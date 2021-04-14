@@ -1,0 +1,109 @@
+package com.honhai.foxconn.fxccalendar.main;
+
+import android.content.res.ColorStateList;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.BottomNavigationView;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.data.Data;
+import com.honhai.foxconn.fxccalendar.data.Event;
+import com.honhai.foxconn.fxccalendar.weekly.layout.CalendarWeeklyFragment;
+
+public class MainActivity extends AppCompatActivity {
+
+    FrameLayout frameLayout;
+    CalendarWeeklyFragment weeklyFragment;
+    BottomNavigationBar bottomBar;
+    ImageView btnAddEvent;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        findViews();
+        setFragment();
+        setBottomBar();
+    }
+
+    private void setBottomBar() {
+        bottomBar.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.navigation_add:
+                        return false;
+                }
+                bottomBar.moveLabelBar(menuItem.getOrder());
+                return true;
+            }
+        });
+        setBottomMenuCalendarType(2);
+        btnAddEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setBottomMenuItemStateColor();
+    }
+
+    private void setBottomMenuCalendarType(int type) {
+        switch (type) {
+            case 1:
+                bottomBar.getMenu().getItem(0).setTitle(R.string.calendar_monthly);
+                return;
+            case 2:
+                bottomBar.getMenu().getItem(0).setIcon(R.drawable.drawable_bottom_calendar_weekly);
+                bottomBar.getMenu().getItem(0).setTitle(R.string.calendar_weekly);
+                return;
+            case 3:
+                bottomBar.getMenu().getItem(0).setTitle(R.string.calendar_summary);
+                return;
+        }
+    }
+
+    private void setBottomMenuItemStateColor() {
+        bottomBar.setItemIconTintList(createColorStateList(Data.getInstance().getThemeColor(), getResources().getColor(R.color.colorBottomMenuDefault)));
+        bottomBar.setItemTextColor(createColorStateList(Data.getInstance().getThemeColor(), getResources().getColor(R.color.colorBottomMenuDefault)));
+    }
+
+    private ColorStateList createColorStateList(int select, int normal) {
+        int[] colors = new int[]{select, normal};
+        int[][] states = new int[2][];
+        states[0] = new int[]{android.R.attr.state_selected};
+        states[1] = new int[]{};
+        return new ColorStateList(states, colors);
+    }
+
+    private void setFragment() {
+        weeklyFragment = new CalendarWeeklyFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame, weeklyFragment).commit();
+    }
+
+    private void findViews() {
+        frameLayout = findViewById(R.id.frame);
+        bottomBar = findViewById(R.id.bottomBar);
+        btnAddEvent = findViewById(R.id.btnAddEvent);
+    }
+}

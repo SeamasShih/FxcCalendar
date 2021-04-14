@@ -1,0 +1,88 @@
+package com.honhai.foxconn.fxccalendar.data.holiday;
+
+import android.content.Context;
+
+import com.honhai.foxconn.fxccalendar.R;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
+
+public class HolidayTable {
+    public static ArrayList<Holiday> getHoliday(Context context, Locale locale, int year, int month) {
+        String country = locale.getCountry();
+        if (country.equals(Locale.CHINA.getCountry()))
+            return getChinaHoliday(context, year, month);
+        else if (country.equals(Locale.TAIWAN.getCountry()))
+            return getTaiwanHoliday(context, year, month);
+        else
+            return getUSHoliday(context, year, month);
+    }
+
+    private static ArrayList<Holiday> getUSHoliday(Context context, int year, int month) {
+        ArrayList<Holiday> holidays = new ArrayList<>();
+        return holidays;
+    }
+
+    private static ArrayList<Holiday> getTaiwanHoliday(Context context, int year, int month) {
+        ArrayList<Holiday> holidays = new ArrayList<>();
+        switch (month) {
+            case Calendar.JANUARY:
+                break;
+            case Calendar.FEBRUARY:
+                break;
+            case Calendar.MARCH:
+                break;
+            case Calendar.APRIL:
+                break;
+            case Calendar.MAY:
+                break;
+            case Calendar.JUNE:
+                break;
+            case Calendar.JULY:
+                break;
+            case Calendar.AUGUST:
+                break;
+            case Calendar.SEPTEMBER:
+                break;
+            case Calendar.OCTOBER:
+                break;
+            case Calendar.NOVEMBER:
+                break;
+            case Calendar.DECEMBER:
+                break;
+        }
+        return holidays;
+    }
+
+    private static ArrayList<Holiday> getChinaHoliday(Context context, int year, int month) {
+        ArrayList<Holiday> holidays = new ArrayList<>();
+        switch (month) {
+            case Calendar.JANUARY:
+                break;
+            case Calendar.FEBRUARY:
+                break;
+            case Calendar.MARCH:
+                break;
+            case Calendar.APRIL:
+                break;
+            case Calendar.MAY:
+                break;
+            case Calendar.JUNE:
+                break;
+            case Calendar.JULY:
+                break;
+            case Calendar.AUGUST:
+                break;
+            case Calendar.SEPTEMBER:
+                break;
+            case Calendar.OCTOBER:
+                break;
+            case Calendar.NOVEMBER:
+                break;
+            case Calendar.DECEMBER:
+                break;
+        }
+        return holidays;
+    }
+}

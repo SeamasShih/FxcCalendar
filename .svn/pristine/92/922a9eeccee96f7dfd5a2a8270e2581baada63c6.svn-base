@@ -1,0 +1,374 @@
+package com.honhai.foxconn.fxccalendar.eventpreview;
+
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
+import android.support.v4.view.PagerAdapter;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.addevent.AddEventActivity;
+import com.honhai.foxconn.fxccalendar.data.Data;
+import com.honhai.foxconn.fxccalendar.data.Event;
+import com.honhai.foxconn.fxccalendar.eventpreview.RecyclerView.GroupItem;
+import com.honhai.foxconn.fxccalendar.eventpreview.RecyclerView.GroupItemClickListener;
+import com.honhai.foxconn.fxccalendar.eventpreview.RecyclerView.GroupItemDecoration;
+import com.honhai.foxconn.fxccalendar.eventpreview.RecyclerView.GroupTestAdapter;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+public class NoticeAdapter extends PagerAdapter {
+
+    private final int CENTER = Integer.MAX_VALUE/2;
+    private ArrayList<Event> times ;
+    private Context context;
+    int isallday = 0;
+    int d1 = 0;
+    int d2 = 0;
+    int d3 = 0;
+    int d4 = 0;
+    private Calendar calendar;
+    private Calendar now = Calendar.getInstance();
+
+    private String title;
+    private int startYear;
+    private int startMonth;
+    private int startDayOfMonth;
+    private int startHour;
+    private int startMinute;
+    private int endYear;
+    private int endMonth;
+    private int endDayOfMonth;
+    private int endHour;
+    private int endMinute;
+    private boolean isAllDay;
+    private int color;
+    private int repeat;
+    private boolean isChinese;
+    private int groupId;
+    private String note;
+    private String map;
+    private String url;
+    private boolean isNoTime;
+    private String objectId;
+
+    public NoticeAdapter(Context context, Calendar calendar) {
+//        this.mListViews = mListViews;
+        this.context = context;
+        this.calendar = calendar;
+    }
+
+    @Override
+    public int getCount() {
+        return Integer.MAX_VALUE;
+    }
+
+    @Override
+    public boolean isViewFromObject(@NonNull View view, @NonNull Object o) {
+        return view == o;
+    }
+
+    @NonNull
+    @Override
+    public Object instantiateItem(@NonNull ViewGroup container, int position) {
+        Log.e("开始事件有几个",""+times.size());
+        if(!times.isEmpty()) {
+            Log.e("开始事件时间", "" + times.get(0).getStartYear() + times.get(0).getStartMonth() + times.get(0).getStartDayOfMonth());
+        }
+//        Log.e("刷新后事件有几个",""+eventsOfDay2.size());
+//        Log.e("",""+eventsOfDay2.get(0).getStartYear());
+        now.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+        now.add(Calendar.DAY_OF_YEAR, position - CENTER);
+        ArrayList<Event> eventsOfDay = getDayEvent(times,now.get(Calendar.YEAR),now.get(Calendar.MONTH),now.get(Calendar.DAY_OF_MONTH));
+        eventsOfDay = sort(eventsOfDay);
+        Log.e("当天事件时间",""+now.get(Calendar.YEAR)+(now.get(Calendar.MONTH)+1)+now.get(Calendar.DAY_OF_MONTH));
+        Log.e("当天事件有几个",""+eventsOfDay.size());
+        View layout;
+        if (eventsOfDay == null || eventsOfDay.size() == 0) {
+            layout = setNoEventViews();
+        } else {
+            layout = setEventViews(eventsOfDay);
+        }
+        container.addView(layout);
+        return layout;
+    }
+
+    @Override
+    public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+        container.removeView((View) object);
+    }
+
+    public  ArrayList<Event> getEventOfDay(ArrayList<Event> events) {
+        this.times = events;
+        return times;
+    }
+
+    private String currentTime(Calendar calendar) {
+
+        String time = calendar.get(Calendar.YEAR) + "年" + (calendar.get(Calendar.MONTH)+1) + "月" + calendar.get(Calendar.DAY_OF_MONTH) + "日";
+
+        return time;
+    }
+
+    private View setEventViews(ArrayList<Event> events) {
+        View layout = LayoutInflater.from(context).inflate(R.layout.adapter_view_layout_recycview, null);
+        TextView tvTitle = layout.findViewById(R.id.rv_adapter_title);
+        ImageView littleAdd = layout.findViewById(R.id.little_add);
+
+        littleAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setClass(context, AddEventActivity.class);
+                context.startActivity(intent);
+            }
+        });
+        tvTitle.setText(currentTime(now));
+        tvTitle.setTextColor(Data.getInstance().getThemeColor());
+        RecyclerView recyclerView = layout.findViewById(R.id.recyclerView_2);
+        LinearLayoutManager manager = new LinearLayoutManager(context);
+        manager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(manager);
+        initData(recyclerView, events);
+        return layout;
+    }
+
+    private View setNoEventViews() {
+        View view = LayoutInflater.from(context).inflate(R.layout.adapter_view_layout2, null);
+        TextView tvTitle = view.findViewById(R.id.tv_adapter_title);
+        ImageView littleAdd_1 = view.findViewById(R.id.addevent_1);
+
+        littleAdd_1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setClass(context, AddEventActivity.class);
+                context.startActivity(intent);
+            }
+        });
+
+        Button bigAdd = view.findViewById(R.id.addEvent);
+        bigAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setClass(context, AddEventActivity.class);
+                context.startActivity(intent);
+            }
+        });
+
+        tvTitle.setText(currentTime(now));
+        tvTitle.setTextColor(Data.getInstance().getThemeColor());
+
+        Button button = view.findViewById(R.id.addEvent);
+        Drawable addevent = context.getDrawable(R.drawable.add_event);
+        addevent.setTint(Data.getInstance().getThemeColor());
+        addevent.setAlpha(255);
+        button.setBackground(addevent);
+
+        Drawable drawable2 = context.getDrawable(R.drawable.ic_add_black_24dp);
+        ImageView imageView = view.findViewById(R.id.addevent_1);
+        imageView.setImageDrawable(drawable2);
+        drawable2.setTint(Data.getInstance().getThemeColor());
+
+        return view;
+    }
+
+    private void initData(RecyclerView recyclerView, final ArrayList<Event> time) {
+        GroupTestAdapter groupTestAdapter = new GroupTestAdapter(context, time);
+        recyclerView.setAdapter(groupTestAdapter);
+
+        //开始使用GroupItemDecoration
+        LayoutInflater layoutInflater = LayoutInflater.from(context);
+        View view = layoutInflater.inflate(R.layout.item_group, null);
+        GroupItemDecoration groupItemDecoration = new GroupItemDecoration(
+                context,
+                view,
+                new GroupItemDecoration.DecorationCallback() {
+                    @Override
+                    public void setGroup(List<GroupItem> groupList) {
+                        //设置分组
+                        GroupItem groupItem;
+                        for (int i = 0; i < time.size(); i++) {
+                            if (time.get(i).isAllDay()) {
+                                groupItem = new GroupItem(0);
+                                if (isallday == 0) {
+                                    groupItem.setData("name", "全天");
+                                    groupItem.setData("time", "");
+                                    groupList.add(groupItem);
+                                    isallday = 1;
+                                }
+                            } else if (time.get(i).getStartHour() < 6) {
+                                if (d1 == 0) {
+                                    groupItem = new GroupItem(i);
+                                    groupItem.setData("name", "深夜");
+                                    groupItem.setData("time", "00:00-05:59");
+                                    groupList.add(groupItem);
+                                    d1 = 1;
+                                }
+                            } else if (time.get(i).getStartHour() > 5 && time.get(i).getStartHour() < 12) {
+                                if (d2 == 0) {
+                                    groupItem = new GroupItem(i);
+                                    groupItem.setData("name", "上午");
+                                    groupItem.setData("time", "06:00-11:59");
+                                    groupList.add(groupItem);
+                                    d2 = 1;
+                                }
+                            } else if (time.get(i).getStartHour() > 11 && time.get(i).getStartHour() < 18) {
+                                if (d3 == 0) {
+                                    groupItem = new GroupItem(i);
+                                    groupItem.setData("name", "下午");
+                                    groupItem.setData("time", "12:00-17:59");
+                                    groupList.add(groupItem);
+                                    d3 = 1;
+                                }
+                            } else if (time.get(i).getStartHour() > 17 && time.get(i).getStartHour() < 24) {
+                                if (d4 == 0) {
+                                    groupItem = new GroupItem(i);
+                                    groupItem.setData("name", "晚上");
+                                    groupItem.setData("time", "18:00-23:59");
+                                    groupList.add(groupItem);
+                                    d4 = 1;
+                                }
+                            }
+                        }
+
+                        isallday = 0;
+                        d1 = 0;
+                        d2 = 0;
+                        d3 = 0;
+                        d4 = 0;
+                    }
+
+
+                    @Override
+                    public void buildGroupView(View groupView, GroupItem groupItem) {
+                        //构建GroupView，通过view.findViewById找到内部控件
+                        TextView textName =  groupView.findViewById(R.id.text_name);
+                        TextView textName1 = groupView.findViewById(R.id.textView2);
+                        textName.setText(groupItem.getData("name").toString());
+                        textName1.setText(groupItem.getData("time").toString());
+
+                    }
+                });
+        recyclerView.addItemDecoration(groupItemDecoration);
+        recyclerView.addOnItemTouchListener(new GroupItemClickListener(groupItemDecoration, new GroupItemClickListener.OnGroupItemClickListener() {
+            @Override
+            public void onGroupItemClick(GroupItem groupItem) {
+                Toast.makeText(context, "点击了Group:" + groupItem.getData("name"), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onGroupItemLongClick(GroupItem groupItem) {
+                Toast.makeText(context, "长按了Group:" + groupItem.getData("name"), Toast.LENGTH_SHORT).show();
+            }
+        }));
+    }
+
+    public ArrayList<Event> getDayEvent(List<Event> events, int year, int month , int day) {
+        ArrayList<Event> myevents = new ArrayList<>();
+
+        for(int i=0; i<events.size(); i++){
+            if(year == events.get(i).getStartYear()){
+                if(month == events.get(i).getStartMonth()){
+                    if(day == events.get(i).getStartDayOfMonth()){
+                        myevents.add(events.get(i));
+                    }
+                }
+            }
+        }
+        return myevents;
+    }
+
+    private ArrayList<Event> sort(ArrayList<Event> time){
+        Collections.sort(time, new Comparator<Event>() {
+            @Override
+            public int compare(Event o1, Event o2) {
+                int f = o1.getStartHour();
+                int b = o2.getStartHour();
+                if(o1.isAllDay()){return -1;}
+                else if(o2.isAllDay()){return 1;}
+                else if (f >= b) {
+                    return 1;
+                }else {
+                    return -1;
+                }
+            }
+        });
+        return time;
+    }
+
+   //使用前必須要用geteventNews方法初始化數據
+    public Event getevent() {
+
+        Event event1 = new Event(title,startYear,startMonth,
+                startDayOfMonth,startHour,startMinute,
+                endYear,endMonth,endDayOfMonth,endHour,
+               endMinute,isAllDay,color,repeat,isChinese,
+                groupId,note,map,url,isNoTime,objectId);
+//        event.setTitle(title);
+//        event.setStartYear(startYear);
+//        event.setStartMonth(startMonth);
+//        event.setStartDayOfMonth(startDayOfMonth);
+//        event.setStartHour(startHour);
+//        event.setStartMinute(startMinute);
+//         event.setEndYear(endYear);
+//        event.setEndMonth(endMonth);
+//        event.setEndDayOfMonth(endDayOfMonth);
+//        event.setEndHour(endHour);
+//        event.setEndMinute(endMinute);
+//        event.setAllDay(isAllDay);
+//        event.setColor(color);
+//        event.setRepeat(repeat);
+//        event.setChinese(isChinese);
+//        event.setGroupId(groupId);
+//        event.setNote(note);
+//        event.setMap(map);
+//        event.setUrl(url);
+//        event.setNoTime(isNoTime);
+//        event.setObjectId(objectId);
+
+        return event1;
+    }
+
+    public void geteventNews(Event event){
+        this.title = event.getTitle();
+        this.startYear = event.getStartYear();
+        this.startMonth = event.getStartMonth();
+        this.startDayOfMonth = event.getStartDayOfMonth();
+        this.startHour = event.getStartHour();
+        this.startMinute = event.getStartMinute();
+        this.endYear = event.getEndYear();
+        this.endMonth = event.getEndMonth();
+        this.endDayOfMonth = event.getEndDayOfMonth();
+        this.endHour = event.getEndHour();
+        this.endMinute = event.getEndMinute();
+        this.isAllDay = event.isAllDay();
+        this.color = event.getColor();
+        this.repeat = event.getRepeat();
+        this.isChinese = event.isChinese();
+        this.groupId = event.getGroupId();
+        this.note = event.getNote();
+        this.map = event.getMap();
+        this.url = event.getUrl();
+        this.isNoTime = event.isNoTime();
+        this.objectId = event.getObjectId();
+
+    }
+
+}
+

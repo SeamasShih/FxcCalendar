@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/action_bar"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/colorPrimary"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/left_clear"
+                style="@style/imageButtonStyle"
+                android:src="@drawable/ic_arrow_back_black_24dp"
+                android:contentDescription="TODO" />
+
+            <ImageButton
+                android:id="@+id/Center_clear"
+                style="@style/imageButtonStyle"
+                android:src="@drawable/ic_account_circle_black_24dp" />
+
+            <TextView
+                android:id="@+id/insert_update_title"
+                style="@style/ActivityTitleStyle"
+                android:layout_width="100dp"
+                android:text="Edit" />
+ 
+            <ImageButton
+                android:id="@+id/tv_save"
+                style="@style/leftTextViewStyle"
+                android:src="@drawable/ic_check_black_24dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/alarm_title"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="5dp"
+                android:background="@null"
+                android:hint="Title"
+                android:paddingStart="20dp"
+                android:inputType=""
+                android:autofillHints="" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#4fa3a3a3"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+
+                    <ImageView
+                        android:id="@+id/iv_all_day"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="10dp"
+                        android:background="@drawable/ic_alarm_on_black_24dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toEndOf="@id/iv_all_day"
+                        android:layout_marginStart="40dp"
+                        android:textColor="#000"
+                        android:text="全天"/>
+
+                    <Switch
+                        android:id="@+id/sw_all_day"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="10dp"
+                        android:layout_centerVertical="true"/>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/alarm_start_year"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:gravity="center_vertical"
+                    android:paddingStart="45dp"
+                    android:textColor="#000"
+                    android:text="开始年月日"/>
+
+                    <TextView
+                        android:id="@+id/alarm_start_time"
+                        android:layout_width="match_parent"
+                        android:layout_height="85dp"
+                        android:gravity="center_vertical"
+                        android:paddingStart="45dp"
+                        android:textColor="#000"
+                        android:text="开始时间"/>
+
+                    <ImageView
+                        android:id="@+id/iv_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="170dp"
+                        android:background="@drawable/ic_keyboard_arrow_right_black_24dp" />
+                <TextView
+                    android:id="@+id/alarm_end_year"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:gravity="center_vertical"
+                    android:paddingStart="245dp"
+                    android:textColor="#000"
+                    android:text="结束年月日"/>
+
+                    <TextView
+                        android:id="@+id/alarm_end_time"
+                        android:layout_width="match_parent"
+                        android:layout_height="85dp"
+                        android:gravity="center_vertical"
+                        android:paddingStart="245dp"
+                        android:textColor="#000"
+                        android:text="结束时间"/>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+                    <ImageView
+                        android:id="@+id/iv_lunar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="10dp"
+                        android:background="@drawable/ic_brightness_3_black_24dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toEndOf="@id/iv_lunar"
+                        android:layout_marginStart="40dp"
+                        android:textColor="#000"
+                        android:text="农历"/>
+
+                    <Switch
+                        android:id="@+id/sw_lunar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="10dp"
+                        android:layout_centerVertical="true"/>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/layout_alarm_replay"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+
+                    <ImageView
+                        android:id="@+id/iv_replay"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="10dp"
+                        android:background="@drawable/ic_cached_black_24dp" />
+
+                    <TextView
+                        android:id="@+id/alarm_replay"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toEndOf="@id/iv_replay"
+                        android:layout_marginStart="40dp"
+                        android:textColor="#000"
+                        android:text="不重复"/>
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#4fa3a3a3"
+                    />
+
+                <RelativeLayout
+                    android:id="@+id/layout_alarm_remind"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+
+                    <ImageView
+                        android:id="@+id/iv_remind"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="10dp"
+                        android:background="@drawable/ic_access_alarm_black_24dp" />
+
+                    <TextView
+                        android:id="@+id/alarm_remind"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toEndOf="@id/iv_remind"
+                        android:layout_marginStart="40dp"
+                        android:textColor="#000"
+                        android:text="15分钟前"/>
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#4fa3a3a3"
+                    />
+
+                <RelativeLayout
+                    android:id="@+id/layout_alarm_vibrate"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+
+                    <ImageView
+                        android:id="@+id/iv_vibrate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="10dp"
+                        android:background="@drawable/ic_system_update_alt_black_24dp" />
+
+                    <TextView
+                        android:id="@+id/alarm_vibrate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toEndOf="@id/iv_vibrate"
+                        android:layout_marginStart="40dp"
+                        android:textColor="#000"
+                        android:text="以日期未定的状态保留"/>
+
+                    <Switch
+                        android:id="@+id/sw_vibrate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="10dp"
+                        android:layout_centerVertical="true"/>
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#4fa3a3a3"
+                    />
+
+                <RelativeLayout
+                    android:id="@+id/layout_alarm_tone_Path"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+
+                    <ImageView
+                        android:id="@+id/iv_alarm_tone_Path"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="10dp"
+                        android:background="@drawable/ic_attach_file_black_24dp" />
+
+                    <TextView
+                        android:id="@+id/alarm_tone_Path"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toEndOf="@id/iv_alarm_tone_Path"
+                        android:layout_marginStart="40dp"
+                        android:textColor="#000"
+                        android:text="网址"/>
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#4fa3a3a3"
+                    />
+
+                <RelativeLayout
+                    android:id="@+id/layout_alarm_local"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+
+                    <ImageView
+                        android:id="@+id/iv_local"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="10dp"
+                        android:background="@drawable/ic_location_on_black_24dp" />
+
+                    <TextView
+                        android:id="@+id/alarm_local"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toEndOf="@id/iv_local"
+                        android:layout_marginStart="40dp"
+                        android:text="添加地点"
+                        />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#4fa3a3a3"
+                    />
+
+
+                <RelativeLayout
+                    android:id="@+id/layout_alarm_color"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:onClick="onClick"
+                    android:clickable="true">
+
+                    <ImageView
+                        android:id="@+id/iv_color"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="10dp"
+                        android:background="@drawable/ic_edit_black_24dp"
+                        android:contentDescription="TODO" />
+
+                    <TextView
+                        android:id="@+id/alarm_color"
+                        android:clickable="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toEndOf="@id/iv_color"
+                        android:layout_marginStart="40dp"
+                        android:textColor="#000"
+                        android:text="默认颜色"
+                        android:focusable="true" />
+
+                    <ImageView
+                        android:id="@+id/iv_point"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="350dp"
+                        android:background="@drawable/ic_keyboard_arrow_right_black_24dp"
+                        android:contentDescription="TODO" />
+                        />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#4fa3a3a3"
+                    />
+
+                <RelativeLayout
+                    android:id="@+id/layout_alarm_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/iv_description"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/ic_message_black_24dp"
+                        android:contentDescription="TODO" />
+
+                    <EditText
+                        android:id="@+id/alarm_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="75dp"
+                        android:layout_marginTop="5dp"
+                        android:lines="5"
+                        android:background="@null"
+                        android:textSize="14sp"
+                        android:hint="添加备注"
+                        android:inputType=""
+                        android:importantForAutofill="no" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#4fa3a3a3"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

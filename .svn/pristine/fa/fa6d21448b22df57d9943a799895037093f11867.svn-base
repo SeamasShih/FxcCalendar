@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name">FxcCalendar</string>
+
+
+    <string name="lovely_red">lovely_red</string>
+    <string name="color">color</string>
+
+    <string name="color_manager">标签的管理</string>
+   <string name="alarm_title">主题</string>
+
+    <string name="calendar_monthly">Monthly</string>
+    <string name="calendar_weekly">Weekly</string>
+    <string name="calendar_summary">Summary</string>
+    <string name="keep">Keep</string>
+    <string name="feed">Feed</string>
+    <string name="more">More</string>
+    <string name="underline"><u>忘记密码</u></string>
+
+    <string name="popupSwitchCalendarTitle">Switch calendar display</string>
+
+    <string name="mainToolbarSearch">Search</string>
+
+    <string name="stringEventWhite">white</string>
+    <string name="stringEventRed">red</string>
+    <string name="stringEventOrange">orange</string>
+    <string name="stringEventYellow">yellow</string>
+    <string name="stringEventGreen">green</string>
+    <string name="stringEventLightBlue">light blue</string>
+    <string name="stringEventPurple">purple</string>
+    <string name="stringEventWineRed">wine red</string>
+    <string name="stringEventBrown">brown</string>
+    <string name="stringEventBlack">black</string>
+    <string name="stringEventBlue">blue</string>
+
+    <string name="addEventColorPopupWindowTitle">Choose Event Color</string>
+    <string name="addEventColorPopupWindowManage">Manage</string>
+    <string name="addEventColorPopupWindowConfirm">Confirm</string>
+
+</resources>

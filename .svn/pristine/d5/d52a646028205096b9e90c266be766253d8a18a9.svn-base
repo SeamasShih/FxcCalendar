@@ -1,0 +1,117 @@
+package com.honhai.foxconn.fxccalendar.login;
+
+
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Paint;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.view.Menu;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.honhai.foxconn.fxccalendar.R;
+
+import static android.view.View.OnClickListener;
+
+public class Register extends AppCompatActivity {
+
+    private Button bt_close;
+    private Button bt_register;
+    private Button bt_button1;
+    private Button bt_fPwd;
+    private EditText et_pwd = null;
+    private EditText et_name = null;
+    private Menu menu;
+    private Button bt_pos;
+    private Object name1;
+    private Object pwd1;
+    private CheckBox cb_ischeck;
+    private SharedPreferences sp;
+    private String pwd;
+    private boolean result;
+    private UserDataManager mUserDataManager;         //用户数据管理类
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.register_login_ui_layout);
+        //初始化实例
+        sp = getSharedPreferences("config", 0);
+
+        et_name = (EditText) findViewById(R.id.et_userName);
+        et_pwd = (EditText) findViewById(R.id.et_passWord);
+        bt_fPwd = (Button) findViewById(R.id.bt_forgetPassword);
+        bt_button1 = (Button) findViewById(R.id.bt_button);
+        bt_register = (Button) findViewById(R.id.bt_register);
+        bt_close = (Button) findViewById(R.id.close_button);
+        cb_ischeck = (CheckBox) findViewById(R.id.cb_ischeck);
+        //在config中把关心的数据取出来
+        String name = sp.getString("name", "");
+        String pwd = sp.getString("pwd", "");
+        //checked状态被选中
+        boolean result = sp.getBoolean("ischecked", false);
+        if (result) {
+            cb_ischeck.setChecked(true);
+        }
+
+        et_name.setText(name);
+        et_pwd.setText(pwd);
+
+        //底部添加横线
+        bt_fPwd.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
+
+
+        if (mUserDataManager == null) {
+            mUserDataManager = new UserDataManager(this);
+            mUserDataManager.openDataBase();                              //建立本地数据库
+        }
+
+        bt_register.setOnClickListener(new MyClickListener());
+        bt_fPwd.setOnClickListener(new MyClickListener());
+        bt_close.setOnClickListener(new MyClickListener());
+        bt_button1.setOnClickListener(new MyClickListener());
+
+    }
+
+    private class MyClickListener implements OnClickListener {
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.bt_button:
+                    String name = et_name.getText().toString().trim();
+                    String pwd = et_pwd.getText().toString().trim();
+                    if (TextUtils.isEmpty(name) || TextUtils.isEmpty(pwd)) {
+                        Toast.makeText(Register.this, "请输入8~32位密码", Toast.LENGTH_LONG).show();
+                    } else {
+                        if (cb_ischeck.isChecked()) {
+                            SharedPreferences.Editor edit = sp.edit();
+                            edit.putString("name", name);
+                            edit.putString("pwd", pwd);
+                            edit.putBoolean("ischecked", true);
+                            edit.commit();
+                            Toast.makeText(Register.this, "登陆并保存成功！！！", Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(Register.this, "请勾选记住密码！！！", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                    break;
+                case R.id.bt_forgetPassword:
+                    Intent i = new Intent(Register.this, Resetpassword.class);
+                    startActivity(i);
+                    break;
+                case R.id.close_button:
+                    break;
+                case R.id.bt_register:
+                    Intent i1 = new Intent(Register.this, Registerumber.class);
+                    startActivity(i1);
+                    break;
+                default:
+            }
+        }
+
+    }
+}

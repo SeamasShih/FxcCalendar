@@ -1,0 +1,49 @@
+package com.honhai.foxconn.fxccalendar.agenda;
+
+
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.agenda.adapter.AgendaListAdapter;
+import com.honhai.foxconn.fxccalendar.data.interfaces.Rollback;
+
+
+public class AgendaViewFragment extends Fragment implements Rollback {
+
+    private View view;
+    public RecyclerView mAgendaListRecyclerView;
+    public AgendaListAdapter mAdapter;
+
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.fragment_agend_layout, container, false);
+        initRecyclerView();
+        initData();
+        return view;
+    }
+
+    private void initRecyclerView() {
+        mAgendaListRecyclerView = view.findViewById(R.id.agendalist_recyclerview);
+        mAgendaListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+        mAgendaListRecyclerView.setAdapter(mAdapter);
+        mAgendaListRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(),
+                DividerItemDecoration.VERTICAL));
+
+    }
+
+    private void initData() {
+    }
+
+    public void rollback(){
+        //todo Lily complete rollback function
+    }
+
+}

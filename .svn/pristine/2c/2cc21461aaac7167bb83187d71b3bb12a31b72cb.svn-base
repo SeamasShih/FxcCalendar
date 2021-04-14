@@ -1,0 +1,274 @@
+package com.honhai.foxconn.fxccalendar.addevent;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
+import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.DatePicker;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.colormanager.ColorManagerActivity;
+import com.honhai.foxconn.fxccalendar.data.Data;
+import com.honhai.foxconn.fxccalendar.data.Event;
+import com.honhai.foxconn.fxccalendar.widget.CustomDatePicker;
+
+import java.util.Calendar;
+
+import static com.honhai.foxconn.fxccalendar.colormanager.ColorAdapter.SP_COLOR_LABEL;
+import static com.honhai.foxconn.fxccalendar.main.MainActivity.INTENT_EVENT;
+
+public class AddEventActivity extends AppCompatActivity {
+    private TextView alarm_color;
+    private EditText alarm_title;
+    private ImageButton left_clear, tv_save;
+    private ImageView iv_time, iv_all_day, iv_color, iv_point, iv_remind;
+    private Switch swAllDay, swLunar, swNoTime;
+    private int prevColor;
+    private int currColor;
+    private Event event;
+    private boolean isDismiss = false;
+    private boolean isCreate = false;
+    private SharedPreferences colorLabelSP;
+    private String[] colorStringId;
+    private int[] colors;
+    private TextView alarm_start_year, alarm_start_time,alarm_end_year,alarm_end_time;
+    private CustomDatePicker customDatePicker1, customDatePicker2;
+    private ColorPopupWindow popupWindow;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_add_event);
+
+        colorLabelSP = getSharedPreferences(SP_COLOR_LABEL, Context.MODE_PRIVATE);
+        colorStringId = getResources().getStringArray(R.array.stringColor);
+        colors = getResources().getIntArray(R.array.eventColorArray);
+
+        Intent intent = getIntent();
+        event = intent.getParcelableExtra(INTENT_EVENT);
+        if (event == null) {
+            Calendar start = Calendar.getInstance();
+            Calendar end = Calendar.getInstance();
+            end.add(Calendar.HOUR_OF_DAY, 1);
+            event = new Event("", start.get(Calendar.YEAR), start.get(Calendar.MONTH), start.get(Calendar.DAY_OF_MONTH), start.get(Calendar.HOUR_OF_DAY), start.get(Calendar.MINUTE),
+                    end.get(Calendar.YEAR), end.get(Calendar.MONTH), end.get(Calendar.DAY_OF_MONTH), end.get(Calendar.HOUR_OF_DAY), end.get(Calendar.MINUTE),
+                    false, getResources().getColor(R.color.colorEventRed), 0, false, 0, "", "", "", false, "");
+            isCreate = true;
+        }
+        prevColor = event.getColor();
+
+        findViews();
+        setEventDetailToUI();
+        colorChange(prevColor);
+    }
+
+    private void setEventDetailToUI() {
+        tv_save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (alarm_title.getText() == null || alarm_title.getText().length() == 0)
+                    return;
+//                if (isCreate) {
+                Data.getInstance().addEventForCloud(event);
+                Data.getInstance().getEvents().add(event);
+//                } else
+//                    modifiedEvent();
+                finish();
+            }
+        });
+        left_clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
+
+    private void modifiedEvent() {
+        event.setTitle(alarm_title.getText().toString());
+//        event.setStartYear();
+//        event.setStartMonth();
+//        event.setStartDayOfMonth();
+//        event.setStartHour();
+//        event.setStartMinute();
+//        event.setEndYear();
+//        event.setEndMonth();
+//        event.setStartDayOfMonth();
+//        event.setEndHour();
+//        event.setEndMinute();
+        event.setAllDay(swAllDay.isChecked());
+        event.setColor(currColor);
+//        event.setRepeat();
+        event.setChinese(swLunar.isChecked());
+//        event.setGroupId();
+//        event.setNote();
+//        event.setMap();
+//        event.setUrl();
+        event.setNoTime(swNoTime.isChecked());
+        updateEvent(event);
+    }
+
+    private void updateEvent(Event event) {
+        Data.getInstance().updateEventForCloud(
+                event.getTitle(),
+                event.getStartYear(),
+                event.getStartMonth(),
+                event.getStartDayOfMonth(),
+                event.getStartHour(),
+                event.getStartMinute(),
+                event.getEndYear(),
+                event.getEndMonth(),
+                event.getStartDayOfMonth(),
+                event.getEndHour(),
+                event.getEndMinute(),
+                event.isAllDay(),
+                event.getColor(),
+                event.getRepeat(),
+                event.isChinese(),
+                event.getGroupId(),
+                event.getNote(),
+                event.getMap(),
+                event.getUrl(),
+                event.isNoTime(),
+                event.getObjectId()
+        );
+    }
+
+    @Override
+    protected void onResume() {
+        if (popupWindow != null)
+            popupWindow.changColorLabel();
+        super.onResume();
+    }
+
+    private void findViews() {
+        alarm_color = findViewById(R.id.alarm_color);
+        left_clear = findViewById(R.id.left_clear);
+        tv_save = findViewById(R.id.tv_save);
+        iv_time = findViewById(R.id.iv_time);
+        iv_point = findViewById(R.id.iv_point);
+        iv_remind = findViewById(R.id.iv_remind);
+        iv_all_day = findViewById(R.id.iv_all_day);
+        iv_color = findViewById(R.id.iv_color);
+        alarm_title = findViewById(R.id.alarm_title);
+        swAllDay = findViewById(R.id.sw_all_day);
+        swLunar = findViewById(R.id.sw_lunar);
+        swNoTime = findViewById(R.id.sw_vibrate);
+    }
+
+    public void colorChange(int color) {
+        Drawable drawable = getDrawable(R.drawable.ic_arrow_back_black_24dp);
+        drawable.setAlpha(255);
+        drawable.setTintList(ColorStateList.valueOf(color));
+        left_clear.setImageDrawable(drawable);
+
+        drawable = getDrawable(R.drawable.ic_check_black_24dp);
+        drawable.setAlpha(255);
+        drawable.setTintList(ColorStateList.valueOf(color));
+        tv_save.setImageDrawable(drawable);
+
+        Drawable drawable1 = getDrawable(R.drawable.ic_keyboard_arrow_right_black_24dp);
+        iv_time.setImageDrawable(drawable1);
+        iv_point.setImageDrawable(drawable1);
+        drawable1.setTint(color);
+
+        alarm_title.setHintTextColor(ColorStateList.valueOf(color));
+
+        Drawable drawable2 = getDrawable(R.drawable.ic_alarm_on_black_24dp);
+        iv_remind.setImageDrawable(drawable2);
+        iv_all_day.setImageDrawable(drawable2);
+        drawable2.setTint(color);
+
+        Drawable drawable4 = iv_color.getBackground();
+        drawable4.setTint(color);
+
+        swAllDay.getThumbDrawable().setTintList(createColorStateList(color, Color.rgb(240, 240, 240)));
+        swAllDay.getTrackDrawable().setTintList(createColorStateList(color, Color.GRAY));
+
+        swLunar.getThumbDrawable().setTintList(createColorStateList(color, Color.rgb(240, 240, 240)));
+        swLunar.getTrackDrawable().setTintList(createColorStateList(color, Color.GRAY));
+
+        swNoTime.getThumbDrawable().setTintList(createColorStateList(color, Color.rgb(240, 240, 240)));
+        swNoTime.getTrackDrawable().setTintList(createColorStateList(color, Color.GRAY));
+
+        for (int i = 0; i < colors.length; i++) {
+            if (colors[i] == color) {
+                alarm_color.setText(colorLabelSP.getString(colorStringId[i], colorStringId[i]));
+                break;
+            }
+        }
+
+        currColor = color;
+    }
+
+    private ColorStateList createColorStateList(int checked, int normal) {
+        int[] colors = new int[]{checked, normal};
+        int[][] states = new int[2][];
+        states[0] = new int[]{android.R.attr.state_checked};
+        states[1] = new int[]{};
+        return new ColorStateList(states, colors);
+    }
+
+    public void onClick(View v) {
+        View popupLayout = getLayoutInflater().inflate(R.layout.add_event_color_popup_window, (ViewGroup) findViewById(R.id.add_event_color_window_layout));
+        popupWindow = new ColorPopupWindow(this, popupLayout, getWindow().getDecorView().getWidth() - 100, getWindow().getDecorView().getHeight() * 3 / 5);
+        popupWindow.setOutsideTouchable(true);
+        popupWindow.setFocusable(true);
+        TextView manage = popupLayout.findViewById(R.id.addEventColorPopupWindowManage);
+        manage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setClass(AddEventActivity.this, ColorManagerActivity.class);
+                startActivity(intent);
+            }
+        });
+        TextView confirm = popupLayout.findViewById(R.id.addEventColorPopupWindowConfirm);
+        confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isDismiss = true;
+                popupWindow.dismiss();
+            }
+        });
+        isDismiss = false;
+        popupWindow.showAtLocation(getWindow().getDecorView(), Gravity.CENTER, 0, 0);
+        WindowManager.LayoutParams lp = getWindow().getAttributes();
+        lp.alpha = .5f;
+        getWindow().setAttributes(lp);
+        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                WindowManager.LayoutParams lp = getWindow().getAttributes();
+                lp.alpha = 1f;
+                getWindow().setAttributes(lp);
+                if (isDismiss)
+                    prevColor = currColor;
+                else
+                    colorChange(prevColor);
+            }
+        });
+    }
+}
+

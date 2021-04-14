@@ -1,0 +1,199 @@
+package com.honhai.foxconn.fxccalendar.search;
+
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.inputmethodservice.Keyboard;
+import android.os.Bundle;
+import android.support.annotation.ColorInt;
+import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.agenda.AgendaDayEvent;
+import com.honhai.foxconn.fxccalendar.data.Data;
+import com.honhai.foxconn.fxccalendar.data.Event;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+
+public class SearchEventActivity extends AppCompatActivity {
+
+    private Toolbar toolbar;
+    private EditText searchText;
+    private View cancelBtn;
+    private RecyclerView recyclerView;
+    private SearchRecyclerViewAdapter searchRecyclerViewAdapter;
+    private ArrayList<Object> list = new ArrayList<>();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_search_event);
+
+        findViews();
+        setToolbar();
+        setEditText();
+        setRecyclerView();
+    }
+
+    private void setRecyclerView() {
+        searchRecyclerViewAdapter = new SearchRecyclerViewAdapter(this, list);
+        recyclerView.setAdapter(searchRecyclerViewAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.addItemDecoration(new RecyclerViewDecoration());
+    }
+
+    private void setEditText() {
+        searchText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.toString().length() != 0)
+                    list = getSearchEventList(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        cancelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchText.setText("");
+            }
+        });
+    }
+
+    private ArrayList<Object> getSearchEventList(String string) {
+        list.clear();
+        ArrayList<AgendaDayEvent> agendaDayEvents = new ArrayList<>();
+        ArrayList<Event> events = Data.getInstance().getEvents();
+        for (int i = 0; i < events.size(); i++) {
+            Event event = events.get(i);
+            if (event.getTitle().contains(string))
+                createEventDay(event, agendaDayEvents);
+        }
+        Collections.sort(agendaDayEvents);
+        for (AgendaDayEvent dayEvent : agendaDayEvents) {
+            list.add(dayEvent);
+            list.addAll(dayEvent.getEvents());
+        }
+        return list;
+    }
+
+    private void createEventDay(Event event, ArrayList<AgendaDayEvent> agendaDayEvents) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(event.getStartYear(), event.getStartMonth(), event.getStartDayOfMonth());
+        for (; !isCalendarEventEndDay(calendar, event); calendar.add(Calendar.DAY_OF_YEAR, 1)) {
+            addEventToAgendaDayEvent(event, calendar, agendaDayEvents);
+        }
+    }
+
+    private void addEventToAgendaDayEvent(Event event, Calendar calendar, ArrayList<AgendaDayEvent> agendaDayEvents) {
+        for (int i = 0; i < agendaDayEvents.size(); i++) {
+            AgendaDayEvent agendaDayEvent = agendaDayEvents.get(i);
+            if (agendaDayEvent.getDay().equal(calendar)) {
+                agendaDayEvent.addEvent(event);
+                return;
+            }
+        }
+        AgendaDayEvent agendaDayEvent = new AgendaDayEvent(this, calendar);
+        agendaDayEvent.addEvent(event);
+        agendaDayEvents.add(agendaDayEvent);
+    }
+
+    private boolean isCalendarEventEndDay(Calendar calendar, Event event) {
+        calendar.add(Calendar.DAY_OF_YEAR, -1);
+        boolean r = (calendar.get(Calendar.YEAR) == event.getEndYear() &&
+                calendar.get(Calendar.MONTH) == event.getEndMonth() &&
+                calendar.get(Calendar.DAY_OF_MONTH) == event.getEndDayOfMonth());
+        calendar.add(Calendar.DAY_OF_YEAR, 1);
+        return r;
+    }
+
+    private void setToolbar() {
+//        toolbar.inflateMenu(R.menu.menu_search_event_toolbar);
+        setCursorColor(searchText, getResources().getColor(R.color.colorPopupSwitchCalendarText));
+        Drawable drawable = getDrawable(R.drawable.ic_arrow_back_black_24dp);
+        drawable.setTint(Data.getInstance().getThemeColor());
+        toolbar.setNavigationIcon(drawable);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
+
+    public void setCursorColor(EditText view, @ColorInt int color) {
+        try {
+            // Get the cursor resource id
+            Field field = TextView.class.getDeclaredField("mCursorDrawableRes");
+            field.setAccessible(true);
+            int drawableResId = field.getInt(view);
+
+            // Get the editor
+            field = TextView.class.getDeclaredField("mEditor");
+            field.setAccessible(true);
+            Object editor = field.get(view);
+
+            // Get the drawable and set a color filter
+            Drawable drawable = ContextCompat.getDrawable(view.getContext(), drawableResId);
+            drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+            Drawable[] drawables = {drawable, drawable};
+
+            // Set the drawables
+            field = editor.getClass().getDeclaredField("mCursorDrawable");
+            field.setAccessible(true);
+            field.set(editor, drawables);
+        } catch (Exception ignored) {
+        }
+    }
+
+    private void findViews() {
+        toolbar = findViewById(R.id.search_toolbar);
+        searchText = findViewById(R.id.search_topEditText);
+        cancelBtn = findViewById(R.id.search_imgClearEditText);
+        recyclerView = findViewById(R.id.search_Recycler);
+    }
+
+    private class RecyclerViewDecoration extends RecyclerView.ItemDecoration {
+        @Override
+        public void onDraw(@NonNull Canvas canvas, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+            int left = parent.getPaddingLeft();
+            int right = parent.getWidth() - parent.getPaddingRight();
+            int childCount = parent.getChildCount();
+            Paint paint = new Paint();
+            paint.setColor(getResources().getColor(R.color.colorPopupSwitchCalendarDividerLine));
+            for (int i = 0; i < childCount; i++) {
+                View child = parent.getChildAt(i);
+                if (parent.getChildViewHolder(child) instanceof SearchRecyclerViewAdapter.HeadViewHolder) {
+                    RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
+                    int top = child.getTop() + params.topMargin + Math.round(child.getTranslationY());
+                    int bottom = top + 1;
+                    canvas.drawRect(left, top, right, bottom, paint);
+                }
+            }
+        }
+    }
+}

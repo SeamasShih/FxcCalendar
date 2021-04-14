@@ -1,0 +1,139 @@
+package com.honhai.foxconn.fxccalendar.addevent;
+
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.PopupWindow;
+import android.widget.TextView;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.colormanager.ColorImageView;
+
+import static com.honhai.foxconn.fxccalendar.colormanager.ColorAdapter.SP_COLOR_LABEL;
+
+public class ColorPopupWindow extends PopupWindow {
+
+    private RecyclerView recyclerView;
+    private AddEventActivity addEventActivity;
+    private SharedPreferences sharedPreferences;
+    private String[] colorsStringId;
+    private Adapter adapter;
+
+    ColorPopupWindow(Context context, View popupLayout, int w, int h) {
+        super(popupLayout, w, h);
+        addEventActivity = (AddEventActivity) context;
+        sharedPreferences = context.getSharedPreferences(SP_COLOR_LABEL, Context.MODE_PRIVATE);
+        colorsStringId = context.getResources().getStringArray(R.array.stringColor);
+        recyclerView = popupLayout.findViewById(R.id.addEventColorPopupWindowRecycler);
+        adapter = new Adapter(popupLayout.getResources().getIntArray(R.array.eventColorArray));
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(popupLayout.getContext()));
+    }
+
+    public void changColorLabel() {
+        adapter.changColorLabel();
+    }
+
+    private class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+        private int[] colors;
+        private int chosen = -1;
+        private String[] colorsText;
+
+        Adapter(int[] colors) {
+            this.colors = colors;
+            colorsText = new String[colors.length];
+            for (int i = 0; i < colorsText.length; i++) {
+                String text = sharedPreferences.getString(colorsStringId[i], colorsStringId[i]);
+                colorsText[i] = text.length() == 0 ? colorsStringId[i] : text;
+            }
+        }
+
+        public void changColorLabel() {
+            colorsText = new String[colors.length];
+            for (int i = 0; i < colorsText.length; i++) {
+                colorsText[i] = sharedPreferences.getString(colorsStringId[i], colorsStringId[i]);
+                if (colorsText[i].equals(""))
+                    colorsText[i] = colorsStringId[i];
+            }
+            notifyDataSetChanged();
+        }
+
+        @NonNull
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+            View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.add_event_color_popup_window_recycler_item, viewGroup, false);
+            return new ViewHolder(v);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, final int i) {
+            ColorImageView colorImageView = ((ViewHolder) viewHolder).colorImageView;
+            TextView textView = ((ViewHolder) viewHolder).textView;
+            ColorChoiceDot colorChoiceDot = ((ViewHolder) viewHolder).colorChoiceDot;
+            View constraintLayout = ((ViewHolder) viewHolder).constraintLayout;
+
+            colorImageView.setColor(colors[i]);
+            textView.setText(colorsText[i]);
+            colorChoiceDot.setColor(colors[i]);
+            colorChoiceDot.setChosen(chosen == i);
+            constraintLayout.setBackgroundColor(chosen == i ? colors[i] : Color.TRANSPARENT);
+            constraintLayout.getBackground().setAlpha(60);
+
+            constraintLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (chosen != i) {
+                        ViewHolder vh = (ViewHolder) recyclerView.findViewHolderForAdapterPosition(chosen);
+                        if (vh != null) {
+                            vh.colorChoiceDot.setChosen(false);
+                            vh.constraintLayout.setBackgroundColor(Color.TRANSPARENT);
+                        }
+                        chosen = i;
+                        ColorChoiceDot dot = v.findViewById(R.id.choice);
+                        dot.setChosen(true);
+                        ConstraintLayout ly = v.findViewById(R.id.colorParent);
+                        if (chosen != -1) {
+                            ly.setBackgroundColor(colors[chosen]);
+                            ly.getBackground().setAlpha(60);
+                            addEventActivity.colorChange(colors[chosen]);
+                        }
+                        notifyDataSetChanged();
+                    }
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return colors.length;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return position;
+        }
+
+        class ViewHolder extends RecyclerView.ViewHolder {
+
+            ColorImageView colorImageView;
+            TextView textView;
+            ColorChoiceDot colorChoiceDot;
+            View constraintLayout;
+
+            ViewHolder(@NonNull View itemView) {
+                super(itemView);
+                colorImageView = itemView.findViewById(R.id.color);
+                textView = itemView.findViewById(R.id.label);
+                colorChoiceDot = itemView.findViewById(R.id.choice);
+                constraintLayout = itemView;
+            }
+        }
+    }
+}

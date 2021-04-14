@@ -1,0 +1,21 @@
+package com.honhai.foxconn.fxccalendar.main;
+
+import android.os.Bundle;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.weekly.view.WeeklyViewPagerAdapter;
+
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        ViewPager viewPager = findViewById(R.id.weeklyViewPager);
+        viewPager.setAdapter(new WeeklyViewPagerAdapter(this));
+        viewPager.setCurrentItem(Integer.MAX_VALUE/2);
+    }
+}

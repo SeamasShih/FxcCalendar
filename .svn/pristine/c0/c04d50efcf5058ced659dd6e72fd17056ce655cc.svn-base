@@ -1,0 +1,14 @@
+package com.honhai.foxconn.fxccalendar.weekly.view;
+
+import android.content.Context;
+import android.support.annotation.Nullable;
+import android.util.AttributeSet;
+import android.view.View;
+
+public abstract class RefreshView extends View {
+    public RefreshView(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public abstract void refresh();
+}

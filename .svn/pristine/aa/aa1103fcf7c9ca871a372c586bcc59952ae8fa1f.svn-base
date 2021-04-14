@@ -1,0 +1,100 @@
+package com.honhai.foxconn.fxccalendar.elsemember.ShowEventPopWindow;
+
+import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.PopupWindow;
+import android.widget.TextView;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.data.Data;
+
+public class ShowEventPopupWindow extends PopupWindow {
+    private final TextView tv_allEvents,tv_completedEvents,tv_uncompletedEvents;
+    private final int gray;
+    private final TextView title;
+    private ImageView allEventsConfirm, completedEventsConfirm, uncompletedEventsConfirm;
+    public static final int EVENTS_ALL = 0;
+    public static final int EVENTS_COMPLETED = 1;
+    public static final int EVENTS_UNCOMPLETED= 2;
+    private SharedPreferences showEventsPreferences;
+
+
+    public ShowEventPopupWindow(View popupLayout, int width, int height) {
+        super(popupLayout, width, height);
+
+        allEventsConfirm = popupLayout.findViewById(R.id.imgPupSwitchCompletedEventBothConfirm);
+        completedEventsConfirm = popupLayout.findViewById(R.id.imgPupSwitchCompletedEventConfirm);
+        uncompletedEventsConfirm = popupLayout.findViewById(R.id.tvPupSwitchUncompletedEventConfirm);
+      tv_allEvents= popupLayout.findViewById(R.id.tvPupSwitchCompletedEventBoth);
+        tv_completedEvents=popupLayout.findViewById(R.id.tvPupSwitchCompletedEvent);
+        tv_uncompletedEvents=popupLayout.findViewById(R.id.tvPupSwitchUncompletedEvent);
+
+        Drawable drawable = allEventsConfirm.getBackground();
+        drawable.setAlpha(255);
+        drawable.setTintList(ColorStateList.valueOf(Data.getInstance().getThemeColor()));
+        allEventsConfirm.setBackground(drawable);
+        completedEventsConfirm.setBackground(drawable);
+        uncompletedEventsConfirm.setBackground(drawable);
+
+        gray = popupLayout.getResources().getColor(R.color.colorPopupSwitchCalendarText);
+        title = popupLayout.findViewById(R.id.tvPupSwitchCompletedEventsTitle);
+
+        setOnClickListener();
+
+
+    }
+
+    private void setOnClickListener() {
+        title.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dismiss();
+            }
+        });
+
+        allEventsConfirm.setOnClickListener(monthlyClickListener);
+        tv_allEvents.setOnClickListener(monthlyClickListener);
+
+
+        completedEventsConfirm.setOnClickListener(completedClickListener);
+        tv_completedEvents.setOnClickListener(completedClickListener);
+
+
+        uncompletedEventsConfirm.setOnClickListener(uncompletedClickListener);
+        tv_uncompletedEvents.setOnClickListener(uncompletedClickListener);
+    }
+
+    private View.OnClickListener monthlyClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            setEventsType(EVENTS_ALL);
+            dismiss();
+        }
+    };
+
+    private View.OnClickListener completedClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            setEventsType(EVENTS_COMPLETED);
+            dismiss();
+        }
+    };
+
+    private View.OnClickListener uncompletedClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            setEventsType(EVENTS_UNCOMPLETED);
+            dismiss();
+        }
+    };
+
+    private void setEventsType(int eventType) {
+//        this.eventType = eventType;
+        
+     
+//        showEventsPreferences.edit().putInt(SP_CALENDAR_TYPE, eventType).apply();
+    }
+}

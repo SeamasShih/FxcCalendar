@@ -1,0 +1,46 @@
+package com.honhai.foxconn.fxccalendar.main;
+
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.Toolbar;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.weekly.layout.CalendarWeeklyFragment;
+import com.honhai.foxconn.fxccalendar.weekly.layout.CalendarWeeklyFragmentV2;
+import com.honhai.foxconn.fxccalendar.weekly.view.CalendarWeeklyViewInfinity;
+
+import java.util.Calendar;
+
+public class MainActivity extends AppCompatActivity {
+
+    FrameLayout frameLayout;
+    CalendarWeeklyFragment weeklyFragment;
+    Toolbar toolbar;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        findViews();
+        setFragment();
+    }
+
+    private void setFragment() {
+        weeklyFragment = new CalendarWeeklyFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame, weeklyFragment).commit();
+    }
+
+    private void findViews() {
+        frameLayout = findViewById(R.id.frame);
+        toolbar = findViewById(R.id.bottomBar);
+        toolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                weeklyFragment.rollback();
+            }
+        });
+    }
+}

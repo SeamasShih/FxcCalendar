@@ -1,0 +1,70 @@
+package com.honhai.foxconn.fxccalendar.elsemember.PopupWindow;
+
+import android.content.Context;
+import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.PopupWindow;
+import android.widget.TextView;
+
+import com.honhai.foxconn.fxccalendar.R;
+
+public class ColorPickerPopupWindow{
+    private ColorPicker colorPicker;
+    private TextView confirm;
+    private TextView cancel;
+
+    private OnConfirmListener onConfirmListener;
+    private OnCancelListener onCancelListener;
+
+    public ColorPickerPopupWindow(AppCompatActivity context) {
+        View popupLayout = context.getLayoutInflater().inflate(R.layout.popup_window_color_picker_layout, (ViewGroup) context.findViewById(R.id.colorPickerLayout));
+        PopupWindow popupWindow = new PopupWindow(popupLayout, context.getWindow().getDecorView().getWidth() - 100, context.getWindow().getDecorView().getHeight() * 3 / 5);
+        popupWindow.setFocusable(true);
+        popupWindow.setOutsideTouchable(true);
+        colorPicker = popupLayout.findViewById(R.id.colorPicker);
+        confirm = popupLayout.findViewById(R.id.colorPickerConfirm);
+        cancel = popupLayout.findViewById(R.id.colorPickerCancel);
+        confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onConfirmListener != null)
+                    onConfirmListener.onConfirm();
+            }
+        });
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onCancelListener != null){
+                    onCancelListener.onCancel();
+                }
+            }
+        });
+        popupWindow.showAtLocation(context.getWindow().getDecorView(), Gravity.CENTER, 0, 0);
+    }
+
+    public void setOnColorChoosingListener(ColorPicker.OnColorChoosingListener listener) {
+        colorPicker.setOnColorChoosingListener(listener);
+    }
+
+    public void setOnColorChoseListener(ColorPicker.OnColorChoseListener listener) {
+        colorPicker.setOnColorChoseListener(listener);
+    }
+
+    public void setOnConfirmListener(OnConfirmListener listener){
+        onConfirmListener = listener;
+    }
+
+    public void setOnCancelListener(OnCancelListener listener){
+        onCancelListener = listener;
+    }
+
+    public interface OnConfirmListener{
+        void onConfirm();
+    }
+
+    public interface OnCancelListener{
+        void onCancel();
+    }
+}

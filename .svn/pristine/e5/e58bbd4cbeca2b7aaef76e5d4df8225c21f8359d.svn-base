@@ -1,0 +1,51 @@
+package com.honhai.foxconn.fxccalendar.data.local.remindersql;
+
+import android.content.Context;
+
+import com.honhai.foxconn.fxccalendar.data.Data;
+import com.honhai.foxconn.fxccalendar.data.Event;
+
+import java.util.ArrayList;
+
+public class ReminderUtils {
+    private static OnRefreshReminderCompleteCallBack onRefreshReminderCompleteCallBack;
+
+    public static void refreshReminderTable(Context context){
+        ReminderDAO reminderDAO = new ReminderDAO(context);
+        ArrayList<Event> events = Data.getInstance().getEvents();
+        ArrayList<Reminder> reminders = reminderDAO.getAll();
+
+        boolean[] isConFirm = new boolean[reminders.size()];
+        for (int i = 0 ; i < isConFirm.length ; i++)
+            isConFirm[i] = false;
+
+        for (int i = 0 ; i < events.size() ; i++){
+            String objectId = events.get(i).getObjectId();
+            for (int j = 0 ; j < reminders.size() ; j++){
+                if (isConFirm[j])
+                    continue;
+                if (objectId.equals(reminders.get(j).getEventObjectId())){
+                    isConFirm[j] = true;
+                    break;
+                }
+            }
+        }
+
+        for (int i = 0 ; i < isConFirm.length ; i++){
+            if (!isConFirm[i]){
+                reminderDAO.delete(reminders.remove(i).getLocalId());
+            }
+        }
+
+        if (onRefreshReminderCompleteCallBack != null)
+            onRefreshReminderCompleteCallBack.onComplete(reminders);
+    }
+
+    public static void setOnRefreshReminderCompleteCallBack(OnRefreshReminderCompleteCallBack onRefreshReminderCompleteCallBack) {
+        ReminderUtils.onRefreshReminderCompleteCallBack = onRefreshReminderCompleteCallBack;
+    }
+
+    public interface OnRefreshReminderCompleteCallBack {
+        void onComplete(ArrayList<Reminder> reminders);
+    }
+}

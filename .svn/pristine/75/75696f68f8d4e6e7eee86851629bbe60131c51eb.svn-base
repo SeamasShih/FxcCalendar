@@ -1,0 +1,44 @@
+package com.honhai.foxconn.fxccalendar.elsemember.GroupMemberList;
+
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
+
+import com.honhai.foxconn.fxccalendar.R;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class GroupMemberActivity extends AppCompatActivity {
+    private List<GroupMember>groupMemberList =new ArrayList<>();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_group_member_list);
+        RecyclerView recyclerView=findViewById(R.id.rv_recycler_view);
+        StaggeredGridLayoutManager layoutManager=new StaggeredGridLayoutManager(3,StaggeredGridLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(layoutManager);
+        GroupMemberAdapter adapter=new GroupMemberAdapter(groupMemberList);
+        recyclerView.setAdapter(adapter);
+        initMemberLists();
+    }
+    private void initMemberLists(){
+        GroupMember member1=new GroupMember(R.drawable.ic_person_black_24dp,"张三");
+        groupMemberList.add(member1);
+
+        GroupMember member2=new GroupMember(R.drawable.ic_person_black_24dp,"李四");
+        groupMemberList.add(member2);
+
+        GroupMember member3=new GroupMember(R.drawable.ic_person_black_24dp,"王五");
+        groupMemberList.add(member3);
+
+        GroupMember member4=new GroupMember(R.drawable.ic_person_black_24dp,"Jason");
+        groupMemberList.add(member4);
+
+        GroupMember member5=new GroupMember(R.drawable.ic_person_black_24dp,"Wilson");
+        groupMemberList.add(member5);
+
+    }
+}

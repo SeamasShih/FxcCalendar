@@ -1,0 +1,73 @@
+package com.honhai.foxconn.fxccalendar.elsemember.GroupManager;
+
+import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.TextView;
+
+import com.honhai.foxconn.fxccalendar.R;
+
+import java.util.List;
+
+public class GroupManagerAdapter extends RecyclerView.Adapter<GroupManagerAdapter.ViewHolder> {
+    private List<ManagerGroupList> mList;
+//    private SparseBooleanArray mSelectedPositions = new SparseBooleanArray();
+//    private boolean mIsSelectable = false;
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        private final TextView tv_name_manager;
+        private final CheckBox cb_checkbox;
+        View groupView;
+
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            groupView = itemView;
+            tv_name_manager= itemView.findViewById(R.id.tv_name_manager);
+            cb_checkbox=itemView.findViewById(R.id.cb_checkbox);
+
+        }
+    }
+
+    public GroupManagerAdapter(List<ManagerGroupList> managerGroupLists) {
+
+        mList = managerGroupLists;
+    }
+    @Override
+    public GroupManagerAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.select_group_manager_item, viewGroup, false);
+        final ViewHolder holder = new ViewHolder(view);
+        holder.groupView.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+
+
+
+            }
+        });
+        return holder;
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull GroupManagerAdapter.ViewHolder viewHolder, int position) {
+
+        ManagerGroupList member = mList.get(position);
+        viewHolder.tv_name_manager.setText(member.getName());
+//        viewHolder.cb_checkbox.setChecked(isItemChecked(position));
+    }
+
+//    private void setItemChecked(int position, boolean isChecked) {
+//        mSelectedPositions.put(position, isChecked);
+//    }
+//    private boolean isItemChecked(int position) {
+//        return mSelectedPositions.get(position);
+//    }
+    @Override
+    public int getItemCount() {
+        return mList.size();
+    }
+
+
+}

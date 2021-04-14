@@ -1,0 +1,82 @@
+package com.honhai.foxconn.fxccalendar.elsemember.GroupManager;
+
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.TextView;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.data.Data;
+import com.honhai.foxconn.fxccalendar.data.Group;
+
+import java.util.ArrayList;
+
+public class GroupManagerActivity extends AppCompatActivity {
+    private ArrayList<ManagerGroupList> memberLists = new ArrayList<>();
+    private String workID;
+    private GroupManagerAdapter adapter;
+
+    private RecyclerView recyclerView;
+    private Toolbar toolbar;
+    private TextView title;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.popup_window_select_group_display);
+        findViews();
+        setToolbar();
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GroupManagerActivity.this.finish();
+            }
+        });
+        initData();
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+        recyclerView.setLayoutManager(layoutManager);
+        adapter = new GroupManagerAdapter(memberLists);
+        recyclerView.setAdapter(adapter);
+//        Data.getInstance().addRefreshView((RefreshData) this);
+
+
+    }
+
+
+    private void findViews() {
+        recyclerView = findViewById(R.id.addEventColorPopupWindowRecycler);
+        toolbar = findViewById(R.id.toolbar);
+        title = findViewById(R.id.toolbar_title);
+
+    }
+
+    private void setToolbar() {
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        toolbar.setNavigationIcon(R.drawable.ic_backup);
+        Drawable drawable = toolbar.getNavigationIcon();
+        drawable.setTint(Data.getInstance().getThemeColor());
+        drawable.setAlpha(255);
+        toolbar.setNavigationIcon(drawable);
+        title.setTextColor(Data.getInstance().getThemeColor());
+        title.setText(getString(R.string.settingsManageGroupPopupWindowTitle));
+
+    }
+
+
+    public void initData() {
+        memberLists.clear();
+//        MemberList group1 = new MemberList(R.drawable.ic_person_black_24dp, "未设置", "");
+        //memberLists.add(group1);
+
+        for (Group group : Data.getInstance().getGroups())
+            memberLists.add(new ManagerGroupList( group.getGroupName(), true));
+//        adapter.notifyDataSetChanged();
+    }
+}

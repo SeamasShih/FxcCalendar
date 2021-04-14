@@ -1,0 +1,215 @@
+package com.honhai.foxconn.fxccalendar.data;
+
+public class Event {
+    private String title;
+    private int startYear;
+    private int startMonth;
+    private int startDayOfMonth;
+    private int startHour;
+    private int startMinute;
+    private int endYear;
+    private int endMonth;
+    private int endDayOfMonth;
+    private int endHour;
+    private int endMinute;
+    private boolean isAllDay;
+    private int color;
+    private int repeat;
+    private boolean isChisese;
+    private int groupId;
+    private String note;
+    private String map;
+    private String url;
+    private boolean isNoTime;
+
+    public Event(String title, int startYear, int startMonth, int startDayOfMonth, int startHour, int startMinute, int endYear, int endMonth, int endDayOfMonth, int endHour, int endMinute, boolean isAllDay, int color, int repeat, boolean isChisese, int groupId, String note, String map, String url, boolean isNoTime) {
+        this.title = title;
+        this.startYear = startYear;
+        this.startMonth = startMonth;
+        this.startDayOfMonth = startDayOfMonth;
+        this.startHour = startHour;
+        this.startMinute = startMinute;
+        this.endYear = endYear;
+        this.endMonth = endMonth;
+        this.endDayOfMonth = endDayOfMonth;
+        this.endHour = endHour;
+        this.endMinute = endMinute;
+        this.isAllDay = isAllDay;
+        this.color = color;
+        this.repeat = repeat;
+        this.isChisese = isChisese;
+        this.groupId = groupId;
+        this.note = note;
+        this.map = map;
+        this.url = url;
+        this.isNoTime = isNoTime;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public int getStartYear() {
+        return startYear;
+    }
+
+    public void setStartYear(int startYear) {
+        this.startYear = startYear;
+    }
+
+    public int getStartMonth() {
+        return startMonth;
+    }
+
+    public void setStartMonth(int startMonth) {
+        this.startMonth = startMonth;
+    }
+
+    public int getStartDayOfMonth() {
+        return startDayOfMonth;
+    }
+
+    public void setStartDayOfMonth(int startDayOfMonth) {
+        this.startDayOfMonth = startDayOfMonth;
+    }
+
+    public int getStartHour() {
+        return startHour;
+    }
+
+    public void setStartHour(int startHour) {
+        this.startHour = startHour;
+    }
+
+    public int getStartMinute() {
+        return startMinute;
+    }
+
+    public void setStartMinute(int startMinute) {
+        this.startMinute = startMinute;
+    }
+
+    public int getEndYear() {
+        return endYear;
+    }
+
+    public void setEndYear(int endYear) {
+        this.endYear = endYear;
+    }
+
+    public int getEndMonth() {
+        return endMonth;
+    }
+
+    public void setEndMonth(int endMonth) {
+        this.endMonth = endMonth;
+    }
+
+    public int getEndDayOfMonth() {
+        return endDayOfMonth;
+    }
+
+    public void setEndDayOfMonth(int endDayOfMonth) {
+        this.endDayOfMonth = endDayOfMonth;
+    }
+
+    public int getEndHour() {
+        return endHour;
+    }
+
+    public void setEndHour(int endHour) {
+        this.endHour = endHour;
+    }
+
+    public int getEndMinute() {
+        return endMinute;
+    }
+
+    public void setEndMinute(int endMinute) {
+        this.endMinute = endMinute;
+    }
+
+    public boolean isAllDay() {
+        return isAllDay;
+    }
+
+    public void setAllDay(boolean allDay) {
+        isAllDay = allDay;
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
+
+    public int getRepeat() {
+        return repeat;
+    }
+
+    public void setRepeat(int repeat) {
+        this.repeat = repeat;
+    }
+
+    public boolean isChisese() {
+        return isChisese;
+    }
+
+    public void setChisese(boolean chisese) {
+        isChisese = chisese;
+    }
+
+    public int getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(int groupId) {
+        this.groupId = groupId;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public String getMap() {
+        return map;
+    }
+
+    public void setMap(String map) {
+        this.map = map;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public boolean isNoTime() {
+        return isNoTime;
+    }
+
+    public void setNoTime(boolean noTime) {
+        isNoTime = noTime;
+    }
+
+    public long getStartTime(){
+        return (startYear * 100000000 + startMonth * 1000000 + startDayOfMonth * 10000 + startHour*100 + startMinute);
+    }
+
+    public long getEndTime(){
+        return (endYear * 100000000 + endMonth * 1000000 + endDayOfMonth * 10000 + endHour*100 + endMinute);
+    }
+}

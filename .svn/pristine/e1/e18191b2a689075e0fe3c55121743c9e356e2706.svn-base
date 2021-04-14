@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_calendar"
+        android:icon="@drawable/drawable_bottom_calendar_weekly"
+        android:orderInCategory="0"
+        android:title="@string/calendar_monthly" />
+
+    <item
+        android:id="@+id/navigation_keeps"
+        android:icon="@drawable/drawable_bottom_keep"
+        android:orderInCategory="1"
+        android:title="@string/keep"/>
+
+    <item
+        android:id="@+id/navigation_add"
+        android:icon="@drawable/ic_assessment_black"
+        android:orderInCategory="2"
+        android:enabled="false"
+        android:title=""/>
+
+    <item
+        android:id="@+id/navigation_feed"
+        android:icon="@drawable/drawable_bottom_feed"
+        android:orderInCategory="3"
+        android:title="@string/feed"/>
+
+    <item
+        android:id="@+id/navigation_more"
+        android:icon="@drawable/drawable_bottom_more"
+        android:orderInCategory="4"
+        android:title="@string/more"/>
+
+</menu>

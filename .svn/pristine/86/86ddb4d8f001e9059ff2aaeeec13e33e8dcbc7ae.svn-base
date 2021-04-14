@@ -1,0 +1,30 @@
+package com.honhai.foxconn.fxccalendar.elsemember;
+
+public class MemberList {
+
+    public MemberList(int imageID,String name,String signature){
+
+        this.imageID=imageID;
+        this.name=name;
+        this.signature=signature;
+    }
+    private String name;
+    private String signature;
+    private int imageID;
+
+    public String getName() {
+        return name;
+    }
+
+    public String getSignature() {
+        return signature;
+    }
+
+    public int getImageID() {
+        return imageID;
+    }
+
+
+
+
+}

@@ -1,0 +1,101 @@
+package com.honhai.foxconn.fxccalendar.addevent;
+
+import android.graphics.Color;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.PopupWindow;
+import android.widget.TextView;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.colormanager.ColorImageView;
+
+public class ColorPopupWindow extends PopupWindow {
+
+    private RecyclerView recyclerView;
+
+    ColorPopupWindow(View popupLayout, int w, int h) {
+        super(popupLayout, w, h);
+        recyclerView = popupLayout.findViewById(R.id.addEventColorPopupWindowRecycler);
+        recyclerView.setAdapter(new Adapter(popupLayout.getResources().getIntArray(R.array.eventColorArray)));
+        recyclerView.setLayoutManager(new LinearLayoutManager(popupLayout.getContext()));
+    }
+
+    private class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+        int[] colors;
+        int chosen = -1;
+
+        Adapter(int[] colors) {
+            this.colors = colors;
+        }
+
+        @NonNull
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+            View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.add_event_color_popup_window_recycler_item, viewGroup, false);
+            return new ViewHolder(v);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+            ColorImageView colorImageView = ((ViewHolder) viewHolder).colorImageView;
+            TextView textView = ((ViewHolder) viewHolder).textView;
+            ColorChoiceDot colorChoiceDot = ((ViewHolder) viewHolder).colorChoiceDot;
+            ColorBackground colorBackground = ((ViewHolder) viewHolder).colorBackground;
+
+            colorImageView.setColor(colors[i]);
+            textView.setTextColor(colors[i]);
+            colorChoiceDot.setColor(colors[i]);
+            colorChoiceDot.setChosen(chosen == i);
+            colorBackground.setColor(Color.argb(60,Color.red(colors[i]),Color.green(colors[i]),Color.blue(colors[i])));
+            colorBackground.setChosen(chosen == i);
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return colors.length;
+        }
+
+        class ViewHolder extends RecyclerView.ViewHolder {
+
+            ColorImageView colorImageView;
+            TextView textView;
+            ColorChoiceDot colorChoiceDot;
+            View constraintLayout;
+            ColorBackground colorBackground;
+
+            ViewHolder(@NonNull View itemView) {
+                super(itemView);
+                colorImageView = itemView.findViewById(R.id.color);
+                textView = itemView.findViewById(R.id.label);
+                colorChoiceDot = itemView.findViewById(R.id.choice);
+                constraintLayout = itemView;
+                colorBackground = itemView.findViewById(R.id.colorBackground);
+
+                constraintLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int i = recyclerView.getChildAdapterPosition(v);
+                        if (chosen != i) {
+                            ViewHolder vh = (ViewHolder) recyclerView.findViewHolderForAdapterPosition(chosen);
+                            if (vh != null) {
+                                vh.colorChoiceDot.setChosen(false);
+                                vh.colorBackground.setChosen(false);
+                            }
+                            chosen = i;
+                            ColorChoiceDot dot = v.findViewById(R.id.choice);
+                            ColorBackground background = v.findViewById(R.id.colorBackground);
+                            dot.setChosen(true);
+                            background.setChosen(true);
+                            notifyDataSetChanged();
+                        }
+                    }
+                });
+            }
+        }
+    }
+}

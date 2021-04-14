@@ -1,0 +1,136 @@
+package com.honhai.foxconn.fxccalendar.data;
+
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVObject;
+import com.avos.avoscloud.AVQuery;
+import com.avos.avoscloud.DeleteCallback;
+import com.avos.avoscloud.FindCallback;
+import com.avos.avoscloud.SaveCallback;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Group {
+    private int groupId;
+    private String groupName;
+    private ArrayList<String> workId;
+    private String objectId;
+    private ArrayList<Group> groups = new ArrayList<>();
+
+    public Group(int groupId, String groupName, ArrayList<String> workId, String objectId) {
+        this.groupId = groupId;
+        this.groupName = groupName;
+        this.workId = workId;
+        this.objectId = objectId;
+    }
+
+    public Group() {
+
+    }
+
+    public int getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(int groupId) {
+        this.groupId = groupId;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
+
+    public ArrayList<String> getWorkId() {
+        return workId;
+    }
+
+    public void setWorkId(ArrayList<String> workId) {
+        this.workId = workId;
+    }
+
+    public String getObjectId() {
+        return objectId;
+    }
+
+    public void setObjectId(String objectId) {
+        this.objectId = objectId;
+    }
+
+    public void addGroup(int groupId, String groupName, ArrayList<String> workIds) {
+        AVObject group = new AVObject("Group");
+        group.put("groupId", groupId);
+        group.put("groupName", groupName);
+        for (String workId : workIds) {
+            group.addUnique("workId", workId);
+        }
+        group.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(AVException e) {
+                if (e != null) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+    }
+
+    public void updateGroup(int groupId, String groupName, ArrayList<String> workIds, String objectId) {
+        AVObject group = AVObject.createWithoutData("Group", objectId);
+        group.put("groupId", groupId);
+        group.put("groupName", groupName);
+        group.remove("workId");
+        for (String workId : workIds) {
+            group.addUnique("workId", workId);
+        }
+        group.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(AVException e) {
+                if (e != null) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public ArrayList<Group> getGroups() {
+        final ArrayList<AVObject> avList = new ArrayList<>();
+        avList.clear();
+        AVQuery<AVObject> avQuery = new AVQuery<>("Group");
+        avQuery.findInBackground(new FindCallback<AVObject>() {
+            @Override
+            public void done(List<AVObject> aList, AVException e) {
+                if (e == null) {
+                    avList.addAll(aList);
+                } else {
+                    e.printStackTrace();
+                }
+            }
+        });
+        groups.clear();
+        for (AVObject object : avList) {
+            Group group = new Group();
+            group.setGroupId((int) (object.get("groupId")));
+            group.setGroupName(object.get("groupName").toString());
+            group.setWorkId((ArrayList<String>) object.getList("workId"));
+            group.setObjectId(object.getObjectId());
+            groups.add(group);
+        }
+        return groups;
+    }
+
+    public void deleteGroup(String objectId) {
+        AVObject group = AVObject.createWithoutData("Group", objectId);
+        group.deleteInBackground(new DeleteCallback() {
+            public void done(AVException e) {
+                if (e != null) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+}

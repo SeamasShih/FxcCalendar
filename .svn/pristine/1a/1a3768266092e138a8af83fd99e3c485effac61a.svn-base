@@ -1,0 +1,58 @@
+package com.honhai.foxconn.fxccalendar.main;
+
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.MenuItem;
+import android.widget.FrameLayout;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.data.Data;
+import com.honhai.foxconn.fxccalendar.data.Event;
+import com.honhai.foxconn.fxccalendar.weekly.layout.CalendarWeeklyFragment;
+
+public class MainActivity extends AppCompatActivity {
+
+    FrameLayout frameLayout;
+    CalendarWeeklyFragment weeklyFragment;
+    BottomNavigationBar bottomBar;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        findViews();
+        setFragment();
+        setBottomBar();
+    }
+
+    private void setBottomBar() {
+        bottomBar.setItemIconTintList(ColorStateList.valueOf(Data.getInstance().getThemeColor()));
+        bottomBar.setItemTextColor(ColorStateList.valueOf(Data.getInstance().getThemeColor()));
+        bottomBar.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                switch (menuItem.getItemId()){
+
+                }
+                bottomBar.moveLabelBar(menuItem.getOrder());
+                return true;
+            }
+        });
+    }
+
+    private void setFragment() {
+        weeklyFragment = new CalendarWeeklyFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame, weeklyFragment).commit();
+    }
+
+    private void findViews() {
+        frameLayout = findViewById(R.id.frame);
+        bottomBar = findViewById(R.id.bottomBar);
+    }
+}

@@ -1,0 +1,297 @@
+package com.honhai.foxconn.fxccalendar.data;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.util.ArrayList;
+
+public class Event implements Parcelable {
+    private String title;
+    private int startYear;
+    private int startMonth;
+    private int startDayOfMonth;
+    private int startHour;
+    private int startMinute;
+    private int endYear;
+    private int endMonth;
+    private int endDayOfMonth;
+    private int endHour;
+    private int endMinute;
+    private boolean isAllDay;
+    private int color;
+    private int repeat;
+    private boolean isChinese;
+    private int groupId;
+    private String note;
+    private String map;
+    private String url;
+    private boolean isNoTime;
+    private String objectId;
+    private ArrayList<Event> events = new ArrayList<>();
+
+    public Event(String title, int startYear, int startMonth, int startDayOfMonth, int startHour, int startMinute, int endYear, int endMonth, int endDayOfMonth, int endHour, int endMinute, boolean isAllDay, int color, int repeat, boolean isChinese, int groupId, String note, String map, String url, boolean isNoTime, String objectId) {
+        this.title = title;
+        this.startYear = startYear;
+        this.startMonth = startMonth;
+        this.startDayOfMonth = startDayOfMonth;
+        this.startHour = startHour;
+        this.startMinute = startMinute;
+        this.endYear = endYear;
+        this.endMonth = endMonth;
+        this.endDayOfMonth = endDayOfMonth;
+        this.endHour = endHour;
+        this.endMinute = endMinute;
+        this.isAllDay = isAllDay;
+        this.color = color;
+        this.repeat = repeat;
+        this.isChinese = isChinese;
+        this.groupId = groupId;
+        this.note = note;
+        this.map = map;
+        this.url = url;
+        this.isNoTime = isNoTime;
+        this.objectId = objectId;
+    }
+
+    Event() {
+
+    }
+
+    protected Event(Parcel in) {
+        title = in.readString();
+        startYear = in.readInt();
+        startMonth = in.readInt();
+        startDayOfMonth = in.readInt();
+        startHour = in.readInt();
+        startMinute = in.readInt();
+        endYear = in.readInt();
+        endMonth = in.readInt();
+        endDayOfMonth = in.readInt();
+        endHour = in.readInt();
+        endMinute = in.readInt();
+        isAllDay = in.readByte() != 0;
+        color = in.readInt();
+        repeat = in.readInt();
+        isChinese = in.readByte() != 0;
+        groupId = in.readInt();
+        note = in.readString();
+        map = in.readString();
+        url = in.readString();
+        isNoTime = in.readByte() != 0;
+        objectId = in.readString();
+        events = in.createTypedArrayList(Event.CREATOR);
+    }
+
+    public static final Creator<Event> CREATOR = new Creator<Event>() {
+        @Override
+        public Event createFromParcel(Parcel in) {
+            return new Event(in);
+        }
+
+        @Override
+        public Event[] newArray(int size) {
+            return new Event[size];
+        }
+    };
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public int getStartYear() {
+        return startYear;
+    }
+
+    public void setStartYear(int startYear) {
+        this.startYear = startYear;
+    }
+
+    public int getStartMonth() {
+        return startMonth;
+    }
+
+    public void setStartMonth(int startMonth) {
+        this.startMonth = startMonth;
+    }
+
+    public int getStartDayOfMonth() {
+        return startDayOfMonth;
+    }
+
+    public void setStartDayOfMonth(int startDayOfMonth) {
+        this.startDayOfMonth = startDayOfMonth;
+    }
+
+    public int getStartHour() {
+        return startHour;
+    }
+
+    public void setStartHour(int startHour) {
+        this.startHour = startHour;
+    }
+
+    public int getStartMinute() {
+        return startMinute;
+    }
+
+    public void setStartMinute(int startMinute) {
+        this.startMinute = startMinute;
+    }
+
+    public int getEndYear() {
+        return endYear;
+    }
+
+    public void setEndYear(int endYear) {
+        this.endYear = endYear;
+    }
+
+    public int getEndMonth() {
+        return endMonth;
+    }
+
+    public void setEndMonth(int endMonth) {
+        this.endMonth = endMonth;
+    }
+
+    public int getEndDayOfMonth() {
+        return endDayOfMonth;
+    }
+
+    public void setEndDayOfMonth(int endDayOfMonth) {
+        this.endDayOfMonth = endDayOfMonth;
+    }
+
+    public int getEndHour() {
+        return endHour;
+    }
+
+    public void setEndHour(int endHour) {
+        this.endHour = endHour;
+    }
+
+    public int getEndMinute() {
+        return endMinute;
+    }
+
+    public void setEndMinute(int endMinute) {
+        this.endMinute = endMinute;
+    }
+
+    public boolean isAllDay() {
+        return isAllDay;
+    }
+
+    public void setAllDay(boolean allDay) {
+        isAllDay = allDay;
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
+
+    public int getRepeat() {
+        return repeat;
+    }
+
+    public void setRepeat(int repeat) {
+        this.repeat = repeat;
+    }
+
+    public boolean isChinese() {
+        return isChinese;
+    }
+
+    public void setChinese(boolean chinese) {
+        isChinese = chinese;
+    }
+
+    public int getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(int groupId) {
+        this.groupId = groupId;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public String getMap() {
+        return map;
+    }
+
+    public void setMap(String map) {
+        this.map = map;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public boolean isNoTime() {
+        return isNoTime;
+    }
+
+    public void setNoTime(boolean noTime) {
+        isNoTime = noTime;
+    }
+
+    public String getObjectId() {
+        return objectId;
+    }
+
+    public void setObjectId(String objectId) {
+        this.objectId = objectId;
+    }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(title);
+        dest.writeInt(startYear);
+        dest.writeInt(startMonth);
+        dest.writeInt(startDayOfMonth);
+        dest.writeInt(startHour);
+        dest.writeInt(startMinute);
+        dest.writeInt(endYear);
+        dest.writeInt(endMonth);
+        dest.writeInt(endDayOfMonth);
+        dest.writeInt(endHour);
+        dest.writeInt(endMinute);
+        dest.writeByte((byte) (isAllDay ? 1 : 0));
+        dest.writeInt(color);
+        dest.writeInt(repeat);
+        dest.writeByte((byte) (isChinese ? 1 : 0));
+        dest.writeInt(groupId);
+        dest.writeString(note);
+        dest.writeString(map);
+        dest.writeString(url);
+        dest.writeByte((byte) (isNoTime ? 1 : 0));
+        dest.writeString(objectId);
+        dest.writeTypedList(events);
+    }
+
+}

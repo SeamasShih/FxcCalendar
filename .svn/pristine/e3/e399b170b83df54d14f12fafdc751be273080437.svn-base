@@ -1,0 +1,40 @@
+package com.honhai.foxconn.fxccalendar.eventpreview;
+
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
+
+import com.honhai.foxconn.fxccalendar.R;
+
+public class EventPreview extends AppCompatActivity {
+
+    Button button;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.eventpreview_main);
+
+        button = (Button)findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                MyDialog2 myDialog2 = new MyDialog2(EventPreview.this);
+                myDialog2.show();
+                DisplayMetrics displayMetrics = new DisplayMetrics();
+                getWindow().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
+                WindowManager.LayoutParams params = myDialog2.getWindow().getAttributes();
+                params.width = (int)(displayMetrics.widthPixels*0.88);
+                params.height = (int)(displayMetrics.heightPixels*0.78);
+                myDialog2.getWindow().setAttributes(params);
+            }
+        });
+
+
+    }
+}

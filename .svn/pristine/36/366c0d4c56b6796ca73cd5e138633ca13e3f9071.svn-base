@@ -1,0 +1,212 @@
+package com.honhai.foxconn.fxccalendar.weekly.view;
+
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.util.AttributeSet;
+import android.view.View;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.data.Data;
+
+import java.util.Calendar;
+import java.util.Locale;
+
+public class CalendarWeeklyView extends View {
+
+    private Paint linePaint;
+    private Paint dayTextPaint;
+    private Paint eventTextPaint;
+    private float eventTextAdjY;
+    private Paint themePaint;
+
+    protected Day[] days;
+
+    private float dayHeight;
+    private float mWidth;
+    private float eventRectLeft;
+    private float eventHeight;
+    private float eventGapHeight;
+    private float eventRectWidth;
+    private float eventTextLeft = 200;
+    private float eventTimeLeft = 40;
+    private int maxEvent;
+
+    public CalendarWeeklyView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+
+        linePaint = new Paint();
+        linePaint.setColor(getResources().getColor(R.color.colorCalendarLine));
+        linePaint.setStyle(Paint.Style.STROKE);
+        linePaint.setStrokeWidth(1f);
+
+        dayTextPaint = new Paint();
+        dayTextPaint.setAntiAlias(true);
+        dayTextPaint.setTextAlign(Paint.Align.CENTER);
+
+        eventTextPaint = new Paint();
+        eventTextPaint.setAntiAlias(true);
+        eventTextPaint.setTextAlign(Paint.Align.LEFT);
+
+        themePaint = new Paint();
+        themePaint.setColor(Data.getInstance().themeColor);
+        themePaint.setAlpha(30);
+
+        days = new Day[7];
+        for (int i = 0; i < days.length; i++) {
+            days[i] = new Day();
+        }
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        dayHeight = (float) getMeasuredHeight() / 7;
+        mWidth = getMeasuredWidth();
+        eventHeight = 40;
+        eventGapHeight = eventHeight / 5;
+        maxEvent = (int) ((dayHeight - eventGapHeight) / (eventHeight + eventGapHeight));
+        eventRectLeft = mWidth * .2f;
+        eventRectWidth = 13;
+
+        eventTextPaint.setTextSize(eventHeight);
+        Paint.FontMetrics metrics = eventTextPaint.getFontMetrics();
+        eventTextAdjY = (metrics.descent - metrics.ascent) / 2 - metrics.descent;
+        invalidate();
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+
+        canvas.save();
+        drawWeek(canvas, days);
+        canvas.restore();
+
+        canvas.drawLine(0, getHeight(), mWidth, getHeight(), linePaint);
+    }
+
+    protected void drawWeek(Canvas canvas, Day[] days) {
+        drawDay(canvas, days[0]);
+        for (int i = 1; i < 7; i++) {
+            canvas.translate(0, dayHeight);
+            drawDay(canvas, days[i]);
+        }
+    }
+
+    private void drawDay(Canvas canvas, Day day) {
+        canvas.save();
+        if (day.isToday)
+            canvas.drawRect(0, 0, mWidth, dayHeight, themePaint);
+        canvas.drawLine(0, 0, mWidth, 0, linePaint);
+        if (day.dayOfMonth != -1){
+            dayTextPaint.setTextSize(dayHeight / 4);
+            dayTextPaint.setColor(getDayTextColor(day.dayOfWeek));
+            canvas.drawText(String.valueOf(day.dayOfMonth), eventRectLeft / 2, dayHeight / 2, dayTextPaint);
+        }
+        dayTextPaint.setTextSize(dayHeight / 8);
+        dayTextPaint.setColor(getResources().getColor(R.color.colorCalendarSubtitle));
+        canvas.drawText(day.weekString, eventRectLeft / 2, dayHeight * 3 / 4, dayTextPaint);
+
+        int amount = 6;
+        amount = amount > maxEvent ? maxEvent : amount;
+        canvas.translate(eventRectLeft, dayHeight / 2);
+        canvas.translate(0, -(eventHeight + eventGapHeight) * (amount - 1) / 2);
+        for (int i = 0; i < amount; i++) {
+            eventTextPaint.setColor(getResources().getColor(R.color.colorPrimary));
+            canvas.drawRoundRect(0, -eventHeight / 2, eventRectWidth, eventHeight / 2, eventRectWidth, eventRectWidth, eventTextPaint);
+            canvas.drawText("Holiday", eventTimeLeft, eventTextAdjY, eventTextPaint);
+            eventTextPaint.setColor(getResources().getColor(R.color.colorCalendarWorkday));
+            canvas.drawText("EventString", eventTextLeft, eventTextAdjY, eventTextPaint);
+            canvas.translate(0, eventHeight + eventGapHeight);
+        }
+        canvas.restore();
+    }
+
+    private int getDayTextColor(int dayOfWeek) {
+        switch (dayOfWeek) {
+            case Calendar.SUNDAY:
+                return getResources().getColor(R.color.colorCalendarHoliday);
+            case Calendar.SATURDAY:
+                return getResources().getColor(R.color.colorCalendarSaturday);
+            default:
+                return getResources().getColor(R.color.colorCalendarWorkday);
+        }
+    }
+
+    public void setWeekday(Calendar calendar) {
+        setWeekday(calendar, days);
+        invalidate();
+    }
+
+    protected void setWeekday(Calendar calendar, Day[] days) {
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        int weekOrder = getWeekOrder(dayOfWeek);
+        calendar.add(Calendar.DAY_OF_MONTH, -1 * weekOrder);
+        for (Day day : days) {
+            day.set(calendar);
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+        }
+    }
+
+    private int getWeekOrder(int dayOfWeek) {
+        switch (dayOfWeek) {
+            case Calendar.SUNDAY:
+                return 0;
+            case Calendar.MONDAY:
+                return 1;
+            case Calendar.TUESDAY:
+                return 2;
+            case Calendar.WEDNESDAY:
+                return 3;
+            case Calendar.THURSDAY:
+                return 4;
+            case Calendar.FRIDAY:
+                return 5;
+            case Calendar.SATURDAY:
+                return 6;
+            default:
+                return -1;
+        }
+    }
+
+    class Day {
+        int year;
+        int month;
+        int weekOfYear;
+        int dayOfMonth;
+        int dayOfWeek;
+        String weekString;
+        boolean isToday;
+
+        Day() {
+            year = -1;
+            month = -1;
+            dayOfMonth = -1;
+            dayOfWeek = -1;
+            isToday = false;
+            weekString = "Week";
+        }
+
+        void set(Calendar calendar) {
+            year = calendar.get(Calendar.YEAR);
+            month = calendar.get(Calendar.MONTH);
+            weekOfYear = calendar.get(Calendar.WEEK_OF_YEAR);
+            dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+            dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+            weekString = calendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.US);
+            Calendar now = Calendar.getInstance();
+            isToday = (year == now.get(Calendar.YEAR) && month == now.get(Calendar.MONTH) && dayOfMonth == now.get(Calendar.DAY_OF_MONTH));
+        }
+
+        void set(Day day){
+            year = day.year;
+            month = day.month;
+            dayOfMonth = day.dayOfMonth;
+            dayOfWeek = day.dayOfWeek;
+            weekString = day.weekString;
+            isToday = day.isToday;
+        }
+    }
+}

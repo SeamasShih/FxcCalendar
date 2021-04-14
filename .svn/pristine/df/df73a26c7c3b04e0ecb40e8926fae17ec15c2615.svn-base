@@ -1,0 +1,59 @@
+package com.honhai.foxconn.fxccalendar.data.local.reminder;
+
+public class Reminder {
+    private String groupName = "";
+    private String eventTile = "";
+    private long reminderTime;
+    private int eventColor;
+    private String eventObjectId = "";
+
+    private long localId;
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
+
+    public String getEventTile() {
+        return eventTile;
+    }
+
+    public void setEventTile(String eventTile) {
+        this.eventTile = eventTile;
+    }
+
+    public long getReminderTime() {
+        return reminderTime;
+    }
+
+    public void setReminderTime(long reminderTime) {
+        this.reminderTime = reminderTime;
+    }
+
+    public int getEventColor() {
+        return eventColor;
+    }
+
+    public void setEventColor(int eventColor) {
+        this.eventColor = eventColor;
+    }
+
+    public long getLocalId() {
+        return localId;
+    }
+
+    public void setLocalId(long localId) {
+        this.localId = localId;
+    }
+
+    public String getEventObjectId() {
+        return eventObjectId;
+    }
+
+    public void setEventObjectId(String eventObjectId) {
+        this.eventObjectId = eventObjectId;
+    }
+}

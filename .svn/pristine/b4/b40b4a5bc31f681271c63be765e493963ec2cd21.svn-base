@@ -1,0 +1,111 @@
+package com.honhai.foxconn.fxccalendar.keepevent;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Paint;
+import android.os.Bundle;
+import android.os.Parcelable;
+import android.provider.CalendarContract;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.addevent.AddEventActivity;
+import com.honhai.foxconn.fxccalendar.data.Data;
+import com.honhai.foxconn.fxccalendar.data.Event;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.honhai.foxconn.fxccalendar.colormanager.ColorAdapter.SP_COLOR_LABEL;
+import static com.honhai.foxconn.fxccalendar.main.MainActivity.INTENT_EVENT;
+
+public class KeepEventAdapter extends RecyclerView.Adapter<KeepEventAdapter.MyHolder> {
+    Context context;
+    private List<Event> keepEvent = new ArrayList<>();
+    private int[] color;
+    private String[] colorLabel;
+    private SharedPreferences sharedPreferences;
+
+    public KeepEventAdapter() {
+
+    }
+
+    public KeepEventAdapter(Context context, List<Event> keepEvent) {
+        this.context = context;
+        this.keepEvent = keepEvent;
+        sharedPreferences = context.getSharedPreferences(SP_COLOR_LABEL, Context.MODE_PRIVATE);
+
+    }
+
+    @NonNull
+    @Override
+    public KeepEventAdapter.MyHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.keep_item_layout, parent, false);
+        MyHolder holder = new MyHolder(view);
+        return holder;
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull KeepEventAdapter.MyHolder myHolder, int position) {
+        myHolder.keepEventTitle.setTextColor(keepEvent.get(position).getColor());
+        String keepEventTitle = keepEvent.get(position).getTitle();
+        myHolder.keepEventTitle.setText(keepEventTitle);
+        if(keepEvent.get(position).isComplete()){
+            myHolder.keepEventTitle.getPaint().setFlags(Paint. STRIKE_THRU_TEXT_FLAG);
+            myHolder.cardView.setCardElevation(0);
+        }
+        color = context.getResources().getIntArray(R.array.eventColorArray);
+        colorLabel = context.getResources().getStringArray(R.array.stringColor);
+        for (int i = 0; i < color.length; i++) {
+            if (color[i] == keepEvent.get(position).getColor()) {
+                String labelText = sharedPreferences.getString(colorLabel[i], colorLabel[i]);
+                if (labelText.equals(""))
+                    labelText = colorLabel[i];
+                myHolder.colorLabel.setText(labelText);
+            }
+        }
+        final int p = position;
+        myHolder.keepEventItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                Bundle bundle = new Bundle();
+                bundle.putParcelable(INTENT_EVENT, keepEvent.get(p));
+                intent.putExtras(bundle);
+                intent.setClass(context, AddEventActivity.class);
+                context.startActivity(intent);
+            }
+        });
+    }
+
+    @Override
+    public int getItemCount() {
+        return keepEvent.size();
+    }
+
+    class MyHolder extends RecyclerView.ViewHolder {
+        LinearLayout keepEventItem;
+        TextView keepEventTitle;
+        TextView colorLabel;
+        CardView cardView;
+
+        public MyHolder(View itemView) {
+            super(itemView);
+            keepEventItem = itemView.findViewById(R.id.keepEventItem);
+            keepEventTitle = itemView.findViewById(R.id.keepEventTitle);
+            colorLabel = itemView.findViewById(R.id.colorLabel);
+            cardView= itemView.findViewById(R.id.card_view);
+        }
+    }
+}
+

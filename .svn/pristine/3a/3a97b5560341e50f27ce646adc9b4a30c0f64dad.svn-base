@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">FxcCalendar</string>
+
+    <string name="calendar_monthly">Monthly</string>
+    <string name="calendar_weekly">Weekly</string>
+    <string name="calendar_summary">Summary</string>
+    <string name="keep">Keep</string>
+    <string name="feed">Feed</string>
+    <string name="more">More</string>
+    <string name="underline"><u>忘记密码</u></string>
+</resources>

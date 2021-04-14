@@ -1,0 +1,83 @@
+package com.honhai.foxconn.fxccalendar.colormanager;
+
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import com.honhai.foxconn.fxccalendar.R;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ColorManagerActivity extends AppCompatActivity {
+    private List<ColorItem> colorItemList= new ArrayList<ColorItem>();
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_color_manager);
+        initColorItem();
+        ColorAdapter adapter = new ColorAdapter(ColorManagerActivity.this, R.layout.color_item_layout, colorItemList);
+        ListView colorList = findViewById(R.id.lv);
+        colorList.setAdapter(adapter);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        toolbar.setNavigationIcon(R.drawable.ic_backup);
+
+        //TODO
+        //need to return to up page
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            }
+        });
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_toolbar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.confirm) {
+            Toast.makeText(this, "确认保存", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    private void initColorItem() {
+        ColorItem orange = new ColorItem("orange", R.drawable.color_orange);
+        colorItemList.add(orange);
+        ColorItem hotPink = new ColorItem("hot pink", R.drawable.color_hotpink);
+        colorItemList.add(hotPink);
+        ColorItem fuchsia = new ColorItem("fuchsia", R.drawable.color_fuchsia);
+        colorItemList.add(fuchsia);
+        ColorItem blueViolet = new ColorItem("blue violet", R.drawable.ic_blueviolet);
+        colorItemList.add(blueViolet);
+        ColorItem appleRed = new ColorItem("apple red", R.drawable.ic_applered);
+        colorItemList.add(appleRed);
+        ColorItem lovelyRed = new ColorItem("lovely red", R.drawable.color_lovelyred);
+        colorItemList.add(lovelyRed);
+        ColorItem black = new ColorItem("black", R.drawable.color_black);
+        colorItemList.add(black);
+        ColorItem springGreen = new ColorItem("spring green", R.drawable.color_springgreen);
+        colorItemList.add(springGreen);
+        ColorItem darkBlue = new ColorItem("dark blue", R.drawable.color_darkblue);
+        colorItemList.add(darkBlue);
+        ColorItem darkGreen = new ColorItem("dark green", R.drawable.color_darkgreen);
+        colorItemList.add(darkGreen);
+    }
+
+
+}

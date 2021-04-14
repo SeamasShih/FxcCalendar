@@ -1,0 +1,39 @@
+package com.honhai.foxconn.fxccalendar.data;
+
+import java.util.ArrayList;
+
+public class Group {
+    private int groupId;
+    private String groupName;
+    private ArrayList<String> workId;
+
+    public Group(int groupId, String groupName, ArrayList<String> workId) {
+        this.groupId = groupId;
+        this.groupName = groupName;
+        this.workId = workId;
+    }
+
+    public int getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(int groupId) {
+        this.groupId = groupId;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
+
+    public ArrayList<String> getWorkId() {
+        return workId;
+    }
+
+    public void setWorkId(ArrayList<String> workId) {
+        this.workId = workId;
+    }
+}

@@ -1,0 +1,264 @@
+<resources>
+    <string name="app_name">富士康日历</string>
+    <string-array name="lunar_first_of_month">
+        <item>春节</item>
+        <item>二月</item>
+        <item>三月</item>
+        <item>四月</item>
+        <item>五月</item>
+        <item>六月</item>
+        <item>七月</item>
+        <item>八月</item>
+        <item>九月</item>
+        <item>十月</item>
+        <item>冬月</item>
+        <item>腊月</item>
+    </string-array>
+    <string-array name="lunar_str">
+        <item>初一</item>
+        <item>初二</item>
+        <item>初三</item>
+        <item>初四</item>
+        <item>初五</item>
+        <item>初六</item>
+        <item>初七</item>
+        <item>初八</item>
+        <item>初九</item>
+        <item>初十</item>
+        <item>十一</item>
+        <item>十二</item>
+        <item>十三</item>
+        <item>十四</item>
+        <item>十五</item>
+        <item>十六</item>
+        <item>十七</item>
+        <item>十八</item>
+        <item>十九</item>
+        <item>二十</item>
+        <item>廿一</item>
+        <item>廿二</item>
+        <item>廿三</item>
+        <item>廿四</item>
+        <item>廿五</item>
+        <item>廿六</item>
+        <item>廿七</item>
+        <item>廿八</item>
+        <item>廿九</item>
+        <item>三十</item>
+    </string-array>
+    <string name="lovely_red">热恋红</string>
+    <string name="color">颜色</string>
+
+    <string name="color_manager">标签的管理</string>
+    <string name="alarm_title">主题</string>
+    <string name="what">接下来要干什么</string>
+    <string name="keepEventTitle">未确定时间事件主题</string>
+
+    <string name="calendar_monthly">月份</string>
+    <string name="calendar_weekly">星期</string>
+    <string name="calendar_summary">摘要</string>
+    <string name="keep">保留项目</string>
+    <string name="mine">我的</string>
+    <string name="group">群组</string>
+    <string name="underline"><u>忘记密码</u></string>
+
+    <string name="popupSwitchCalendarTitle">切换日历界面</string>
+
+    <string name="mainToolbarSearch">搜索</string>
+    <string name="mainToolbarSetting">设定</string>
+
+    <string name="searchToolbarMore">更多</string>
+
+    <string name="colorManageToolbarConfirm">确定</string>
+
+    <string name="fragmentMineBannerWorkId">工号</string>
+    <string name="fragmentMineBannerPassword">密码</string>
+    <string name="fragmentMineBannerName">名字</string>
+    <string name="fragmentMineBannerEnglishName">英文名字</string>
+    <string name="fragmentMineBannerLogout">登出</string>
+
+    <string name="stringEventWhite">White</string>
+    <string name="stringEventRed">Red</string>
+    <string name="stringEventOrange">Orange</string>
+    <string name="stringEventYellow">Yellow</string>
+    <string name="stringEventGreen">Green</string>
+    <string name="stringEventLightBlue">Light Blue</string>
+    <string name="stringEventPurple">Purple</string>
+    <string name="stringEventWineRed">Wine Red</string>
+    <string name="stringEventBrown">Brown</string>
+    <string name="stringEventBlack">Black</string>
+    <string name="stringEventBlue">Blue</string>
+
+    <array name="stringColor">
+        <item name="stringEventRed">Red</item>
+        <item name="stringEventOrange">Orange</item>
+        <item name="stringEventYellow">Yellow</item>
+        <item name="stringEventGreen">Green</item>
+        <item name="stringEventLightBlue">Light Blue</item>
+        <item name="stringEventBlue">Blue</item>
+        <item name="stringEventPurple">Purple</item>
+        <item name="stringEventWineRed">Wine Red</item>
+        <item name="stringEventBrown">Brown</item>
+        <item name="stringEventBlack">Black</item>
+    </array>
+
+    <string name="addEventColorPopupWindowTitle">选择活动的颜色</string>
+    <string name="addEventColorPopupWindowManage">标签管理</string>
+    <string name="addEventColorPopupWindowConfirm">确认</string>
+
+    <string name="colorPickerCancel">取消</string>
+
+    <string name="title_activity_setting">日历设置</string>
+    <string name="title_activity_settings">设置</string>
+
+    <!-- Strings related to Settings -->
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_social_recommendations">Enable social recommendations</string>
+    <string name="pref_description_social_recommendations">Recommendations for people to contact
+        based on your message history
+    </string>
+
+    <string name="pref_title_display_name">Display name</string>
+    <string name="pref_default_display_name">John Smith</string>
+
+    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
+    <string-array name="pref_example_list_titles">
+        <item>总是</item>
+        <item>必要时</item>
+        <item>从不</item>
+    </string-array>
+    <string-array name="pref_example_list_values">
+        <item>1</item>
+        <item>0</item>
+        <item>-1</item>
+    </string-array>
+
+    <!-- Example settings for Data & Sync -->
+    <string name="pref_header_data_sync">数据与同步</string>
+
+    <string name="pref_title_sync_frequency">同步频率</string>
+    <string-array name="pref_sync_frequency_titles">
+        <item>15 分钟</item>
+        <item>30 分钟</item>
+        <item>1 小时</item>
+        <item>3 小时</item>
+        <item>6 小时</item>
+        <item>从不</item>
+    </string-array>
+    <string-array name="pref_sync_frequency_values">
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>180</item>
+        <item>360</item>
+        <item>-1</item>
+    </string-array>
+
+    <string-array name="list_preference_entries">
+        <item>Entry 1</item>
+        <item>Entry 2</item>
+        <item>Entry 3</item>
+    </string-array>
+
+    <string-array name="list_preference_entry_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+    <string-array name="multi_select_list_preference_default_value" />
+
+    <string name="pref_title_system_sync_settings">系统同步设定</string>
+
+    <!-- Example settings for Notifications -->
+    <string name="pref_header_notifications">通知</string>
+
+    <string name="pref_title_new_message_notifications">有新消息哦</string>
+
+    <string name="pref_title_ringtone">铃声</string>
+    <string name="pref_ringtone_silent">静音</string>
+
+    <string name="pref_title_vibrate">振动</string>
+
+
+
+    <string name="calendarWeeklyAllDayText">全天</string>
+    <string name="calendarWeeklyHolidayText">假期</string>
+    <string name="calendarWeeklyObservedText">补假</string>
+    <string name="calendarWeeklyWorkdayText">工作日</string>
+
+    <string name="tvLunarText">农历</string>
+    <string name="alarm_color">默认颜色</string>
+    <string name="alarm_remind">15分钟前</string>
+    <string name="alarm_vibrate">以日期未定的状态保留</string>
+    <string name="alarm_tone_Path">网址</string>
+    <string name="alarm_local">添加地点</string>
+    <string name="alarm_replay">不重复</string>
+    <string name="alarm_description">添加备注</string>
+
+    <string name="stringHolidayObserved">补假</string>
+    <string name="stringHolidayHoliday">假期</string>
+    <string name="stringHolidayWorkday">工作日</string>
+    <string name="stringHolidayNewYearsDay">元旦</string>
+    <string name="stringHolidayChineseNewYearsEve">除夕</string>
+    <string name="stringHolidayChineseNewYear">春节</string>
+    <string name="stringHoliday228PeaceMemorialDay">228和平纪念日</string>
+    <string name="stringHolidayChingMingFestival">清明节</string>
+    <string name="stringHolidayChildrensDay">儿童节</string>
+    <string name="stringHolidayDragonBoatFestival">端午节</string>
+    <string name="stringHolidayMoonFestival">中秋节</string>
+    <string name="stringHolidayNationalDay">国庆节</string>
+    <string name="stringHolidayLaborDay">劳动节</string>
+
+    <string name="addEventTitleCantBeEmpty">主题不能为空！</string>
+    <string name="addEventTimeIsInvalid">结束时间早于开始时间！</string>
+    <string name="addEventDeleteMessage">确定要删除此事件吗？</string>
+    <string name="addEventDeleteYesText">是</string>
+    <string name="addEventDeleteNoText">否</string>
+
+    <string name="noKeepEvent">日期未確定的活動可以進行保留項目</string>
+    <string name="am">上午</string>
+    <string name="pm">下午</string>
+
+    <string name="searchEditTextHint">关键词</string>
+    <string name="searchEventNumberString">活动</string>
+    <string name="saveConfirm">保存成功！</string>
+    <string name="group_member">群组成员</string>
+
+
+    <string name="register">登陆</string>
+    <string name="number">请输入工号</string>
+    <string name="password">8~32字符的密码</string>
+    <string name="forgetpassword">忘记密码</string>
+    <string name="rememberPassword">记住密码</string>
+    <string name="login">登陆</string>
+    <string name="creatOne">尚未拥有账号，前往注册</string>
+    <string name="reset">重置密码</string>
+    <string name="emailAddress">邮箱地址</string>
+    <string name="urlAddress">重设密码的URL将发送到以上的邮箱地址</string>
+    <string name="send">发送</string>
+    <string name="registerAccount">注册账号</string>
+    <string name="jobNumber">请输入工号</string>
+    <string name="confirm">请再次确认密码</string>
+    <string name="ChineseName">请输入中文名字</string>
+    <string name="englishName">请输入英文名字</string>
+    <string name="creatAccount">创建账号</string>
+    <string name="alreadyAccount">使用已有账户登录</string>
+    <string name="WrongAccount">工号或密码错误，请重新登录！！！</string>
+    <string name="RegisterSuccess">注册成功</string>
+    <string name="registrfailed">此账户名已经存在,注册失败</string>
+
+    <string name="account_empty">工号不为空</string>
+    <string name="pwd_empty">密码不为空</string>
+    <string name="pwd_check_empty">确认密码不为空</string>
+    <string name="ResetChin_empty">中文名字不为空</string>
+    <string name="ResetEng_empty">英文名字不为空</string>
+    <string name="Psaaword_same">两次密码不相同，请重新输入</string>
+    <string name="emailAdess">请输入正确的邮箱地址</string>
+
+    <string name="stringToday">今天</string>
+
+</resources>

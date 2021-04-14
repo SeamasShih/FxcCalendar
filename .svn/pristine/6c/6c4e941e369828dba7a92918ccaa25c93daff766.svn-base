@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+
+    <color name="colorStatusBar">#c4c4c4</color>
+    <color name="colorDefaultBackground">#fafafa</color>
+
+    <color name="colorPopupSwitchCalendarDividerLine">#d7d7d7</color>
+    <color name="colorPopupSwitchCalendarText">#a9a9a9</color>
+
+    <color name="colorCalendarLine">#dedede</color>
+    <color name="colorCalendarWorkday">#121212</color>
+    <color name="colorCalendarHoliday">#ff0000</color>
+    <color name="colorCalendarSaturday">#0080ff</color>
+    <color name="colorCalendarSubtitle">#bababa</color>
+    <color name="colorCalendarCursor">#58848484</color>
+
+    <color name="colorBottomMenuDefault">#9e9e9e</color>
+
+    <array name="eventColorArray">
+        <item name="colorEventRed">#bf0c0c</item>
+        <item name="colorEventOrange">#ffa500</item>
+        <item name="colorEventYellow">#ecdd0a</item>
+        <item name="colorEventGreen">#05d405</item>
+        <item name="colorEventLightBlue">#19d3ec</item>
+        <item name="colorEventBlue">#0c14ed</item>
+        <item name="colorEventPurple">#6b00ff</item>
+        <item name="colorEventWineRed">#de11d3</item>
+        <item name="colorEventBrown">#b13b00</item>
+        <item name="colorEventBlack">#000000</item>
+    </array>
+
+    <color name="colorEventWhite">#ffffff</color>
+    <color name="colorEventRed">#bf0c0c</color>
+    <color name="colorEventOrange">#ffa500</color>
+    <color name="colorEventYellow">#ecdd0a</color>
+    <color name="colorEventGreen">#05d405</color>
+    <color name="colorEventLightBlue">#19d3ec</color>
+    <color name="colorEventBlue">#0c14ed</color>
+    <color name="colorEventPurple">#6b00ff</color>
+    <color name="colorEventWineRed">#de11d3</color>
+    <color name="colorEventBrown">#b13b00</color>
+    <color name="colorEventBlack">#000000</color>
+
+    <color name="white">#ffffff</color> <!-- 白色 -->
+    <color name="gray">#808080</color> <!-- 灰色 -->
+
+</resources>

@@ -1,0 +1,276 @@
+package com.honhai.foxconn.fxccalendar.elsemember;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
+import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.colormanager.ColorManagerActivity;
+import com.honhai.foxconn.fxccalendar.data.Data;
+import com.honhai.foxconn.fxccalendar.elsemember.PopupWindow.ColorPicker;
+import com.honhai.foxconn.fxccalendar.elsemember.PopupWindow.ColorPickerPopupWindow;
+import com.honhai.foxconn.fxccalendar.elsemember.ShowEventPopWindow.ShowEventPopupWindow;
+import com.honhai.foxconn.fxccalendar.login.ModifyActivity;
+
+import static com.honhai.foxconn.fxccalendar.main.MainActivity.SP_THEME;
+import static com.honhai.foxconn.fxccalendar.main.MainActivity.SP_THEME_COLOR;
+
+public class SettingsActivity extends AppCompatActivity {
+
+    private TextView tv_alarm_setting;
+    private TextView tv_settings_title;
+    private TextView tv_color_theme;
+    private TextView tv_label_manager;
+    private ImageButton ib_left_return;
+    private ImageButton ib_right_save;
+    private ImageView iv_modify;
+    private ImageView iv_edit;
+    private ImageView iv_note;
+    private ImageView iv_color_theme;
+    private ImageView iv_label_manage;
+    private RelativeLayout rl_event_label;
+    private RelativeLayout rl_alarm_color;
+    private RelativeLayout rl_alarm_vibrate;
+    private ColorPickerPopupWindow mPopWindow;
+    private SharedPreferences colorSharedPreference;
+    private int pervColor;
+    private int currColor;
+    private ImageView iv_select;
+
+    private ImageView iv_personal_information;
+    private TextView tv_personal_information;
+    private ImageView iv_modify_personal;
+    private RelativeLayout layout_event_personal;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_settings);
+
+        findViews();
+        pervColor = Data.getInstance().getThemeColor();
+        currColor = pervColor;
+        setViewsColor();
+
+
+        rl_alarm_color.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                showPopupWindow();
+                // Toast.makeText(getApplicationContext(),"显示色彩主题页面",Toast.LENGTH_LONG).show();
+            }
+        });
+
+        rl_alarm_vibrate.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                showCompletedEvents();
+
+            }
+        });
+
+
+        rl_event_label.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setClass(SettingsActivity.this, ColorManagerActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        layout_event_personal.setOnClickListener(new OnClickListener() {    //加入个人修改信息部分
+            @Override
+            public void onClick(View v) {
+//                Toast.makeText(getApplicationContext(),"点击成功",Toast.LENGTH_LONG).show();
+                Intent intent = new Intent();
+                intent.setClass(SettingsActivity.this, ModifyActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        ib_left_return.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                //Toast.makeText(getApplicationContext(), "返回,不保存设定", Toast.LENGTH_LONG).show();
+                finish();
+            }
+        });
+        ib_right_save.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Data.getInstance().setThemeColor(currColor);
+                finish();
+                //Toast.makeText(getApplicationContext(), "保存设定", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void findViews() {
+
+        tv_alarm_setting = findViewById(R.id.alarm_setting);
+        tv_settings_title = findViewById(R.id.settings_title);
+        tv_color_theme = findViewById(R.id.tv_color);
+        tv_label_manager = findViewById(R.id.tv_label_manager);
+
+        ib_left_return = findViewById(R.id.left_return);
+        ib_right_save = findViewById(R.id.right_save);
+
+        iv_modify = findViewById(R.id.iv_modify);
+        iv_edit = findViewById(R.id.iv_edit);
+        iv_note = findViewById(R.id.iv_note);
+        iv_color_theme = findViewById(R.id.iv_color_theme);
+        iv_label_manage = findViewById(R.id.iv_label_manage);
+        iv_select = findViewById(R.id.iv_select);
+
+        rl_event_label = findViewById(R.id.layout_event_label);
+        rl_alarm_vibrate = findViewById(R.id.layout_alarm_vibrate);
+        rl_alarm_color = findViewById(R.id.layout_alarm_color);
+
+
+        //加入个人修改信息部分
+        iv_personal_information = findViewById(R.id.iv_personal_information);
+        tv_personal_information = findViewById(R.id.tv_personal_information);
+        iv_modify_personal = findViewById(R.id.iv_modify_personal);
+        layout_event_personal = findViewById(R.id.layout_event_personal);//RelativeLayout
+
+
+    }
+
+    private void setViewsColor() {
+        tv_alarm_setting.setTextColor(currColor);
+        tv_settings_title.setTextColor(currColor);
+        tv_color_theme.setTextColor(currColor);
+        tv_label_manager.setTextColor(currColor);
+
+        tv_personal_information.setTextColor(currColor);       //加入个人修改信息部分
+
+        Drawable drawable_left_return = ib_left_return.getDrawable();
+        drawable_left_return.setTint(currColor);
+        ib_left_return.setImageDrawable(drawable_left_return);
+
+        Drawable drawable_right_save = ib_right_save.getDrawable();
+        drawable_right_save.setTint(currColor);
+        ib_right_save.setImageDrawable(drawable_right_save);
+
+        Drawable drawable_modify_edit = getDrawable(R.drawable.ic_keyboard_arrow_right_black_24dp);
+        iv_modify.setImageDrawable(drawable_modify_edit);
+        iv_edit.setImageDrawable(drawable_modify_edit);
+        iv_modify_personal.setImageDrawable(drawable_modify_edit);//加入个人修改信息部分
+        drawable_modify_edit.setTint(currColor);
+
+        Drawable drawable_iv_personal_information = iv_personal_information.getBackground();//加入个人修改信息部分
+        drawable_iv_personal_information.setTint(currColor);
+
+        Drawable drawable_iv_label_manage = iv_label_manage.getBackground();
+        drawable_iv_label_manage.setTint(currColor);
+
+
+        Drawable drawable_iv_color_theme = iv_color_theme.getBackground();
+        drawable_iv_color_theme.setTint(currColor);
+
+        Drawable drawable_iv_note = iv_note.getBackground();
+        drawable_iv_note.setAlpha(255);
+        drawable_iv_note.setTint(currColor);
+
+        Drawable drawable_iv_select = iv_select.getBackground();
+        drawable_iv_select.setTint(currColor);
+
+//        sw_vibrate.getThumbDrawable().setTintList(createColorStateList(currColor, Color.rgb(240, 240, 240)));
+//        sw_vibrate.getTrackDrawable().setTintList(createColorStateList(currColor, Color.GRAY));
+
+    }
+
+    private ColorStateList createColorStateList(int checked, int normal) {
+        int[] colors = new int[]{checked, normal};
+        int[][] states = new int[2][];
+        states[0] = new int[]{android.R.attr.state_checked};
+        states[1] = new int[]{};
+        return new ColorStateList(states, colors);
+    }
+
+    private void showPopupWindow() {
+
+        mPopWindow = new ColorPickerPopupWindow(SettingsActivity.this);
+        mPopWindow.setOnConfirmListener(new ColorPickerPopupWindow.OnConfirmListener() {
+            @Override
+            public void onConfirm() {
+                colorSharedPreference = getSharedPreferences(SP_THEME, Context.MODE_PRIVATE);
+                SharedPreferences.Editor colorEdit = colorSharedPreference.edit();
+                colorEdit.putInt(SP_THEME_COLOR, currColor);
+                colorEdit.apply();
+                pervColor = currColor;
+            }
+
+        });
+        mPopWindow.setOnCancelListener(new ColorPickerPopupWindow.OnCancelListener() {
+            @Override
+            public void onCancel() {
+                currColor = pervColor;
+                setViewsColor();
+            }
+        });
+        mPopWindow.setOnColorChoosingListener(new ColorPicker.OnColorChoosingListener() {
+            @Override
+            public void OnColorChoosing(int color) {
+                currColor = color;
+                setViewsColor();
+            }
+        });
+        mPopWindow.setOnColorChoseListener(new ColorPicker.OnColorChoseListener() {
+            @Override
+            public void OnColorChose(int color) {
+                currColor = color;
+                setViewsColor();
+            }
+        });
+    }
+
+    private void showCompletedEvents() {
+
+//        View popupLayout = getLayoutInflater().inflate(R.layout.popup_window_completed_events_select, (ViewGroup) findViewById(R.id.parent_completed_events));
+        View popupLayout = getLayoutInflater().inflate(R.layout.popup_window_completed_events_select, null);
+        ShowEventPopupWindow popupWindow = new ShowEventPopupWindow(popupLayout, getWindow().getDecorView().getWidth() - 100, getWindow().getDecorView().getHeight() / 3);
+        popupWindow.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.colorDefaultBackground)));
+        popupWindow.setOutsideTouchable(true);
+        popupWindow.setFocusable(true);
+//        popupWindow.showAsDropDown(popupLayout, 0, 0, Gravity.CENTER);
+        popupWindow.showAtLocation(getWindow().getDecorView(), Gravity.CENTER, 0, 0);
+        WindowManager.LayoutParams lp = getWindow().getAttributes();
+        lp.alpha = .5f;
+        getWindow().setAttributes(lp);
+        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                WindowManager.LayoutParams lp = getWindow().getAttributes();
+                lp.alpha = 1f;
+                getWindow().setAttributes(lp);
+            }
+        });
+    }
+
+
+}

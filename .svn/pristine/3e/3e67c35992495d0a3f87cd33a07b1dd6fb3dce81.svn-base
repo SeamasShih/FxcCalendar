@@ -1,0 +1,36 @@
+package com.honhai.foxconn.fxccalendar.agenda;
+
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
+import android.content.Context;
+import android.util.AttributeSet;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.FrameLayout;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.weekly.adapter.WeeklyViewPagerAdapter;
+
+public class AgendaView extends FrameLayout {
+
+    /**
+     * 显示日程的 ListView
+     */
+    public AgendaListView mAgendaListView;
+
+    // region Constructors
+
+    public AgendaView(Context context) {
+        super(context);
+    }
+
+    public AgendaView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+
+        LayoutInflater inflater = (LayoutInflater) context
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        inflater.inflate(R.layout.agenda_view, this, true);
+    }
+
+}

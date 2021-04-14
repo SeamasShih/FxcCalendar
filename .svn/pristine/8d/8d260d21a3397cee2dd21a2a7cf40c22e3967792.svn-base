@@ -1,0 +1,50 @@
+package com.honhai.foxconn.fxccalendar.elsemember.GroupMemberList;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.data.Data;
+import com.honhai.foxconn.fxccalendar.data.Group;
+import com.honhai.foxconn.fxccalendar.data.interfaces.RefreshData;
+import com.honhai.foxconn.fxccalendar.elsemember.CalendarElseFragment;
+import com.honhai.foxconn.fxccalendar.elsemember.MemberList;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class GroupMemberActivity extends AppCompatActivity {
+    private List<GroupMember>groupMemberList =new ArrayList<>();
+    private Group group;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_group_member_list);
+        RecyclerView recyclerView=findViewById(R.id.rv_recycler_view);
+        StaggeredGridLayoutManager layoutManager=new StaggeredGridLayoutManager(3,StaggeredGridLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(layoutManager);
+        GroupMemberAdapter adapter=new GroupMemberAdapter(groupMemberList);
+        recyclerView.setAdapter(adapter);
+        initMemberLists();
+
+    }
+
+    private void initMemberLists(){
+        groupMemberList.clear();
+        for (String userName : Data.getInstance().getUserNames())
+            groupMemberList.add(new GroupMember(R.drawable.ic_person_black_24dp,  userName));
+//        GroupMember member1=new GroupMember(R.drawable.ic_person_black_24dp,"张三");
+//        groupMemberList.add(member1);
+//
+//       GroupMember member2=new GroupMember(R.drawable.ic_person_black_24dp,"李四");
+//      groupMemberList.add(member2);
+//
+//        GroupMember member3=new GroupMember(R.drawable.ic_person_black_24dp,"王五");
+//        groupMemberList.add(member3);
+    }
+
+
+}

@@ -1,0 +1,62 @@
+package com.honhai.foxconn.fxccalendar.keepevent;
+
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.data.Data;
+import com.honhai.foxconn.fxccalendar.data.Event;
+
+import java.util.ArrayList;
+import java.util.List;
+
+
+public class KeepEventFragment extends Fragment {
+    public List<String> KeepEvent;
+    private List<Event> AllEvent;
+    private int i;
+
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        KeepEvent = new ArrayList();
+        AllEvent = Data.getInstance().getEvents();
+        for (i = 0; i < AllEvent.size(); i++) {
+            if (AllEvent.get(i).isNoTime()) {
+                KeepEvent.add(AllEvent.get(i).getTitle());
+            }
+        }
+        if (KeepEvent.size() == 0) {
+            View view = inflater.inflate(R.layout.fragment_no_keep_event, container, false);
+            ImageView addKeepEvent = view.findViewById(R.id.iv_add_keep_event);
+            Drawable drawable = getActivity().getDrawable(R.drawable.ic_add_keep_event);
+            drawable.setAlpha(255);
+            drawable.setTint(Data.getInstance().getThemeColor());
+            addKeepEvent.setImageDrawable(drawable);
+            addKeepEvent.setOnClickListener(new View.OnClickListener() {
+                @Override
+                //TODO jump to keepEventEdit activity
+                public void onClick(View v) {
+
+                }
+            });
+            return view;
+        } else {
+            View view = inflater.inflate(R.layout.fragment_keep_event, container, false);
+            RecyclerView myRecyclerView = view.findViewById(R.id.KeepEventList);
+            KeepEventAdapter keepEventAdapter = new KeepEventAdapter(getContext(), KeepEvent);
+            myRecyclerView.setLayoutManager
+                    (new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+            myRecyclerView.setAdapter(keepEventAdapter);
+            return view;
+        }
+    }
+}

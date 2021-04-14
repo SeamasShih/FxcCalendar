@@ -1,0 +1,129 @@
+package com.honhai.foxconn.fxccalendar.search;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.PopupWindow;
+import android.widget.TextView;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.colormanager.ColorImageView;
+import com.honhai.foxconn.fxccalendar.data.Data;
+
+import java.util.ArrayList;
+
+import static com.honhai.foxconn.fxccalendar.colormanager.ColorAdapter.SP_COLOR_LABEL;
+
+class SearchLabelPopupWindow extends PopupWindow {
+    private RecyclerView recyclerView;
+    private OnColorSearchSelectListener onColorSearchSelectListener;
+    private Adapter adapter;
+
+    SearchLabelPopupWindow(Context context, View parent, int w, int h) {
+        super(parent, w, h);
+        recyclerView = parent.findViewById(R.id.colorLabelSearchRecyclerView);
+        adapter = new Adapter(context);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+    }
+
+    void setOnColorSearchSelectListener(OnColorSearchSelectListener onColorSearchSelectListener) {
+        this.onColorSearchSelectListener = onColorSearchSelectListener;
+    }
+
+    void setSelectColors(ArrayList<Integer> colors){
+        for (int i = 0 ; i < colors.size() ; i++){
+            int ac = colors.get(i);
+            for (int j = 0 ; j < adapter.colors.length ; j++){
+                if (adapter.colors[j] == ac)
+                    adapter.selected[j] = true;
+            }
+        }
+        adapter.notifyDataSetChanged();
+    }
+
+    private class Adapter extends RecyclerView.Adapter {
+        private int[] colors;
+        private String[] colorStrings;
+        private SharedPreferences sharedPreferences;
+        private boolean[] selected;
+        private int bgShadowColor;
+        private ArrayList<Integer> colorArray = new ArrayList<>();
+
+        private Adapter(Context context) {
+            colors = context.getResources().getIntArray(R.array.eventColorArray);
+            colorStrings = context.getResources().getStringArray(R.array.stringColor);
+            sharedPreferences = context.getSharedPreferences(SP_COLOR_LABEL, Context.MODE_PRIVATE);
+            int themeColor = Data.getInstance().getThemeColor();
+            bgShadowColor = Color.argb(20, Color.red(themeColor), Color.green(themeColor), Color.blue(themeColor));
+            selected = new boolean[colors.length];
+            for (int i = 0; i < selected.length; i++) {
+                selected[i] = false;
+            }
+        }
+
+        @NonNull
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.popup_window_search_color_label_recycler_item, viewGroup, false);
+            return new Holder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, final int pos) {
+            Holder holder = (Holder) viewHolder;
+            holder.colorImageView.setColor(colors[pos]);
+            holder.textView.setText(sharedPreferences.getString(colorStrings[pos], colorStrings[pos]));
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    selected[pos] = !selected[pos];
+                    if (selected[pos])
+                        v.setBackgroundColor(bgShadowColor);
+                    else
+                        v.setBackgroundColor(Color.TRANSPARENT);
+                    if (onColorSearchSelectListener != null) {
+                        colorArray.clear();
+                        for (int i = 0 ; i < selected.length ; i++){
+                            if (selected[i])
+                                colorArray.add(colors[i]);
+                        }
+                        onColorSearchSelectListener.onSelect(colorArray);
+                    }
+                }
+            });
+            holder.itemView.setBackgroundColor(selected[pos] ? bgShadowColor : Color.TRANSPARENT);
+        }
+
+        @Override
+        public int getItemCount() {
+            return colors.length;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return position;
+        }
+
+        private class Holder extends RecyclerView.ViewHolder {
+            ColorImageView colorImageView;
+            TextView textView;
+
+            Holder(@NonNull View itemView) {
+                super(itemView);
+                colorImageView = itemView.findViewById(R.id.imgColor);
+                textView = itemView.findViewById(R.id.tvColorText);
+            }
+        }
+    }
+
+    interface OnColorSearchSelectListener{
+        void onSelect(ArrayList<Integer> colors);
+    }
+}

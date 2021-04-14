@@ -1,0 +1,224 @@
+package com.honhai.foxconn.fxccalendar.weekly.view;
+
+import android.animation.Animator;
+import android.animation.ValueAnimator;
+import android.content.Context;
+import android.graphics.Canvas;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+
+import java.util.Calendar;
+
+public class CalendarWeeklyViewInfinity extends CalendarWeeklyView {
+
+    private float moveTouchX;
+    private ValueAnimator animator = new ValueAnimator();
+    private GestureDetector gestureDetector;
+
+
+    private Day[] prevDays = new Day[7];
+    private Day[] nextDays = new Day[7];
+
+    public CalendarWeeklyViewInfinity(Context context, AttributeSet attrs) {
+        super(context, attrs);
+
+        for (int i = 0; i < prevDays.length; i++) {
+            prevDays[i] = new Day();
+            nextDays[i] = new Day();
+        }
+
+        animator.setDuration(100);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                float r = (float) animation.getAnimatedValue();
+                moveTouchX = r;
+                invalidate();
+            }
+        });
+
+        gestureDetector = new GestureDetector(context, new GestureListener());
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (animator.isRunning())
+            return false;
+        gestureDetector.onTouchEvent(event);
+        switch (event.getActionMasked()) {
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
+                if (animator.isRunning())
+                    return true;
+                if (moveTouchX > getWidth() / 2) {
+                    setRollPrevAnimator();
+                } else if (moveTouchX < -getWidth() / 2) {
+                    setRollNextAnimator();
+                } else {
+                    setRollBackAnimator();
+                }
+                animator.start();
+                break;
+        }
+        return true;
+    }
+
+    private void setRollPrevAnimator() {
+        animator.setFloatValues(moveTouchX, getWidth());
+        animator.removeAllListeners();
+        animator.addListener(new rollPrevListener());
+    }
+
+    private void setRollNextAnimator() {
+        animator.setFloatValues(moveTouchX, -getWidth());
+        animator.removeAllListeners();
+        animator.addListener(new rollNextListener());
+    }
+
+    private void setRollBackAnimator() {
+        animator.setFloatValues(moveTouchX, 0);
+        animator.removeAllListeners();
+        animator.addListener(new rollBackListener());
+    }
+
+    public void rollback() {
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int weekOfYear = calendar.get(Calendar.WEEK_OF_YEAR);
+        if (year == days[0].year) {
+            if (weekOfYear > days[0].weekOfYear) {
+                setWeekday(calendar, nextDays);
+                setRollNextAnimator();
+                animator.start();
+            } else if (weekOfYear < days[0].weekOfYear) {
+                setWeekday(calendar, prevDays);
+                setRollPrevAnimator();
+                animator.start();
+            }
+        } else if (year > days[0].year) {
+            setWeekday(calendar, nextDays);
+            setRollNextAnimator();
+            animator.start();
+        } else {
+            setWeekday(calendar, prevDays);
+            setRollPrevAnimator();
+            animator.start();
+        }
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        canvas.translate(moveTouchX, 0);
+
+        super.onDraw(canvas);
+
+        canvas.save();
+        canvas.translate(-getWidth(), 0);
+        drawWeek(canvas, prevDays);
+        canvas.restore();
+
+        canvas.save();
+        canvas.translate(getWidth(), 0);
+        drawWeek(canvas, nextDays);
+        canvas.restore();
+    }
+
+    @Override
+    public void setWeekday(Calendar calendar) {
+        calendar.add(Calendar.WEEK_OF_YEAR, -1);
+        setWeekday(calendar, prevDays);
+        setWeekday(calendar, days);
+        setWeekday(calendar, nextDays);
+        invalidate();
+    }
+
+    private void switchWeek(int dir) {
+        if (dir > 0) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(nextDays[0].year, nextDays[0].month, nextDays[0].dayOfMonth);
+            setWeekday(calendar);
+        } else if (dir < 0) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(prevDays[0].year, prevDays[0].month, prevDays[0].dayOfMonth);
+            setWeekday(calendar);
+        }
+    }
+
+    private class rollPrevListener extends AnimatorSimpleListener {
+        @Override
+        public void onAnimationEnd(Animator animation) {
+            moveTouchX = 0;
+            switchWeek(-1);
+            invalidate();
+        }
+    }
+
+    private class rollNextListener extends AnimatorSimpleListener {
+        @Override
+        public void onAnimationEnd(Animator animation) {
+            moveTouchX = 0;
+            switchWeek(1);
+            invalidate();
+        }
+    }
+
+    private class rollBackListener extends AnimatorSimpleListener {
+        @Override
+        public void onAnimationEnd(Animator animation) {
+            moveTouchX = 0;
+            invalidate();
+        }
+    }
+
+    private class AnimatorSimpleListener implements Animator.AnimatorListener {
+
+        @Override
+        public void onAnimationStart(Animator animation) {
+
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animation) {
+
+        }
+
+        @Override
+        public void onAnimationCancel(Animator animation) {
+
+        }
+
+        @Override
+        public void onAnimationRepeat(Animator animation) {
+
+        }
+    }
+
+    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onDown(MotionEvent e) {
+            return true;
+        }
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            if (velocityX > 1000) {
+                setRollPrevAnimator();
+            } else if (velocityX < -1000) {
+                setRollNextAnimator();
+            } else {
+                setRollBackAnimator();
+            }
+            animator.start();
+            return true;
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            moveTouchX -= distanceX;
+            invalidate();
+            return true;
+        }
+    }
+}

@@ -1,0 +1,29 @@
+package com.honhai.foxconn.fxccalendar.agenda;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+
+
+import com.honhai.foxconn.fxccalendar.R;
+
+public class AgendaHeaderView extends LinearLayout {
+    private Context context;
+    /**
+     * 引入布局文件
+
+     */
+    public static AgendaHeaderView inflate(ViewGroup parent) {
+        return (AgendaHeaderView) LayoutInflater.from(parent.getContext()).inflate(R.layout.agenda_view_header, parent, false);
+    }
+
+    public AgendaHeaderView(Context context) {
+        super(context);
+        this.context= context;
+        System.out.println("AgendaHeaderView--1");
+    }
+
+
+
+}

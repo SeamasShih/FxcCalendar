@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--AgendaListView 中用于顶靠的顶部布局 AgendaHeaderView-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/header_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#f4f4f4"
+    android:orientation="horizontal">
+
+
+        <LinearLayout
+            android:id="@+id/day_container"
+            android:layout_width="match_parent"
+            android:layout_height="38dp"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+
+            <!-- 日期(星期）-->
+            <TextView
+                android:id="@+id/view_agenda_day_of_month"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10dp"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textColor="@android:color/black"
+                android:layout_gravity="center"
+                android:visibility="visible" />
+
+
+            <!-- 今天-->
+            <TextView
+                android:id="@+id/view_agenda_today"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="230dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:textColor="#2F4F4F"
+                android:text="@string/stringToday"
+                android:textSize="15sp" />
+
+        </LinearLayout>
+
+
+
+</LinearLayout>

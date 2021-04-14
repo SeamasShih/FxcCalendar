@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+
+    <color name="colorStatusBar">#c4c4c4</color>
+
+    <color name="colorCalendarLine">#dedede</color>
+    <color name="colorCalendarWorkday">#121212</color>
+    <color name="colorCalendarHoliday">#ff0000</color>
+    <color name="colorCalendarSaturday">#0080ff</color>
+    <color name="colorCalendarSubtitle">#bababa</color>
+
+    <color name="white">#ffffff</color>
+    <color name="lovelyred">#981010</color>
+    <color name="orange">#ffa500</color><!--橙色 -->
+    <color name="hotpink">#ff69b4</color><!--热粉红色 -->
+    <color name="fuchsia">#ff00ff</color><!--紫红色 -->
+    <color name="blueviolet">#8a2be2</color><!--紫罗兰蓝色 -->
+    <color name="applered">#ab0000</color><!--暗红色 -->
+    <color name="black">#000000</color><!--黑色 -->
+    <color name="springgreen">#00ff7f</color><!--春绿色 -->
+    <color name="darkblue">#00008b</color><!--暗蓝色 -->
+    <color name="darkgreen">#006400</color><!--暗绿色 -->
+</resources>

@@ -1,0 +1,168 @@
+package com.honhai.foxconn.fxccalendar.data.local.groupsql;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+
+import com.honhai.foxconn.fxccalendar.data.Group;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
+public class GroupDAO {
+
+    static final String TABLE_NAME = "groups";
+
+    private static final String KEY_ID = "_id";
+
+    private static final String GROUP_ID_COLUMN = "groupId";
+    private static final String GROUP_NAME_COLUMN = "groupName";
+    private static final String WORK_ID_ARRAY_COLUMN = "workId";
+    private static final String OBJECT_ID_COLUMN = "objectId";
+
+    private static final String SPLIT_SIGN = "!";
+
+    static final String CREATE_TABLE =
+            "CREATE TABLE " + TABLE_NAME + " (" +
+                    KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    GROUP_ID_COLUMN + " INTEGER NOT NULL, " +
+                    GROUP_NAME_COLUMN + " TEXT NOT NULL, " +
+                    WORK_ID_ARRAY_COLUMN + " TEXT NOT NULL, " +
+                    OBJECT_ID_COLUMN + " TEXT NOT NULL) ";
+
+    private SQLiteDatabase db;
+
+    public GroupDAO(Context context) {
+        db = LocalGroupOpenHelper.getDatabase(context);
+    }
+
+    public void close() {
+        db.close();
+    }
+
+    public Group insert(Group group) {
+        ContentValues cv = new ContentValues();
+
+        cv.put(GROUP_ID_COLUMN, group.getGroupId());
+        cv.put(GROUP_NAME_COLUMN, group.getGroupName());
+        String workIdString = "";
+        ArrayList<String> workId = group.getWorkId();
+        if (workId.size() > 0)
+            workIdString = workIdString + workId.get(0);
+        for (int i = 1 ; i < workId.size() ; i++)
+            workIdString = workIdString + SPLIT_SIGN + workId.get(i);
+        cv.put(WORK_ID_ARRAY_COLUMN, workIdString);
+        cv.put(OBJECT_ID_COLUMN, group.getObjectId());
+
+        long id = db.insert(TABLE_NAME, null, cv);
+
+        group.setLocalId(id);
+
+        return group;
+    }
+
+    public boolean update(Group group) {
+        ContentValues cv = new ContentValues();
+
+        cv.put(GROUP_ID_COLUMN, group.getGroupId());
+        cv.put(GROUP_NAME_COLUMN, group.getGroupName());
+        String workIdString = "";
+        ArrayList<String> workId = group.getWorkId();
+        if (workId.size() > 0)
+            workIdString = workIdString + workId.get(0);
+        for (int i = 1 ; i < workId.size() ; i++)
+            workIdString = SPLIT_SIGN + workIdString;
+        cv.put(WORK_ID_ARRAY_COLUMN, workIdString);
+        cv.put(OBJECT_ID_COLUMN, group.getObjectId());
+
+        String where = KEY_ID + "=" + group.getLocalId();
+
+        return db.update(TABLE_NAME, cv, where, null) > 0;
+    }
+
+    public boolean delete(long id) {
+        String where = KEY_ID + "=" + id;
+        return db.delete(TABLE_NAME, where, null) > 0;
+    }
+
+    public void removeAll() {
+        db.delete(TABLE_NAME, null, null);
+    }
+
+    public ArrayList<Group> getAll() {
+        ArrayList<Group> result = new ArrayList<>();
+        Cursor cursor = db.query(
+                TABLE_NAME, null, null, null, null, null, null, null);
+
+        while (cursor.moveToNext()) {
+            result.add(getRecord(cursor));
+        }
+
+        cursor.close();
+        return result;
+    }
+
+    public ArrayList<Group> getGroupsByWorkId(String workId){
+        ArrayList<Group> result = new ArrayList<>();
+        Cursor cursor = db.query(
+                TABLE_NAME, null, null, null, null, null, null, null);
+
+        while (cursor.moveToNext()) {
+            String workIdString = cursor.getString(3);
+            String[] workIdArray = workIdString.split(SPLIT_SIGN);
+            for (String id : workIdArray){
+                if (workId.equals(id)) {
+                    result.add(getRecord(cursor));
+                    break;
+                }
+            }
+        }
+
+        cursor.close();
+        return result;
+    }
+
+    public Group get(long id) {
+        Group item = null;
+        String where = KEY_ID + "=" + id;
+        Cursor result = db.query(
+                TABLE_NAME, null, where, null, null, null, null, null);
+
+        if (result.moveToFirst()) {
+            item = getRecord(result);
+        }
+
+        result.close();
+        return item;
+    }
+
+    private Group getRecord(Cursor cursor) {
+        Group result = new Group();
+
+        result.setLocalId(cursor.getLong(0));
+        result.setGroupId(cursor.getInt(1));
+        result.setGroupName(cursor.getString(2));
+
+        String workIdString = cursor.getString(3);
+        String[] workIdArray = workIdString.split(SPLIT_SIGN);
+        ArrayList<String> workId = new ArrayList<>(Arrays.asList(workIdArray));
+        result.setWorkId(workId);
+        result.setObjectId(cursor.getString(4));
+
+        return result;
+    }
+
+    public int getCount() {
+        int result = 0;
+        Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + TABLE_NAME, null);
+
+        if (cursor.moveToNext()) {
+            result = cursor.getInt(0);
+        }
+
+        cursor.close();
+        return result;
+    }
+}

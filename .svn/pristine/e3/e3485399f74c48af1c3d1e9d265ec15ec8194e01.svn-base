@@ -1,0 +1,55 @@
+package com.honhai.foxconn.fxccalendar.welcome;
+
+import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.data.Data;
+import com.honhai.foxconn.fxccalendar.data.User;
+import com.honhai.foxconn.fxccalendar.data.local.usersql.UserDAO;
+import com.honhai.foxconn.fxccalendar.login.Register;
+
+import java.util.ArrayList;
+
+public class WelcomeActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_welcome);
+
+        refreshUser();
+//        Data.getInstance().createUser();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    Thread.sleep(3000);
+                    startActivity(new Intent().setClass(WelcomeActivity.this,Register.class));
+                    finish();
+                }catch (InterruptedException e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+    }
+
+    private void refreshUser() {
+        final UserDAO userDAO = new UserDAO(this);
+        ArrayList<User> users = Data.getInstance().getUsers();
+        users.clear();
+        users.addAll(userDAO.getAll());
+
+        Data.getInstance().refreshUsersForCloud();
+        Data.getInstance().setOnDownLoadUserCompleteCallBack(new Data.OnDownLoadUserCompleteCallBack() {
+            @Override
+            public void onComplete(ArrayList<User> users) {
+                userDAO.removeAll();
+                for (int i = 0 ; i < users.size() ; i++)
+                    userDAO.insert(users.get(i));
+            }
+        });
+    }
+}

@@ -1,0 +1,682 @@
+package com.honhai.foxconn.fxccalendar.main;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.PopupWindow;
+import android.widget.TextView;
+
+//import com.bumptech.glide.Glide;
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.addevent.AddEventActivity;
+import com.honhai.foxconn.fxccalendar.addevent.DeleteMessagePopupWindow;
+import com.honhai.foxconn.fxccalendar.agenda.AgendaViewFragment;
+import com.honhai.foxconn.fxccalendar.data.Data;
+import com.honhai.foxconn.fxccalendar.data.Event;
+import com.honhai.foxconn.fxccalendar.data.Group;
+import com.honhai.foxconn.fxccalendar.data.interfaces.Rollback;
+import com.honhai.foxconn.fxccalendar.data.local.eventsql.EventDAO;
+import com.honhai.foxconn.fxccalendar.data.local.groupsql.GroupDAO;
+import com.honhai.foxconn.fxccalendar.data.local.remindersql.ReminderUtils;
+import com.honhai.foxconn.fxccalendar.elsemember.CalendarElseFragment;
+import com.honhai.foxconn.fxccalendar.elsemember.GroupManager.GroupManagerActivity;
+import com.honhai.foxconn.fxccalendar.elsemember.SettingsActivity;
+import com.honhai.foxconn.fxccalendar.keepevent.KeepEventFragment;
+import com.honhai.foxconn.fxccalendar.mine.MyInfoFragment;
+import com.honhai.foxconn.fxccalendar.month.CalendarMonthFragment;
+import com.honhai.foxconn.fxccalendar.search.SearchEventActivity;
+import com.honhai.foxconn.fxccalendar.weekly.fragment.CalendarWeeklyFragment;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
+
+import static com.honhai.foxconn.fxccalendar.elsemember.SettingsActivity.EVENTS_UNCOMPLETED;
+import static com.honhai.foxconn.fxccalendar.elsemember.SettingsActivity.SP_COMPLETED_EVENTS;
+import static com.honhai.foxconn.fxccalendar.elsemember.SettingsActivity.SP_COMPLETED_EVENTS_TYPE;
+import static com.honhai.foxconn.fxccalendar.search.SearchEventActivity.INTENT_EVENT_SEARCH_TYPE;
+import static com.honhai.foxconn.fxccalendar.search.SearchEventActivity.INTENT_NORMAL_EVENT;
+import static com.honhai.foxconn.fxccalendar.search.SearchEventActivity.INTENT_NO_TIME_EVENT;
+
+public class MainActivity extends AppCompatActivity {
+
+    private ArrayList<Fragment> fragments = new ArrayList<>();
+    private CalendarWeeklyFragment weeklyFragment;
+    private AgendaViewFragment summaryFragment;
+    private CalendarElseFragment elseFragment;
+    private CalendarMonthFragment monthFragment;
+    private KeepEventFragment keepEventFragment;
+    private MyInfoFragment myInfoFragment;
+    private BottomNavigationBar bottomBar;
+    private AddEventButton btnAddEvent;
+    private TextView title;
+    private TextView subTitle;
+    private Toolbar toolbar;
+
+    private int calendarType;
+    private int page = 0;
+    private boolean isLongClick;
+
+    private Calendar monthlyTitle = Calendar.getInstance();
+    private Calendar weeklyTitle = Calendar.getInstance();
+    private Calendar summaryTitle = Calendar.getInstance();
+
+    public static final int CALENDAR_SUMMARY = 0;
+    public static final int CALENDAR_WEEKLY = 1;
+    public static final int CALENDAR_MONTHLY = 2;
+
+    private final int FRAGMENT_PAGE_CALENDAR = 0;
+    private final int FRAGMENT_PAGE_KEEP = 1;
+    private final int FRAGMENT_PAGE_GROUP = 2;
+    private final int FRAGMENT_PAGE_MINE = 3;
+
+    public static final String SP_CALENDAR_TYPE_NAME = "CalendarType";
+    public static final String SP_CALENDAR_TYPE = "type";
+
+    public static final String SP_THEME = "Theme";
+    public static final String SP_THEME_COLOR = "ThemeColor";
+    public static final String SP_LATEST_EVENT_COLOR = "LatestEventColor";
+
+    public static final String INTENT_EVENT = "event";
+    public static final String INTENT_YEAR = "year";
+    public static final String INTENT_MONTH = "month";
+    public static final String INTENT_DAY_OF_MONTH = "dayOfMonth";
+    public static final String INTENT_IS_NO_TIME = "isNoTime";
+
+    public static final int READ_REQUESTCODE = 1;
+
+    private SharedPreferences calendarSharedPreference;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        initSharePreference();
+        findViews();
+        setFragment();
+        setBottomBar();
+        setBtnAddEvent();
+        setToolbar();
+
+        refreshGroup();
+        refreshEvent();
+
+    }
+
+    private void refreshGroup() {
+        final GroupDAO groupDAO = new GroupDAO(this);
+        ArrayList<Group> groups = Data.getInstance().getGroups();
+        groups.clear();
+        String workId = Data.getUserInfo().getWorkId();
+        SharedPreferences sharedPreferences = getSharedPreferences(workId, MODE_PRIVATE);
+        groups.addAll(groupDAO.getGroupsByWorkIdAndSharePreferences(workId, sharedPreferences));
+
+        Data.getInstance().refreshGroupsForCloud();
+        Data.getInstance().setOnDownLoadGroupCompleteCallBack(new Data.OnDownLoadGroupCompleteCallBack() {
+            @Override
+            public void onComplete(ArrayList<Group> groups) {
+                ArrayList<Group> nows = new ArrayList<>(Data.getInstance().getGroups());
+                SharedPreferences sharedPreferences = getSharedPreferences(Data.getUserInfo().getWorkId(), MODE_PRIVATE);
+                for (Group group : Data.getInstance().getGroups()){
+                    if (!sharedPreferences.getBoolean(group.getObjectId(),true))
+                        nows.remove(group);
+                }
+
+                Data.getInstance().getGroups().clear();
+                Data.getInstance().getGroups().addAll(nows);
+
+                groupDAO.removeAll();
+                for (Group group : groups) {
+                    groupDAO.insert(group);
+                    downloadPhoto(group);
+                }
+            }
+        });
+    }
+
+    private void downloadPhoto(Group group) {
+        final String stringIcon = group.getGroupIcon();
+        final String stringId = group.getObjectId();
+        if (stringIcon == null)
+            return;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    InputStream is = (InputStream) new URL(stringIcon).getContent();
+                    Bitmap bitmap = BitmapFactory.decodeStream(is);
+                    is.close();
+                    String path = getFilesDir().getPath();
+                    File appDir = new File(path);
+                    if (!appDir.exists()) {
+                        appDir.mkdir();
+                    }
+                    String filename = stringId + ".jpg";
+                    File file = new File(appDir, filename);
+                    if (file.exists()) {
+                        file.delete();
+                    }
+                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+                    byte[] bitmapdata = bos.toByteArray();
+                    FileOutputStream fos = new FileOutputStream(file);
+                    fos.write(bitmapdata);
+                    fos.flush();
+                    fos.close();
+
+//                    ContentValues values = new ContentValues();
+//                    values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+//                    values.put(MediaStore.Images.Media.DATA, file.getPath());
+//                    values.put(MediaStore.Images.Media.DISPLAY_NAME, stringId + ".jpg");
+//                    ContentResolver cr = MainActivity.this.getContentResolver();
+//                    cr.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+                    Data.getInstance().redrawViews();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    private void refreshEvent() {
+        final EventDAO eventDAO = new EventDAO(this);
+        ArrayList<Event> events = Data.getInstance().getEvents();
+        events.clear();
+        SharedPreferences sharedPreferences = getSharedPreferences(SP_COMPLETED_EVENTS, Context.MODE_PRIVATE);
+        int eventType = sharedPreferences.getInt(SP_COMPLETED_EVENTS_TYPE, EVENTS_UNCOMPLETED);
+        events.addAll(eventDAO.getEventsByGroups(Data.getInstance().getGroups(), eventType));
+        Data.getInstance().setEventType(eventType);
+
+        Data.getInstance().setOnDownloadEventCompleteCallBack(new Data.OnDownloadEventCompleteCallBack() {
+            @Override
+            public void onComplete(ArrayList<Event> events) {
+                eventDAO.removeAll();
+                for (int i = 0; i < events.size(); i++)
+                    eventDAO.insert(events.get(i));
+                ReminderUtils.refreshReminderTable(MainActivity.this);
+            }
+        });
+        Data.getInstance().refreshEventsForCloud();
+    }
+
+    private void initSharePreference() {
+        calendarSharedPreference = getSharedPreferences(SP_CALENDAR_TYPE_NAME, Context.MODE_PRIVATE);
+        calendarType = calendarSharedPreference.getInt(SP_CALENDAR_TYPE, CALENDAR_MONTHLY);
+
+        SharedPreferences themeSharedPreference = getSharedPreferences(SP_THEME, Context.MODE_PRIVATE);
+        Data.getInstance().setThemeColor(themeSharedPreference.getInt(SP_THEME_COLOR, Color.RED));
+    }
+
+    @Override
+    public void onAttachedToWindow() {
+        Data.getInstance().redrawViews();
+        super.onAttachedToWindow();
+    }
+
+    @Override
+    public void onBackPressed() {
+        showLeavePopupWindow();
+    }
+
+    private void showLeavePopupWindow() {
+        View layout = getLayoutInflater().inflate(R.layout.popup_window_delete_event_message, null);
+        Window window = getWindow();
+        final DeleteMessagePopupWindow popupWindow = new DeleteMessagePopupWindow(this, layout, (int) (window.getDecorView().getWidth() * .8f), (int) (window.getDecorView().getHeight() * .2f));
+        popupWindow.showAtLocation(window.getDecorView(), Gravity.CENTER, 0, 0);
+        TextView message = layout.findViewById(R.id.deleteWarningMessage);
+        TextView cancel = layout.findViewById(R.id.deleteCancelBtn);
+        TextView confirm = layout.findViewById(R.id.deleteConfirmBtn);
+        message.setText(R.string.popupWindowLeaveMessage);
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popupWindow.dismiss();
+            }
+        });
+        confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
+
+    private void setToolbar() {
+        Calendar calendar = Calendar.getInstance();
+        String month = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, getResources().getConfiguration().locale);
+        int year = calendar.get(Calendar.YEAR);
+        title.setText(month + ", " + year);
+        if (getResources().getConfiguration().locale.getCountry().equals(Locale.CHINA.getCountry()) ||
+                getResources().getConfiguration().locale.getCountry().equals(Locale.TAIWAN.getCountry()))
+            subTitle.setText(Data.getUserInfo().getName());
+        else
+            subTitle.setText(Data.getUserInfo().getEnglishName());
+
+        toolbar.inflateMenu(R.menu.menu_main_top_toolbar);
+        toolbar.setOnMenuItemClickListener(new ToolbarMenuSearchClickListener());
+    }
+
+    private void setBtnAddEvent() {
+        btnAddEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Data.getInstance().isNetworkAvailable(MainActivity.this)) {
+                    Intent intent = new Intent();
+                    intent.setClass(MainActivity.this, AddEventActivity.class);
+                    if (page == 1) {
+                        intent.putExtra(INTENT_IS_NO_TIME, true);
+                    } else {
+                        Calendar calendar = getCurrentFragmentCursorCalendar();
+                        if (calendar != null) {
+                            intent.putExtra(INTENT_YEAR, calendar.get(Calendar.YEAR));
+                            intent.putExtra(INTENT_MONTH, calendar.get(Calendar.MONTH));
+                            intent.putExtra(INTENT_DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH));
+                        }
+                    }
+                    startActivity(intent);
+                }
+            }
+        });
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void setBottomBar() {
+        bottomBar.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.navigation_calendar:
+                        if (isLongClick) {
+                            isLongClick = false;
+                            break;
+                        }
+                        if (page == FRAGMENT_PAGE_CALENDAR) {
+                            Rollback fragment = getCurrentFragment();
+                            if (fragment != null)
+                                fragment.rollback();
+                        } else
+                            setCalendarType(calendarType);
+                        changeToolMenu(page);
+                        break;
+                    case R.id.navigation_keeps:
+                        page = FRAGMENT_PAGE_KEEP;
+                        showFragment();
+                        changeToolMenu(page);
+                        break;
+                    case R.id.navigation_group:
+                        page = FRAGMENT_PAGE_GROUP;
+                        showFragment();
+                        changeToolMenu(page);
+                        break;
+                    case R.id.navigation_mine:
+                        page = FRAGMENT_PAGE_MINE;
+                        showFragment();
+                        changeToolMenu(page);
+                        break;
+                }
+                bottomBar.moveLabelBar(menuItem.getOrder());
+                return true;
+            }
+        });
+        bottomBar.setOnNavigationItemLongClickListener(new BottomNavigationBar.OnNavigationItemLongClickListener() {
+            @Override
+            public void onNavigationItemLongClickListener(MotionEvent ev) {
+                switch (bottomBar.getPressItem(ev)) {
+                    case 0:
+                        isLongClick = true;
+                        showPopupSwitchCalendarView();
+                        break;
+                }
+            }
+        });
+        setBottomMenuCalendarType(calendarType);
+        bottomBar.getMenu().getItem(4).getIcon().setAlpha(255);
+    }
+
+    private void changeToolMenu(int page) {
+        switch (page) {
+            case 0:
+                toolbar.getMenu().getItem(0).setVisible(true);
+                toolbar.getMenu().getItem(0).setIcon(R.drawable.ic_search_black_24dp);
+                toolbar.getMenu().getItem(0).setTitle(R.string.mainToolbarSearch);
+                setToolbarColor();
+                toolbar.setOnMenuItemClickListener(new ToolbarMenuSearchClickListener());
+                break;
+            case 1:
+                toolbar.getMenu().getItem(0).setVisible(true);
+                toolbar.getMenu().getItem(0).setIcon(R.drawable.ic_search_black_24dp);
+                toolbar.getMenu().getItem(0).setTitle(R.string.mainToolbarSearch);
+                setToolbarColor();
+                toolbar.setOnMenuItemClickListener(new ToolbarMenuNoTimeSearchClickListener());
+                break;
+            case 2:
+                toolbar.getMenu().getItem(0).setVisible(true);
+                toolbar.getMenu().getItem(0).setIcon(R.drawable.ic_dehaze_black_24dp);
+                toolbar.getMenu().getItem(0).setTitle(R.string.mainToolbarSelect);
+                setToolbarColor();
+                toolbar.setOnMenuItemClickListener(new ToolbarMenuGroupSelectClickListener());
+                break;
+            case 3:
+                toolbar.getMenu().getItem(0).setVisible(true);
+                toolbar.getMenu().getItem(0).setIcon(R.drawable.ic_settings_black_24dp);
+                toolbar.getMenu().getItem(0).setTitle(R.string.mainToolbarSetting);
+                setToolbarColor();
+                toolbar.setOnMenuItemClickListener(new ToolbarMenuSettingClickListener());
+                break;
+        }
+    }
+
+    public void setCalendarType(int calendarType) {
+        this.calendarType = calendarType;
+        page = FRAGMENT_PAGE_CALENDAR;
+        bottomBar.moveLabelBar(0);
+        bottomBar.setSelectedItemId(R.id.navigation_calendar);
+        showFragment();
+        setBottomMenuCalendarType(calendarType);
+        switch (calendarType) {
+            case CALENDAR_MONTHLY:
+                setTitle(monthlyTitle);
+                break;
+            case CALENDAR_WEEKLY:
+                setTitle(weeklyTitle);
+                break;
+            case CALENDAR_SUMMARY:
+                setTitle(summaryTitle);
+                break;
+        }
+        calendarSharedPreference.edit().putInt(SP_CALENDAR_TYPE, calendarType).apply();
+    }
+
+    private Calendar getCurrentFragmentCursorCalendar() {
+        switch (calendarType) {
+            case CALENDAR_MONTHLY:
+                return monthFragment.getCalendarCursor();
+            case CALENDAR_WEEKLY:
+                return weeklyFragment.getCalendarCursor();
+            case CALENDAR_SUMMARY:
+                return Calendar.getInstance();
+        }
+        return null;
+    }
+
+    private Rollback getCurrentFragment() {
+        switch (calendarType) {
+            case CALENDAR_MONTHLY:
+                return monthFragment;
+            case CALENDAR_WEEKLY:
+                return weeklyFragment;
+            case CALENDAR_SUMMARY:
+                return summaryFragment;
+        }
+        return null;
+    }
+
+    private void showPopupSwitchCalendarView() {
+        View popupLayout = getLayoutInflater().inflate(R.layout.popup_window_select_calendar_layout, (ViewGroup) findViewById(R.id.main_layout));
+        CalendarPopupWindow popupWindow = new CalendarPopupWindow(this, popupLayout, getWindow().getDecorView().getWidth(), getWindow().getDecorView().getHeight() / 2);
+        popupWindow.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.colorDefaultBackground)));
+        popupWindow.setOutsideTouchable(true);
+        popupWindow.setFocusable(true);
+        popupWindow.showAsDropDown(bottomBar, 0, 0);
+        WindowManager.LayoutParams lp = getWindow().getAttributes();
+        lp.alpha = .5f;
+        getWindow().setAttributes(lp);
+        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                WindowManager.LayoutParams lp = getWindow().getAttributes();
+                lp.alpha = 1f;
+                getWindow().setAttributes(lp);
+            }
+        });
+        popupWindow.setPopupCalendarListType(calendarType);
+        popupWindow.setPopupCalendarListListener(calendarType);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setBottomMenuItemStateColor();
+        setToolbarColor();
+        showFragment();
+    }
+
+    private void setToolbarColor() {
+        title.setTextColor(Data.getInstance().getThemeColor());
+
+        MenuItem item = toolbar.getMenu().getItem(0);
+        Drawable drawable = item.getIcon();
+        drawable.setTint(Data.getInstance().getThemeColor());
+        item.setIcon(drawable);
+    }
+
+    private void setBottomMenuCalendarType(int type) {
+        switch (type) {
+            case CALENDAR_MONTHLY:
+                bottomBar.getMenu().getItem(0).setIcon(R.drawable.drawable_bottom_calendar_monthly);
+                bottomBar.getMenu().getItem(0).setTitle(R.string.calendar_monthly);
+                break;
+            case CALENDAR_WEEKLY:
+                bottomBar.getMenu().getItem(0).setIcon(R.drawable.drawable_bottom_calendar_weekly);
+                bottomBar.getMenu().getItem(0).setTitle(R.string.calendar_weekly);
+                break;
+            case CALENDAR_SUMMARY:
+                bottomBar.getMenu().getItem(0).setIcon(R.drawable.drawable_bottom_calendar_summary);
+                bottomBar.getMenu().getItem(0).setTitle(R.string.calendar_summary);
+                break;
+        }
+    }
+
+    private void setBottomMenuItemStateColor() {
+        bottomBar.setItemIconTintList(createColorStateList(Data.getInstance().getThemeColor(), getResources().getColor(R.color.colorBottomMenuDefault)));
+        bottomBar.setItemTextColor(createColorStateList(Data.getInstance().getThemeColor(), getResources().getColor(R.color.colorBottomMenuDefault)));
+    }
+
+    private ColorStateList createColorStateList(int select, int normal) {
+        int[] colors = new int[]{select, normal};
+        int[][] states = new int[2][];
+        states[0] = new int[]{android.R.attr.state_selected};
+        states[1] = new int[]{};
+        return new ColorStateList(states, colors);
+    }
+
+    private void showFragment() {
+        Fragment fragment;
+        switch (page) {
+            case FRAGMENT_PAGE_CALENDAR:
+            default:
+                switch (calendarType) {
+                    case CALENDAR_MONTHLY:
+                    default:
+                        fragment = monthFragment;
+                        break;
+                    case CALENDAR_WEEKLY:
+                        fragment = weeklyFragment;
+                        break;
+                    case CALENDAR_SUMMARY:
+                        fragment = summaryFragment;
+                        break;
+                }
+                break;
+            case FRAGMENT_PAGE_KEEP:
+                fragment = keepEventFragment;
+                break;
+            case FRAGMENT_PAGE_GROUP:
+                fragment = elseFragment;
+                break;
+            case FRAGMENT_PAGE_MINE:
+                fragment = myInfoFragment;
+                break;
+        }
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        for (int i = 0; i < fragments.size(); i++) {
+            Fragment fg = fragments.get(i);
+            if (fg.equals(fragment))
+                transaction.show(fg);
+            else
+                transaction.hide(fg);
+        }
+        transaction.commit();
+    }
+
+    private void setFragment() {
+        monthFragment = new CalendarMonthFragment();
+        monthFragment.setOnMonthChangeListener(new CalendarMonthFragment.OnMonthChangeListener() {
+
+            @Override
+            public void onMonthChange(Calendar calendar) {
+                setTitle(calendar);
+            }
+        });
+        weeklyFragment = new CalendarWeeklyFragment();
+        weeklyFragment.setOnWeekChangeListener(new CalendarWeeklyFragment.OnWeekChangeListener() {
+            @Override
+            public void onWeekChange(Calendar calendar) {
+                setTitle(calendar);
+            }
+        });
+        summaryFragment = new AgendaViewFragment();
+        summaryFragment.setOnCalendarChangeListener(new AgendaViewFragment.OnCalendarChangeListener() {
+            @Override
+            public void onCalendarChange(Calendar calendar) {
+                setTitle(calendar);
+            }
+        });
+        elseFragment = new CalendarElseFragment();
+        keepEventFragment = new KeepEventFragment();
+        myInfoFragment = new MyInfoFragment();
+
+        fragments.add(weeklyFragment);
+        fragments.add(summaryFragment);
+        fragments.add(elseFragment);
+        fragments.add(monthFragment);
+        fragments.add(keepEventFragment);
+        fragments.add(myInfoFragment);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        for (int i = 0; i < fragments.size(); i++) {
+            transaction.add(R.id.frame, fragments.get(i));
+        }
+        transaction.commit();
+
+        setCalendarType(calendarType);
+    }
+
+    public void setTitle(Calendar calendar) {
+        String month = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, getResources().getConfiguration().locale);
+        int year = calendar.get(Calendar.YEAR);
+        switch (calendarType) {
+            case CALENDAR_MONTHLY:
+                monthlyTitle = calendar;
+                break;
+            case CALENDAR_WEEKLY:
+                weeklyTitle = calendar;
+                break;
+            case CALENDAR_SUMMARY:
+                summaryTitle = calendar;
+                break;
+        }
+        title.setText(month + ", " + year);
+    }
+
+    private void findViews() {
+        bottomBar = findViewById(R.id.bottomBar);
+        btnAddEvent = findViewById(R.id.btnAddEvent);
+        title = findViewById(R.id.toolbarTitle);
+        subTitle = findViewById(R.id.toolbarSubtitle);
+        toolbar = findViewById(R.id.topBar);
+    }
+
+    @Override
+    public void finish() {
+        Data.getInstance().clearRefreshView();
+        super.finish();
+    }
+
+    private class ToolbarMenuNoTimeSearchClickListener implements Toolbar.OnMenuItemClickListener {
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.toolbar_search:
+                    Intent intent = new Intent();
+                    intent.setClass(MainActivity.this, SearchEventActivity.class);
+                    intent.putExtra(INTENT_EVENT_SEARCH_TYPE, INTENT_NO_TIME_EVENT);
+                    startActivity(intent);
+                    return true;
+            }
+            return false;
+        }
+    }
+
+    private class ToolbarMenuSearchClickListener implements Toolbar.OnMenuItemClickListener {
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.toolbar_search:
+                    Intent intent = new Intent();
+                    intent.setClass(MainActivity.this, SearchEventActivity.class);
+                    intent.putExtra(INTENT_EVENT_SEARCH_TYPE, INTENT_NORMAL_EVENT);
+                    startActivity(intent);
+                    return true;
+            }
+            return false;
+        }
+    }
+
+    private class ToolbarMenuSettingClickListener implements Toolbar.OnMenuItemClickListener {
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.toolbar_search:
+                    Intent intent = new Intent();
+                    intent.setClass(getBaseContext(), SettingsActivity.class);
+                    startActivity(intent);
+                    return true;
+            }
+            return false;
+        }
+    }
+
+    private class ToolbarMenuGroupSelectClickListener implements Toolbar.OnMenuItemClickListener {
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.toolbar_search:
+                    Intent intent = new Intent();
+                    intent.setClass(getBaseContext(), GroupManagerActivity.class);
+                    startActivity(intent);
+                    return true;
+            }
+            return false;
+        }
+    }
+}

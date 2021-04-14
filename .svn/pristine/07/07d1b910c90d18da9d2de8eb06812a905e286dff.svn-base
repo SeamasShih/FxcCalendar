@@ -1,0 +1,61 @@
+package com.honhai.foxconn.fxccalendar.keepevent;
+
+import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.honhai.foxconn.fxccalendar.R;
+
+public class KeepEventAdapter extends RecyclerView.Adapter<KeepEventAdapter.MyHolder> {
+    Context context;
+    private String[] string;
+
+    public KeepEventAdapter(){
+
+    }
+
+    public KeepEventAdapter(Context context, String[] string) {
+        this.context = context;
+        this.string = string;
+    }
+
+
+    @NonNull
+    @Override
+    public KeepEventAdapter.MyHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.keep_item_layout, parent, false);
+        MyHolder holder = new MyHolder(view);
+        return holder;
+
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull KeepEventAdapter.MyHolder myHolder, int position) {
+
+    }
+
+    @Override
+    public int getItemCount() {
+        return 10;
+    }
+
+    class MyHolder extends RecyclerView.ViewHolder {
+        LinearLayout keepEventItem;
+        TextView keepEventTitle;
+        ImageView iv;
+
+        public MyHolder(View itemView) {
+            super(itemView);
+            keepEventItem = itemView.findViewById(R.id.keepEventItem);
+            keepEventTitle = itemView.findViewById(R.id.keepEventTitle);
+            iv= itemView.findViewById(R.id.iv_keep);
+        }
+    }
+
+}

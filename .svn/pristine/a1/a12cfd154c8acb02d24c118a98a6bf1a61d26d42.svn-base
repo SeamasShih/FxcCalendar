@@ -1,0 +1,91 @@
+package com.honhai.foxconn.fxccalendar.elsemember;
+
+import android.graphics.drawable.Drawable;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.Switch;
+import android.widget.TextView;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.data.Data;
+
+public class SettingsActivity extends AppCompatActivity {
+
+    private TextView tv_alarm_setting;
+    private TextView tv_settings_title;
+    private TextView tv_color_theme;
+    private TextView tv_label_manager;
+    private ImageButton ib_left_return;
+    private ImageButton ib_right_save;
+    private ImageView iv_modify;
+    private ImageView iv_edit;
+    private ImageView iv_note;
+    private ImageView iv_color_theme;
+    private ImageView iv_label_manage;
+    //private Switch sw_vibrate;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_settings);
+
+        findViews();
+        setViewsColor();
+
+
+    }
+
+    private void findViews() {
+
+        tv_alarm_setting = findViewById(R.id.alarm_setting);
+        tv_settings_title = findViewById(R.id.settings_title);
+        tv_color_theme = findViewById(R.id.tv_color);
+        tv_label_manager = findViewById(R.id.tv_label_manager);
+
+        ib_left_return = findViewById(R.id.left_return);
+        ib_right_save = findViewById(R.id.right_save);
+
+        iv_modify = findViewById(R.id.iv_modify);
+        iv_edit = findViewById(R.id.iv_edit);
+        iv_note = findViewById(R.id.iv_note);
+        iv_color_theme = findViewById(R.id.iv_color_theme);
+        iv_label_manage = findViewById(R.id.iv_label_manage);
+
+        //sw_vibrate = findViewById(R.id.sw_vibrate);
+    }
+
+    private void setViewsColor() {
+        tv_alarm_setting.setTextColor(Data.getInstance().getThemeColor());
+        tv_settings_title.setTextColor(Data.getInstance().getThemeColor());
+        tv_color_theme.setTextColor(Data.getInstance().getThemeColor());
+        tv_label_manager.setTextColor(Data.getInstance().getThemeColor());
+
+        Drawable drawable_left_return = ib_left_return.getDrawable();
+        drawable_left_return.setTint(Data.getInstance().getThemeColor());
+        ib_left_return.setImageDrawable(drawable_left_return);
+
+        Drawable drawable_right_save = ib_right_save.getDrawable();
+        drawable_right_save.setTint(Data.getInstance().getThemeColor());
+        ib_right_save.setImageDrawable(drawable_right_save);
+
+        Drawable drawable_iv_point = iv_modify.getBackground();
+        drawable_iv_point.setTint(Data.getInstance().getThemeColor());
+
+        Drawable drawable_iv_label_manage = iv_label_manage.getBackground();
+        drawable_iv_label_manage.setTint(Data.getInstance().getThemeColor());
+
+        Drawable drawable_iv_label = iv_edit.getBackground();
+        drawable_iv_label.setTint(Data.getInstance().getThemeColor());
+
+        Drawable drawable_iv_color_theme = iv_color_theme.getBackground();
+        drawable_iv_color_theme.setTint(Data.getInstance().getThemeColor());
+
+        Drawable drawable_iv_note = iv_note.getBackground();
+        drawable_iv_note.setTint(Data.getInstance().getThemeColor());
+
+
+
+    }
+}

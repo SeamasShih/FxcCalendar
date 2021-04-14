@@ -1,0 +1,224 @@
+package com.honhai.foxconn.fxccalendar.agenda;
+
+
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.agenda.adapter.AgendaListAdapter;
+import com.honhai.foxconn.fxccalendar.data.Data;
+import com.honhai.foxconn.fxccalendar.data.Event;
+import com.honhai.foxconn.fxccalendar.data.interfaces.RefreshData;
+import com.honhai.foxconn.fxccalendar.data.interfaces.Rollback;
+import com.honhai.foxconn.fxccalendar.search.SearchRecyclerViewAdapter;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
+
+
+public class AgendaViewFragment extends Fragment implements Rollback, RefreshData {
+
+    private View view;
+    public RecyclerView mAgendaListRecyclerView;
+    public AgendaListAdapter mAdapter;
+    public List<Object> objects = new ArrayList<>();
+    public ArrayList<Event> events = new ArrayList<>();
+    private ArrayList<AgendaDayEvent> agendaDayEvents = new ArrayList<>();
+    private ArrayList<DayBanner> banners = new ArrayList<>();
+    private LinearLayoutManager manager;
+    private OnCalendarChangeListener calendarChangeListener;
+
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.fragment_agend_layout, container, false);
+        initRecyclerView();
+        Data.getInstance().addRefreshView(this);
+        initData();
+        return view;
+    }
+
+    private void initRecyclerView() {
+        mAgendaListRecyclerView = view.findViewById(R.id.agendalist_recyclerview);
+        manager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        mAgendaListRecyclerView.setLayoutManager(manager);
+        mAgendaListRecyclerView.addItemDecoration(new MyDecoration());
+        mAgendaListRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                if (calendarChangeListener != null) {
+                    for (DayBanner banner : banners) {
+                        if (manager.findFirstVisibleItemPosition() == banner.position)
+                            calendarChangeListener.onCalendarChange(banner.calendar);
+                    }
+                }
+            }
+        });
+    }
+
+    private void initData() {
+        ArrayList<Event> events = Data.getInstance().getEvents();
+        /*  Event event = new Event("1yyyyyy",1,2,3,0,5,6,7,8,9,10,true,Data.getInstance().getThemeColor(),1,true,1,"","1","1",true,"1");
+         events.add(event);
+         Day mday = new Day(event);
+         AgendaDayEvent  agendaDayEvent = new AgendaDayEvent(getContext(),mday);
+         agendaDayEvent.addEvent(event);
+         agendaDayEvents.add(agendaDayEvent);*/
+        refreshAgendaEventList(events);
+        sortData(agendaDayEvents);
+        mAdapter = new AgendaListAdapter(getActivity(), objects);
+        mAgendaListRecyclerView.setAdapter(mAdapter);
+        mAdapter.notifyDataSetChanged();
+
+
+    }
+
+    private void sortData(ArrayList<AgendaDayEvent> mAgendaDayEvents) {
+        objects.clear();
+        for (AgendaDayEvent mAgendaDayEvent : mAgendaDayEvents) {
+            objects.add(mAgendaDayEvent.getAgendaDay());
+            banners.add(new DayBanner(mAgendaDayEvent.getCalendar(), objects.size() - 1));
+            ArrayList<AgendaDayEvent.AgendaEvent> mAgendaEvents = mAgendaDayEvent.getAgendaEventList();
+            /*if (mAgendaEvents != null && mAgendaEvents.size() > 0) {
+             for (AgendaDayEvent.AgendaEvent mAgendaEvent : mAgendaEvents) {
+             objects.add(mAgendaEvent);
+
+             }*/
+            objects.addAll(mAgendaEvents);
+        }
+
+        //return objects;
+    }
+
+    private void refreshAgendaEventList(ArrayList<Event> events) {
+        agendaDayEvents.clear();
+        for (int i = 0; i < events.size(); i++) {
+            Event event = events.get(i);
+            if (!event.isNoTime() && isEventTimeCorrect(event))
+                createEventDay(event);
+        }
+        Collections.sort(agendaDayEvents);
+    }
+
+    private boolean isEventTimeCorrect(Event event) {
+        Calendar s = Calendar.getInstance();
+        Calendar e = Calendar.getInstance();
+        s.set(event.getStartYear(), event.getStartMonth(), event.getStartDayOfMonth(), event.getStartHour(), event.getStartMinute());
+        e.set(event.getEndYear(), event.getEndMonth(), event.getEndDayOfMonth(), event.getEndHour(), event.getEndMinute());
+        return e.after(s);
+    }
+
+    private void createEventDay(Event event) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(event.getStartYear(), event.getStartMonth(), event.getStartDayOfMonth());
+        for (; !isCalendarEventEndDay(calendar, event); calendar.add(Calendar.DAY_OF_YEAR, 1)) {
+            addEventToAgendaDayEvent(event, calendar);
+        }
+    }
+
+    private void addEventToAgendaDayEvent(Event event, Calendar calendar) {
+        for (int i = 0; i < agendaDayEvents.size(); i++) {
+            AgendaDayEvent agendaDayEvent = agendaDayEvents.get(i);
+            if (agendaDayEvent.getDay().equal(calendar)) {
+                agendaDayEvent.addEvent(event);
+                return;
+            }
+        }
+        AgendaDayEvent agendaDayEvent = new AgendaDayEvent(getContext(), calendar);
+        agendaDayEvent.addEvent(event);
+        agendaDayEvents.add(agendaDayEvent);
+    }
+
+    private boolean isCalendarEventEndDay(Calendar calendar, Event event) {
+        calendar.add(Calendar.DAY_OF_YEAR, -1);
+        boolean r = (calendar.get(Calendar.YEAR) == event.getEndYear() &&
+                calendar.get(Calendar.MONTH) == event.getEndMonth() &&
+                calendar.get(Calendar.DAY_OF_MONTH) == event.getEndDayOfMonth());
+        calendar.add(Calendar.DAY_OF_YEAR, 1);
+        return r;
+    }
+
+
+    @Override
+    public void refresh() {
+        ArrayList<Event> events = Data.getInstance().getEvents();
+        refreshAgendaEventList(events);
+        sortData(agendaDayEvents);
+        mAgendaListRecyclerView.scrollToPosition(getTodayPosition());
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onResume() {
+        mAdapter.notifyDataSetChanged();
+        super.onResume();
+    }
+
+    private int getTodayPosition() {
+        int c;
+        Calendar calendar = Calendar.getInstance();
+        for (int i = 0; i < banners.size(); i++) {
+            DayBanner banner = banners.get(i);
+            c = banner.calendar.compareTo(calendar);
+            if (c >= 0) {
+                if (banner.position > mAgendaListRecyclerView.getChildAdapterPosition(mAgendaListRecyclerView.getChildAt(0)))
+                    return banner.position;
+                else if (i != 0)
+                    return banners.get(i - 1).position;
+                else
+                    return banner.position;
+            }
+        }
+        return 0;
+    }
+
+    public void rollback() {
+        mAgendaListRecyclerView.smoothScrollToPosition(getTodayPosition());
+    }
+
+    public void setOnCalendarChangeListener(OnCalendarChangeListener listener) {
+        calendarChangeListener = listener;
+    }
+
+    private class DayBanner {
+        Calendar calendar;
+        int position;
+
+        DayBanner(Calendar calendar, int position) {
+            this.calendar = calendar;
+            this.position = position;
+        }
+    }
+
+    public interface OnCalendarChangeListener {
+        void onCalendarChange(Calendar calendar);
+    }
+
+    private class MyDecoration extends RecyclerView.ItemDecoration {
+        @Override
+        public void onDraw(@NonNull Canvas canvas, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+            int left = parent.getPaddingLeft();
+            int right = parent.getWidth() - parent.getPaddingRight();
+            int childCount = parent.getChildCount();
+            Paint paint = new Paint();
+            paint.setColor(getResources().getColor(R.color.colorPopupSwitchCalendarDividerLine));
+            for (int i = 0; i < childCount; i++) {
+                View child = parent.getChildAt(i);
+                RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
+                int top = child.getTop() + params.topMargin + Math.round(child.getTranslationY());
+                int bottom = top + 1;
+                canvas.drawRect(left, top, right, bottom, paint);
+            }
+        }
+    }
+}

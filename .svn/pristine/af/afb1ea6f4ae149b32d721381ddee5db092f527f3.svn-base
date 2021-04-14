@@ -1,0 +1,81 @@
+package com.honhai.foxconn.fxccalendar.colormanager;
+
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import com.honhai.foxconn.fxccalendar.R;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ColorManagerActivity extends AppCompatActivity {
+    private List<ColorItem> colorItemList= new ArrayList<ColorItem>();
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_color_manager);
+        initColorItem();
+        ColorAdapter adapter = new ColorAdapter(ColorManagerActivity.this, R.layout.color_item_layout, colorItemList);
+        ListView colorList = findViewById(R.id.lv);
+        colorList.setAdapter(adapter);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        toolbar.setNavigationIcon(R.drawable.ic_backup);
+
+        //TODO
+        //need to return to up page
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            }
+        });
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_toolbar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.confirm) {
+            Toast.makeText(this, "确认保存", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    private void initColorItem() {
+        ColorItem red = new ColorItem(getResources().getString(R.string.stringEventRed), getResources().getColor(R.color.colorEventRed));
+        colorItemList.add(red);
+        ColorItem orange = new ColorItem(getResources().getString(R.string.stringEventOrange), getResources().getColor(R.color.colorEventOrange));
+        colorItemList.add(orange);
+        ColorItem yellow = new ColorItem(getResources().getString(R.string.stringEventYellow), getResources().getColor(R.color.colorEventYellow));
+        colorItemList.add(yellow);
+        ColorItem green = new ColorItem(getResources().getString(R.string.stringEventGreen), getResources().getColor(R.color.colorEventGreen));
+        colorItemList.add(green);
+        ColorItem lightBlue = new ColorItem(getResources().getString(R.string.stringEventLightBlue), getResources().getColor(R.color.colorEventLightBlue));
+        colorItemList.add(lightBlue);
+        ColorItem blue = new ColorItem(getResources().getString(R.string.stringEventBlue), getResources().getColor(R.color.colorEventBlue));
+        colorItemList.add(blue);
+        ColorItem purple = new ColorItem(getResources().getString(R.string.stringEventPurple), getResources().getColor(R.color.colorEventPurple));
+        colorItemList.add(purple);
+        ColorItem wineRed = new ColorItem(getResources().getString(R.string.stringEventWineRed), getResources().getColor(R.color.colorEventWineRed));
+        colorItemList.add(wineRed);
+        ColorItem brown = new ColorItem(getResources().getString(R.string.stringEventBrown), getResources().getColor(R.color.colorEventBrown));
+        colorItemList.add(brown);
+        ColorItem black = new ColorItem(getResources().getString(R.string.stringEventBlack), getResources().getColor(R.color.colorEventBlack));
+        colorItemList.add(black);
+    }
+}

@@ -1,0 +1,77 @@
+package com.honhai.foxconn.fxccalendar.elsemember;
+
+import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.data.Data;
+
+import java.util.List;
+
+public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> {
+    private List<MemberList> mList;
+
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        ImageView groupImage;
+        TextView groupName, groupSignature;
+        View groupView;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            groupView=itemView;
+            groupImage = itemView.findViewById(R.id.imv_avatar);
+            groupName = itemView.findViewById(R.id.tv_group_name);
+            groupSignature = itemView.findViewById(R.id.tv_group_signature);
+
+
+
+        }
+    }
+
+    public GroupAdapter(List<MemberList> memberLists) {
+
+        mList = memberLists;
+    }
+
+    @Override
+    public GroupAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.group_manager_list_item, viewGroup, false);
+        final ViewHolder holder = new ViewHolder(view);
+        holder.groupView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position=holder.getAdapterPosition();
+                MemberList member = mList.get(position);
+                Toast.makeText(v.getContext(),"點擊成功了",Toast.LENGTH_LONG).show();
+            }
+        });
+        //Data.getUserInfo().getWorkId();
+
+        return holder;
+    }
+
+    @Override
+    public void onBindViewHolder(GroupAdapter.ViewHolder viewHolder, int position) {
+        MemberList member = mList.get(position);
+        viewHolder.groupImage.setImageResource(member.getImageID());
+        //Drawable drawable_iv_avatar=viewHolder.groupImage.getDrawable();
+        //drawable_iv_avatar.setTint(Data.getInstance().getThemeColor());
+        viewHolder.groupImage.getDrawable().setTint(Data.getInstance().getThemeColor());
+
+        viewHolder.groupName.setText(member.getName());
+        viewHolder.groupSignature.setText(member.getSignature());
+
+    }
+
+    @Override
+    public int getItemCount() {
+        return mList.size();
+    }
+}

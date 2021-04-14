@@ -1,0 +1,27 @@
+package com.honhai.foxconn.fxccalendar.agenda.adapter;
+
+
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.honhai.foxconn.fxccalendar.R;
+
+public class EventViewHolder extends RecyclerView.ViewHolder {
+    TextView stattime;
+    TextView endtime;
+    TextView title;
+    ImageView color;
+    ImageView user;
+
+    public EventViewHolder (View itemView) {
+        super(itemView);
+        stattime = (TextView) itemView.findViewById(R.id.view_agenda_event_StartTime);
+        endtime = (TextView) itemView.findViewById(R.id.view_agenda_event_EndTime);
+        title = (TextView) itemView.findViewById(R.id.view_agenda_event_title);
+        color = (ImageView) itemView.findViewById(R.id.view_agenda_event_color);
+        user =  (ImageView) itemView.findViewById(R.id.view_agenda_user);
+
+    }
+}

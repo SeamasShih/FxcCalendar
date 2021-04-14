@@ -1,0 +1,117 @@
+package com.honhai.foxconn.fxccalendar.agenda;
+
+import android.content.Context;
+import android.support.annotation.NonNull;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.data.Event;
+import com.honhai.foxconn.fxccalendar.weekly.data.Day;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+
+public class AgendaDayEvent {
+    private static final String LABEL_IN_DAY = "se_";
+    private static final String LABEL_START_DAY = "s_";
+    private static final String LABEL_END_DAY = "e_";
+    private static final String LABEL_ALL_DAY = "a_";
+
+    private Context context;
+    private Day day;
+    private ArrayList<AgendaEvent> arrayList = new ArrayList<>();
+
+    public AgendaDayEvent(Context context, Calendar calendar) {
+        this.context = context;
+        day = new Day(calendar);
+    }
+
+    public AgendaDayEvent(Context context, Day calendar) {
+        this.context = context;
+        day = calendar;
+    }
+
+    public void setDay(Calendar calendar) {
+        day.set(calendar);
+    }
+
+    public void addEvent(Event event) {
+        arrayList.add(new AgendaEvent(event));
+        Collections.sort(arrayList);
+    }
+
+    public ArrayList<AgendaEvent> getAgendaEventList() {
+        return arrayList;
+    }
+
+    public String getAgendaDay() {
+        return (day.year + "." + day.month + "." + day.dayOfMonth);
+    }
+
+
+    public class AgendaEvent implements Comparable<AgendaEvent> {
+        private Event event;
+        private String label;
+
+        AgendaEvent(Event event) {
+            this.event = event;
+            if (day.equal(event.getStartYear(), event.getStartMonth(), event.getStartDayOfMonth()) &&
+                    day.equal(event.getEndYear(), event.getEndMonth(), event.getEndDayOfMonth())) {
+                label = LABEL_IN_DAY;
+            } else if (day.equal(event.getStartYear(), event.getStartMonth(), event.getStartDayOfMonth())) {
+                label = LABEL_START_DAY;
+            } else if (day.equal(event.getEndYear(), event.getEndMonth(), event.getEndDayOfMonth())) {
+                label = LABEL_END_DAY;
+            } else {
+                label = LABEL_ALL_DAY;
+            }
+        }
+
+        public String getTime() {
+            switch (label) {
+                case LABEL_IN_DAY:
+                    return LABEL_IN_DAY +
+                            event.getStartHour() + "-" + event.getStartMinute() + "-" +
+                            event.getEndHour() + "-" + event.getEndMinute();
+                case LABEL_START_DAY:
+                    return LABEL_START_DAY +
+                            event.getStartHour() + "-" + event.getStartMinute() + "-" +
+                            "0-00";
+                case LABEL_END_DAY:
+                    return LABEL_END_DAY +
+                            "0-00" +
+                            event.getEndHour() + "-" + event.getEndMinute();
+                default:
+                    return LABEL_ALL_DAY + context.getString(R.string.calendarWeeklyAllDayText);
+            }
+        }
+
+        @Override
+        public int compareTo(@NonNull AgendaEvent ae) {
+            int mPrior, aPrior;
+            switch (label) {
+                case LABEL_IN_DAY:
+                case LABEL_START_DAY:
+                case LABEL_END_DAY:
+                    mPrior = Integer.valueOf(""+event.getStartHour()+event.getStartMinute()+event.getEndHour()+event.getEndMinute());
+                    break;
+                default:
+                    mPrior = 99999999;
+                    break;
+            }
+            switch (label) {
+                case LABEL_IN_DAY:
+                case LABEL_START_DAY:
+                case LABEL_END_DAY:
+                    aPrior = Integer.valueOf(""+ae.event.getStartHour()+ae.event.getStartMinute()+ae.event.getEndHour()+ae.event.getEndMinute());
+                    break;
+                default:
+                    aPrior = 99999999;
+                    break;
+            }
+            return aPrior - mPrior;
+        }
+    }
+
+}

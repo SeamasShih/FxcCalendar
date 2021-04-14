@@ -1,0 +1,392 @@
+package com.honhai.foxconn.fxccalendar.eventpreview;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.data.Data;
+import com.honhai.foxconn.fxccalendar.data.Event;
+import com.honhai.foxconn.fxccalendar.eventpreview.RecyclerView.GroupItem;
+import com.honhai.foxconn.fxccalendar.eventpreview.RecyclerView.GroupItemClickListener;
+import com.honhai.foxconn.fxccalendar.eventpreview.RecyclerView.GroupItemDecoration;
+import com.honhai.foxconn.fxccalendar.eventpreview.RecyclerView.GroupTestAdapter;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+
+public class MyDialog2 extends Dialog implements ViewPager.OnPageChangeListener{
+
+    private ViewPager mViewPager;
+    private GroupTestAdapter groupTestAdapter;
+    private Data data = Data.getInstance();
+    private List<Event> times = data.getEvents();
+    private List<Event> mevent_0 = new ArrayList<>();
+    private List<Event> mevent_1 = new ArrayList<>();
+    private List<Event> mevent_2 = new ArrayList<>();
+    private List<Event> mevent_3 = new ArrayList<>();
+    private List<Event> mevent_4 = new ArrayList<>();
+    private List<Event> mevent_17 = new ArrayList<>();
+    private List<List> dayEvents;
+    private int currentPage = 0;
+    private List<View> adapterViews;
+    private int[] mdata = {1994,12,19};
+    private int[] monthdata;
+
+    private int cruuent = 0;
+
+
+    int isallday =0;
+    int d1 = 0;
+    int d2 = 0;
+    int d3 = 0;
+    int d4 = 0;
+
+    Event event1 = new Event("1yyyyyy",1,2,3,0,5,6,7,8,9,10,true,1,1,true,1,"","1","1",false,"1");
+    Event event2 = new Event("1yyyyyy",1,2,3,0,5,6,7,8,9,10,true,1,1,true,1,"","1","1",true,"1");
+    Event event3 = new Event("1yyyyyy",1,2,3,0,5,6,7,8,9,10,true,1,1,true,1,"","1","1",true,"1");
+    Event event4 = new Event("1yyyyyy",1,2,3,0,5,6,7,8,9,10,true,1,1,true,1,"","1","1",true,"1");
+    Event event5 = new Event("1yyyyyy",1,2,3,0,5,6,7,8,9,10,true,1,1,true,1,"","1","1",true,"1");
+    Event event6 = new Event("1yyyyyy",1,2,3,0,5,6,7,8,9,10,true,1,1,true,1,"","1","1",true,"1");
+    Event d = new Event("1yyyyyy",1,2,3,0,5,6,7,8,9,10,true,1,1,true,1,"","1","1",true,"1");
+
+
+    public MyDialog2(Context context,int[] data) {
+        //定义Dialog的主题风格
+        super(context, R.style.selfDefDialog2);
+        this.monthdata = data;
+
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getWindow().setWindowAnimations(R.style.popupAnimation);
+
+        mevent_1.add(d);
+        mevent_2.add(d);
+        mevent_1.add(event1);
+        mevent_2.add(event6);
+        mevent_0.add(d);
+        mevent_3.add(event3);
+        mevent_2.add(event2);
+        mevent_3.add(event3);
+        mevent_3.add(event3);
+        mevent_3.add(event3);
+        mevent_4.add(event3);
+        mevent_4.add(event4);
+        mevent_4.add(event5);
+        mevent_4.add(event5);
+        mevent_4.add(event5);
+        mevent_17.add(d);
+        mevent_17.add(d);
+        mevent_17.add(d);
+
+        sort(mevent_2);
+        sort(mevent_3);
+        sort(mevent_4);
+        sort(mevent_1);
+        sort(mevent_0);
+        sort(mevent_17);
+
+        setContentView(R.layout.dialog_layout);
+        mViewPager = findViewById(R.id.viewpager);
+        mViewPager.setAdapter(createAdapter());
+        mViewPager.setPageMargin(40);
+        mViewPager.setOffscreenPageLimit(1);
+        mViewPager.setCurrentItem(Integer.MAX_VALUE/2);
+        mViewPager.setOnPageChangeListener(this);
+    }
+
+    private List<Event> sort(List<Event> time){
+        Collections.sort(time, new Comparator<Event>() {
+        @Override
+        public int compare(Event o1, Event o2) {
+            int f = o1.getStartHour();
+            int b = o2.getStartHour();
+            if (f >= b) {
+                return 1;
+            }else {
+                return -1;
+            }
+        }
+    });
+    return time;
+    }
+
+
+    private String currentTime(int[] str){
+
+        String time = str[0]+"年"+str[1]+"月"+str[2]+"日";
+
+        return time;
+    }
+
+    private PagerAdapter createAdapter() {
+//        Log.e("执行pagerAdapter","kkk");
+//        adapterViews = new ArrayList<>();
+//        for (int i = 0; i < 7; i++) {
+//            if(i == 0){
+//                adapterViews.add(getEventViews(mevent_4));
+//            }else if(i == 1){
+//                adapterViews.add(getEventViews(mevent_0));
+//            }else if(i == 2){
+//                adapterViews.add(getEventViews(mevent_1));
+//        }
+//        else if(i == 3){
+//                adapterViews.add(getEventViews(mevent_0));
+//            }
+//            else if(i == 4){
+//
+//                adapterViews.add(getNoEventViews());
+//            }
+//            else if(i == 5){
+//
+//                adapterViews.add(getNoEventViews());
+//            }
+//            else if(i == 6){
+//
+//                adapterViews.add(getNoEventViews());
+//            }
+//        }
+        return new NoticeAdapter(getContext(),Calendar.getInstance());
+    }
+
+    private void initData(RecyclerView recyclerView, final List<Event> time){
+        groupTestAdapter = new GroupTestAdapter(getContext(),time);
+        recyclerView.setAdapter(groupTestAdapter);
+
+        //开始使用GroupItemDecoration
+        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+        View view = layoutInflater.inflate(R.layout.item_group,null);
+        GroupItemDecoration groupItemDecoration = new GroupItemDecoration(
+                getContext(),
+                view,
+                new GroupItemDecoration.DecorationCallback() {
+            @Override
+            public void setGroup(List<GroupItem> groupList) {
+                //设置分组
+                GroupItem groupItem;
+                for(int i=0;i<time.size();i++){
+                    if(time.get(i).isAllDay()){
+                        groupItem = new GroupItem(0);
+                        if(isallday == 0){
+                            groupItem.setData("name","全天");
+                            groupItem.setData("time","");
+                            groupList.add(groupItem);
+                        isallday = 1;
+                        }
+                    }else if(time.get(i).getStartHour()<6){
+                        if(d1 == 0) {
+                            groupItem = new GroupItem(i);
+                            groupItem.setData("name", "深夜");
+                            groupItem.setData("time", "00:00-05:59");
+                            groupList.add(groupItem);
+                            d1 = 1;
+                        }
+                    }else if(time.get(i).getStartHour()>5 && time.get(i).getStartHour()<12){
+                        if(d2 == 0){
+                        groupItem = new GroupItem(i);
+                        groupItem.setData("name","上午");
+                        groupItem.setData("time","06:00-11:59");
+                        groupList.add(groupItem);
+                        d2 = 1;
+                        }
+                    }else if(time.get(i).getStartHour()>11 && time.get(i).getStartHour()<18){
+                        if(d3 == 0){
+                        groupItem = new GroupItem(i);
+                        groupItem.setData("name","下午");
+                        groupItem.setData("time","12:00-17:59");
+                        groupList.add(groupItem);
+                        d3 = 1;
+                        }
+                    }else if(time.get(i).getStartHour()>17 && time.get(i).getStartHour()<24){
+                        if(d4 == 0) {
+                            groupItem = new GroupItem(i);
+                            groupItem.setData("name", "晚上");
+                            groupItem.setData("time", "18:00-23:59");
+                            groupList.add(groupItem);
+                            d4 = 1;
+                        }
+                    }
+                }
+
+                isallday =0;
+                d1 = 0;
+                d2 = 0;
+                d3 = 0;
+                d4 = 0;
+            }
+
+
+            @Override
+            public void buildGroupView(View groupView, GroupItem groupItem) {
+                //构建GroupView，通过view.findViewById找到内部控件
+                TextView textName = (TextView) groupView.findViewById(R.id.text_name);
+                TextView textName1 = (TextView) groupView.findViewById(R.id.textView2);
+                textName.setText(groupItem.getData("name").toString());
+                textName1.setText(groupItem.getData("time").toString());
+
+                ImageView imageView = (ImageView) groupView.findViewById(R.id.img);
+                if(groupItem.getData("name").equals("11-20")){
+//                    imageView.setImageDrawable(getResources().getDrawable((int)groupItem.getData("imgId")));
+                }else {
+//                    imageView.setImageDrawable(getResources().getDrawable(R.mipmap.ic_launcher));
+                }
+            }
+        });
+        recyclerView.addItemDecoration(groupItemDecoration);
+        recyclerView.addOnItemTouchListener(new GroupItemClickListener(groupItemDecoration,new GroupItemClickListener.OnGroupItemClickListener() {
+            @Override
+            public void onGroupItemClick(GroupItem groupItem) {
+                Toast.makeText(getContext(), "点击了Group:"+groupItem.getData("name"), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onGroupItemLongClick(GroupItem groupItem) {
+                Toast.makeText(getContext(), "长按了Group:"+groupItem.getData("name"), Toast.LENGTH_SHORT).show();
+            }
+        }));
+    }
+
+
+    @Override
+    public void onPageScrolled(int i, float v, int i1) {
+
+    }
+
+    @Override
+    public void onPageSelected(int i) {
+
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
+        switch (state){
+            case ViewPager.SCROLL_STATE_IDLE:
+//                if (mViewPager.getCurrentItem() == 1 || mViewPager.getCurrentItem() == 2 || mViewPager.getCurrentItem() == 3) {
+//                    // 如果位置没有变终止循环
+//                    break;
+//                }
+
+//                adapterViews.set(3,getEventViews(mevent_17));
+//                adapterViews.set(4,getEventViews(mevent_17));
+//               adapterViews.set(0,getEventViews(mevent_17));
+//                adapterViews.set(1,getEventViews(mevent_17));
+//                adapterViews.set(2,getEventViews(mevent_17));
+
+
+//                Log.e("adapterView有几个值",""+adapterViews.size());
+//                if (mViewPager.getCurrentItem() > 3) {
+//                    currentPage++;
+//                    cruuent++;
+//
+//                } else {
+//                    currentPage--;
+//                    cruuent--;
+//
+//                }
+//                Log.e("位置",""+cruuent);
+
+//                System.out.println("--currentPage--11--:" + currentPage);
+//                if (currentPage == 5) {
+//                    currentPage = 0;
+//                }
+//
+//                if (currentPage == -1) {
+//                    currentPage = 4;
+//                }
+//
+//                if (currentPage == 0) {
+//
+//                    adapterViews.set(0,getEventViews(mevent_17));
+//                } else {
+//
+//                    adapterViews.set(0,getEventViews(mevent_17));
+//                }
+//
+//
+//                adapterViews.set(1,getEventViews(mevent_17));
+//
+//                if (currentPage == 4) {
+//
+//                    adapterViews.set(2,getEventViews(mevent_17));
+//                } else {
+//
+//                    adapterViews.set(2,getEventViews(mevent_17));
+//                }
+//                Log.e("是否调整中间值", mViewPager.getCurrentItem() + "看看有没有1");
+//                if(mViewPager.getCurrentItem() == 2){
+//                    adapterViews.set(4,getEventViews(mevent_0));
+//                    Log.e("是否调整中间值", mViewPager.getCurrentItem() + "yes");
+//                }
+//                if(mViewPager.getCurrentItem() == 5){
+//                    adapterViews.set(3,getNoEventViews());
+//                    Log.e("是否调整中间值5", mViewPager.getCurrentItem() + "yes");
+//                }
+//                if(mViewPager.getCurrentItem() == 6) {
+//                    Log.e("getCurrentItem():", mViewPager.getCurrentItem() + "");
+//                    mViewPager.setCurrentItem(3, false);
+//                    Log.e("2getCurrentItem():", mViewPager.getCurrentItem() + "");
+//                }
+//                if(mViewPager.getCurrentItem() == 0) {
+//                    Log.e("zougetCurrentItem():", mViewPager.getCurrentItem() + "");
+//                    mViewPager.setCurrentItem(4, false);
+//                    Log.e("2zougetCurrentItem():", mViewPager.getCurrentItem() + "");
+////                mViewPager.setCurrentItem(1, false);
+//                }
+//                break;
+        }
+    }
+    public View getEventViews(List<Event> time){
+            RecyclerView recyclerView;
+            View view = LayoutInflater.from(getContext()).inflate(R.layout.adapter_view_layout_recycview, null);
+            TextView tvTitle = view.findViewById(R.id.rv_adapter_title);
+            tvTitle.setText(currentTime(mdata));
+            tvTitle.setTextColor(Data.getInstance().getThemeColor());
+            recyclerView = view.findViewById(R.id.recyclerView_2);
+            LinearLayoutManager manager = new LinearLayoutManager(getContext());
+            manager.setOrientation(LinearLayoutManager.VERTICAL);
+            recyclerView.setLayoutManager(manager);
+            initData(recyclerView,time);
+        return view;
+    }
+
+    private View getNoEventViews(){
+
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.adapter_view_layout2,null);
+        TextView tvTitle =  view.findViewById(R.id.tv_adapter_title);
+        tvTitle.setText(currentTime(mdata));
+        tvTitle.setTextColor(Data.getInstance().getThemeColor());
+
+        Button button = view.findViewById(R.id.addEvent);
+        Drawable addevent = getContext().getDrawable(R.drawable.add_event);
+        addevent.setTint(Data.getInstance().getThemeColor());
+        addevent.setAlpha(255);
+        button.setBackground(addevent);
+
+        Drawable drawable2 = getContext().getDrawable(R.drawable.ic_add_black_24dp);
+        ImageView imageView = view.findViewById(R.id.addevent_1);
+        imageView.setImageDrawable(drawable2);
+        drawable2.setTint(Data.getInstance().getThemeColor());
+
+        return view;
+    }
+}

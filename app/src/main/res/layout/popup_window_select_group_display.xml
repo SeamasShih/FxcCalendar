@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/add_event_color_window_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!--<TextView-->
+    <!--android:id="@+id/tv_group_manage_title"-->
+    <!--android:text="@string/settingsManageGroupPopupWindowTitle"-->
+    <!--android:textColor="@color/colorPopupSwitchCalendarText"-->
+    <!--android:gravity="center"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="@dimen/eventItemHeight" />-->
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/addEventColorPopupWindowRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+
+</android.support.constraint.ConstraintLayout>
+

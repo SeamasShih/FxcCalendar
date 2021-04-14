@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.honhai.foxconn.fxccalendar.colormanager.ColorImageView
+        android:id="@+id/imgColor"
+        android:layout_width="25dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="20dp"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <TextView
+        android:id="@+id/tvColorText"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="10dp"
+        android:gravity="center_vertical"
+        android:singleLine="true"
+        app:layout_constraintLeft_toRightOf="@id/imgColor" />
+
+</android.support.constraint.ConstraintLayout>

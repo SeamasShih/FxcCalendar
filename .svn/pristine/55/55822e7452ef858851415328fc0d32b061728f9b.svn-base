@@ -1,0 +1,7 @@
+package com.honhai.foxconn.fxccalendar.main;
+
+import android.support.v4.app.Fragment;
+
+public abstract class CalendarFragment extends Fragment {
+    public abstract void rollback();
+}

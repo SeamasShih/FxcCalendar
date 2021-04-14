@@ -1,0 +1,255 @@
+package com.honhai.foxconn.fxccalendar.eventpreview;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.data.Data;
+import com.honhai.foxconn.fxccalendar.data.Event;
+import com.honhai.foxconn.fxccalendar.eventpreview.RecyclerView.GroupItem;
+import com.honhai.foxconn.fxccalendar.eventpreview.RecyclerView.GroupItemClickListener;
+import com.honhai.foxconn.fxccalendar.eventpreview.RecyclerView.GroupItemDecoration;
+import com.honhai.foxconn.fxccalendar.eventpreview.RecyclerView.GroupTestAdapter;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+
+
+public class MyDialog2 extends Dialog {
+
+    private ViewPager mViewPager;
+    private GroupTestAdapter groupTestAdapter;
+    private Data data = Data.getInstance();
+    private List<Event> time = data.getEvents();
+
+    int isallday =0;
+    int d1 = 0;
+    int d2 = 0;
+    int d3 = 0;
+    int d4 = 0;
+
+    Event event1 = new Event("1yyyyyy",1,2,3,0,5,6,7,8,9,10,true,1,1,true,1,"","1","1",false);
+    Event event2 = new Event("1yyyyyy",1,2,3,0,5,6,7,8,9,10,true,1,1,true,1,"","1","1",true);
+    Event event3 = new Event("1yyyyyy",1,2,3,0,5,6,7,8,9,10,true,1,1,true,1,"","1","1",true);
+    Event event4 = new Event("1yyyyyy",1,2,3,0,5,6,7,8,9,10,true,1,1,true,1,"","1","1",true);
+    Event event5 = new Event("1yyyyyy",1,2,3,0,5,6,7,8,9,10,true,1,1,true,1,"","1","1",true);
+    Event event6 = new Event("1yyyyyy",1,2,3,0,5,6,7,8,9,10,true,1,1,true,1,"","1","1",true);
+    Event d = new Event("1yyyyyy",1,2,3,0,5,6,7,8,9,10,true,1,1,true,1,"","1","1",true);
+
+
+    public MyDialog2( Context context) {
+        //定义Dialog的主题风格
+        super(context, R.style.selfDefDialog2);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getWindow().setWindowAnimations(R.style.popupAnimation);
+
+        time.add(d);
+        time.add(d);
+        time.add(event1);
+        time.add(event6);
+        time.add(d);
+        time.add(event3);
+        time.add(event2);
+        time.add(event3);
+        time.add(event3);
+        time.add(event3);
+        time.add(event3);
+        time.add(event4);
+        time.add(event5);
+        time.add(event5);
+        time.add(event5);
+        time.add(event5);
+        time.add(event5);
+        time.add(event5);
+
+        Collections.sort(time, new Comparator<Event>() {
+            @Override
+            public int compare(Event o1, Event o2) {
+                int f = o1.getStartHour();
+                int b = o2.getStartHour();
+                if (f >= b) {
+                    return 1;
+                }else {
+                    return -1;
+                }
+            }
+        });
+
+        setContentView(R.layout.dialog_layout);
+        mViewPager = findViewById(R.id.viewpager);
+        mViewPager.setAdapter(createAdapter());
+        mViewPager.setPageMargin(40);
+        mViewPager.setOffscreenPageLimit(1);
+        mViewPager.setCurrentItem(1);
+    }
+
+    private PagerAdapter createAdapter() {
+
+        List<View> adapterViews = new ArrayList<>();
+
+        for (int i = 0; i < 4; i++) {
+
+            if(i>0){
+                RecyclerView recyclerView;
+                View view = LayoutInflater.from(getContext()).inflate(R.layout.adapter_view_layout_recycview, null);
+
+                TextView tvTitle = (TextView) view.findViewById(R.id.rv_adapter_title);
+                tvTitle.setText(time.get(i).getStartYear()+"年"+time.get(i).getStartMonth()+"月"+time.get(i).getStartDayOfMonth()+"日");
+                tvTitle.setTextColor(Data.getInstance().getThemeColor());
+
+                recyclerView = view.findViewById(R.id.recyclerView_2);
+                LinearLayoutManager manager = new LinearLayoutManager(getContext());
+                manager.setOrientation(LinearLayoutManager.VERTICAL);
+                Log.e("rvget(i)",String.valueOf(i));
+                recyclerView.setLayoutManager(manager);
+
+                initData(recyclerView);
+                adapterViews.add(view);
+
+            }else{
+                View view = LayoutInflater.from(getContext()).inflate(R.layout.adapter_view_layout2,null);
+                Log.e("get(i)",String.valueOf(i));
+                TextView tvTitle =  view.findViewById(R.id.tv_adapter_title);
+                tvTitle.setText(time.get(i).getStartYear()+"年"+time.get(i).getStartMonth()+"月"+time.get(i).getStartDayOfMonth()+"日");
+                tvTitle.setTextColor(Data.getInstance().getThemeColor());
+
+                Button button = view.findViewById(R.id.addEvent);
+                Drawable addevent = getContext().getDrawable(R.drawable.add_event);
+                addevent.setTint(Data.getInstance().getThemeColor());
+                addevent.setAlpha(255);
+                button.setBackground(addevent);
+
+                Drawable drawable2 = getContext().getDrawable(R.drawable.ic_add_black_24dp);
+                ImageView imageView = view.findViewById(R.id.addevent_1);
+                imageView.setImageDrawable(drawable2);
+                drawable2.setTint(Data.getInstance().getThemeColor());
+
+                adapterViews.add(view);
+            }
+        }
+        return new NoticeAdapter(adapterViews);
+    }
+
+    private void initData(RecyclerView recyclerView){
+        groupTestAdapter = new GroupTestAdapter(getContext(),time);
+        recyclerView.setAdapter(groupTestAdapter);
+
+        //开始使用GroupItemDecoration
+        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+        View view = layoutInflater.inflate(R.layout.item_group,null);
+        GroupItemDecoration groupItemDecoration = new GroupItemDecoration(
+                getContext(),
+                view,
+                new GroupItemDecoration.DecorationCallback() {
+            @Override
+            public void setGroup(List<GroupItem> groupList) {
+                //设置分组
+                GroupItem groupItem;
+                for(int i=0;i<time.size();i++){
+                    if(time.get(i).isAllDay()){
+                        groupItem = new GroupItem(0);
+                        if(isallday == 0){
+                            groupItem.setData("name","全天");
+                            groupItem.setData("time","");
+                            groupList.add(groupItem);
+                        isallday = 1;
+                        }
+                    }else if(time.get(i).getStartHour()<6){
+                        if(d1 == 0) {
+                            groupItem = new GroupItem(i);
+                            groupItem.setData("name", "深夜");
+                            groupItem.setData("time", "00:00-05:59");
+                            groupList.add(groupItem);
+                            d1 = 1;
+                        }
+                    }else if(time.get(i).getStartHour()>5 && time.get(i).getStartHour()<12){
+                        if(d2 == 0){
+                        groupItem = new GroupItem(i);
+                        groupItem.setData("name","上午");
+                        groupItem.setData("time","06:00-11:59");
+                        groupList.add(groupItem);
+                        d2 = 1;
+                        }
+                    }else if(time.get(i).getStartHour()>11 && time.get(i).getStartHour()<18){
+                        if(d3 == 0){
+                        groupItem = new GroupItem(i);
+                        groupItem.setData("name","下午");
+                        groupItem.setData("time","12:00-17:59");
+                        groupList.add(groupItem);
+                        d3 = 1;
+                        }
+                    }else if(time.get(i).getStartHour()>17 && time.get(i).getStartHour()<24){
+                        if(d4 == 0) {
+                            groupItem = new GroupItem(i);
+                            groupItem.setData("name", "晚上");
+                            groupItem.setData("time", "18:00-23:59");
+                            groupList.add(groupItem);
+                            d4 = 1;
+                        }
+                    }
+                }
+
+                isallday =0;
+                d1 = 0;
+                d2 = 0;
+                d3 = 0;
+                d4 = 0;
+            }
+
+
+            @Override
+            public void buildGroupView(View groupView, GroupItem groupItem) {
+                //构建GroupView，通过view.findViewById找到内部控件
+                TextView textName = (TextView) groupView.findViewById(R.id.text_name);
+                TextView textName1 = (TextView) groupView.findViewById(R.id.textView2);
+                textName.setText(groupItem.getData("name").toString());
+                textName1.setText(groupItem.getData("time").toString());
+
+                ImageView imageView = (ImageView) groupView.findViewById(R.id.img);
+                if(groupItem.getData("name").equals("11-20")){
+//                    imageView.setImageDrawable(getResources().getDrawable((int)groupItem.getData("imgId")));
+                }else {
+//                    imageView.setImageDrawable(getResources().getDrawable(R.mipmap.ic_launcher));
+                }
+            }
+        });
+        recyclerView.addItemDecoration(groupItemDecoration);
+        recyclerView.addOnItemTouchListener(new GroupItemClickListener(groupItemDecoration,new GroupItemClickListener.OnGroupItemClickListener() {
+            @Override
+            public void onGroupItemClick(GroupItem groupItem) {
+                Toast.makeText(getContext(), "点击了Group:"+groupItem.getData("name"), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onGroupItemLongClick(GroupItem groupItem) {
+                Toast.makeText(getContext(), "长按了Group:"+groupItem.getData("name"), Toast.LENGTH_SHORT).show();
+            }
+        }));
+    }
+
+
+
+
+
+
+}

@@ -1,0 +1,315 @@
+<resources>
+    <string name="app_name">FxcCalendar</string>
+    <string-array name="weeks">
+        <item>Sun.</item>
+        <item>Mon.</item>
+        <item>Tue.</item>
+        <item>Wed.</item>
+        <item>Thu.</item>
+        <item>Fri.</item>
+        <item>Sat.</item>
+    </string-array>
+    <string-array name="lunar_first_of_month">
+        <item>Jan.</item>
+        <item>Feb.</item>
+        <item>Mar.</item>
+        <item>Apr.</item>
+        <item>May.</item>
+        <item>Jun.</item>
+        <item>Jul.</item>
+        <item>Aug.</item>
+        <item>Sep.</item>
+        <item>Oct.</item>
+        <item>Nov.</item>
+        <item>Dec.</item>
+    </string-array>
+    <string-array name="lunar_str">
+        <item>1st</item>
+        <item>2nd</item>
+        <item>3rd</item>
+        <item>4th</item>
+        <item>5th</item>
+        <item>6th</item>
+        <item>7th</item>
+        <item>8th</item>
+        <item>9th</item>
+        <item>10th</item>
+        <item>11st</item>
+        <item>12nd</item>
+        <item>13rd</item>
+        <item>14th</item>
+        <item>15th</item>
+        <item>16th</item>
+        <item>17th</item>
+        <item>18th</item>
+        <item>19th</item>
+        <item>20th</item>
+        <item>21st</item>
+        <item>22nd</item>
+        <item>23rd</item>
+        <item>24th</item>
+        <item>25th</item>
+        <item>26th</item>
+        <item>27th</item>
+        <item>28th</item>
+        <item>29th</item>
+        <item>30th</item>
+    </string-array>
+    <string name="lovely_red">lovely_red</string>
+    <string name="color">color</string>
+
+    <string name="color_manager">Label Management</string>
+    <string name="alarm_title">Title</string>
+    <string name="what">What do you want to do?</string>
+    <string name="keepEventTitle">Title</string>
+
+    <string name="calendar_monthly">Monthly</string>
+    <string name="calendar_weekly">Weekly</string>
+    <string name="calendar_summary">Summary</string>
+    <string name="keep">Keep</string>
+    <string name="mine">Mine</string>
+    <string name="group">Groups</string>
+    <string name="underline"><u>Forgot your password?</u></string>
+
+    <string name="popupSwitchCalendarTitle">Switch calendar display</string>
+
+    <string name="mainToolbarSearch">Search</string>
+    <string name="mainToolbarSetting">Settings</string>
+
+    <string name="searchToolbarMore">More</string>
+
+    <string name="colorManageToolbarConfirm">Confirm</string>
+
+    <string name="fragmentMineBannerWorkId">Work ID</string>
+    <string name="fragmentMineBannerPassword">Password</string>
+    <string name="fragmentMineBannerName">Name</string>
+    <string name="fragmentMineBannerEnglishName">English Name</string>
+    <string name="fragmentMineBannerLogout">Sign out</string>
+    <string name="popupWindowLogoutMessage">Really sign out?</string>
+
+    <string name="popupWindowLeaveMessage">Really leave this App?</string>
+
+    <string name="stringEventWhite">White</string>
+    <string name="stringEventRed">Red</string>
+    <string name="stringEventOrange">Orange</string>
+    <string name="stringEventYellow">Yellow</string>
+    <string name="stringEventGreen">Green</string>
+    <string name="stringEventLightBlue">Light Blue</string>
+    <string name="stringEventPurple">Purple</string>
+    <string name="stringEventWineRed">Wine Red</string>
+    <string name="stringEventBrown">Brown</string>
+    <string name="stringEventBlack">Black</string>
+    <string name="stringEventBlue">Blue</string>
+
+    <array name="stringColor">
+        <item name="stringEventRed">Red</item>
+        <item name="stringEventOrange">Orange</item>
+        <item name="stringEventYellow">Yellow</item>
+        <item name="stringEventGreen">Green</item>
+        <item name="stringEventLightBlue">Light Blue</item>
+        <item name="stringEventBlue">Blue</item>
+        <item name="stringEventPurple">Purple</item>
+        <item name="stringEventWineRed">Wine Red</item>
+        <item name="stringEventBrown">Brown</item>
+        <item name="stringEventBlack">Black</item>
+    </array>
+
+    <string name="addEventColorPopupWindowTitle">Choose Event Color</string>
+    <string name="addEventColorPopupWindowManage">Manage</string>
+    <string name="addEventColorPopupWindowConfirm">Confirm</string>
+
+    <string name="colorPickerCancel">Cancel</string>
+
+    <string name="title_activity_setting">SettingActivity</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_social_recommendations">Enable social recommendations</string>
+    <string name="pref_description_social_recommendations">Recommendations for people to contact
+        based on your message history
+    </string>
+
+    <string name="pref_title_display_name">Display name</string>
+    <string name="pref_default_display_name">John Smith</string>
+
+    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
+    <string-array name="pref_example_list_titles">
+        <item>Always</item>
+        <item>When possible</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_example_list_values">
+        <item>1</item>
+        <item>0</item>
+        <item>-1</item>
+    </string-array>
+
+    <!-- Example settings for Data & Sync -->
+    <string name="pref_header_data_sync">Data &amp; sync</string>
+
+    <string name="pref_title_sync_frequency">Sync frequency</string>
+    <string-array name="pref_sync_frequency_titles">
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>3 hours</item>
+        <item>6 hours</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_sync_frequency_values">
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>180</item>
+        <item>360</item>
+        <item>-1</item>
+    </string-array>
+
+    <string-array name="list_preference_entries">
+        <item>Entry 1</item>
+        <item>Entry 2</item>
+        <item>Entry 3</item>
+    </string-array>
+
+    <string-array name="list_preference_entry_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+    <string-array name="multi_select_list_preference_default_value" />
+
+    <string name="pref_title_system_sync_settings">System sync settings</string>
+
+    <!-- Example settings for Notifications -->
+    <string name="pref_header_notifications">Notifications</string>
+
+    <string name="pref_title_new_message_notifications">New message notifications</string>
+
+    <string name="pref_title_ringtone">Ringtone</string>
+    <string name="pref_ringtone_silent">Silent</string>
+
+    <string name="pref_title_vibrate">Vibrate</string>
+
+    <string name="register">Login</string>
+    <string name="number">Please enter the work number</string>
+    <string name="password">8 ~ 32 character password</string>
+    <string name="forgetpassword">Forget the password?</string>
+    <string name="rememberPassword">Remember the password</string>
+    <string name="login">Sign in</string>
+    <string name="creatOne">If you do not have an account,create one.</string>
+    <string name="reset">Register Account</string>
+    <string name="emailAddress">Email Address</string>
+    <string name="urlAddress">We have not a password reset email to the above address.</string>
+    <string name="send">Send Email</string>
+    <string name="registerAccount">Register Account</string>
+    <string name="jobNumber">Please enter the work number</string>
+    <string name="confirm">Please confirm the password again</string>
+    <string name="ChineseName">Please enter your Chinese name</string>
+    <string name="englishName">Please enter your English name</string>
+    <string name="creatAccount">Create Account</string>
+    <string name="alreadyAccount">If you already have an account,sign in</string>
+    <string name="WrongAccount">Wrong job number or password, please login again！！！</string>
+    <string name="RegisterSuccess">Register success</string>
+    <string name="registrfailed">Register failed</string>
+
+    <string name="account_empty">"Job number can't be empty!"</string>
+    <string name="pwd_empty">"Password can't be empty!"</string>
+    <string name="pwd_check_empty">Check password</string>
+    <string name="ResetChin_empty">Chinese name can not be empty!</string>
+    <string name="ResetEng_empty">English name can not be empty!</string>
+    <string name="Psaaword_same">Password confirm is different.</string>
+
+    <string name="calendarWeeklyAllDayText">All-day</string>
+    <string name="calendarWeeklyHolidayText">Holiday</string>
+    <string name="calendarWeeklyObservedText">Observed</string>
+    <string name="calendarWeeklyWorkdayText">Workday</string>
+
+    <string name="tvLunarText">Complete </string>
+    <string name="alarm_color">Default Color</string>
+    <string name="alarm_remind">Before 15 Minute</string>
+    <string name="alarm_vibrate">Keep an event without a date</string>
+    <string name="alarm_tone_Path">URL</string>
+    <string name="alarm_local">Location </string>
+    <string name="alarm_replay">Not Repeating</string>
+    <string name="alarm_description">Note</string>
+
+
+    <string name="stringHolidayObserved">Observed</string>
+    <string name="stringHolidayHoliday">Holiday</string>
+    <string name="stringHolidayWorkday">Workday</string>
+    <string name="stringHolidayNewYearsDay">"New Year's Day"</string>
+    <string name="stringHolidayChineseNewYearsEve">"Chinese New Year's Eve"</string>
+    <string name="stringHolidayChineseNewYear">"Chinese New Year"</string>
+    <string name="stringHoliday228PeaceMemorialDay">"228 Peace Memorial Day"</string>
+    <string name="stringHolidayChingMingFestival">"Ching Ming Festival"</string>
+    <string name="stringHolidayChildrensDay">"Children's day"</string>
+    <string name="stringHolidayDragonBoatFestival">"Dragon Boat Festival"</string>
+    <string name="stringHolidayMoonFestival">"Moon Festival"</string>
+    <string name="stringHolidayNationalDay">"National Day"</string>
+    <string name="stringHolidayLaborDay">"Labor day"</string>
+
+    <string name="addEventTitleCantBeEmpty">"Title can't be empty!"</string>
+    <string name="addEventTimeIsInvalid">"End time is earlier than start time!"</string>
+    <string name="addEventDeleteMessage">Do you really delete this event?</string>
+    <string name="addEventDeleteYesText">Yes</string>
+    <string name="addEventDeleteNoText">No</string>
+
+
+    <string name="noKeepEvent">Events with undecided time.</string>
+    <string name="am">a.m.</string>
+    <string name="pm">p.m.</string>
+
+    <string name="searchEditTextHint">Keywords…</string>
+    <string name="searchEventNumberString">events</string>
+
+    <string name="saveConfirm">Saved success!</string>
+    <string name="group_member">Member List</string>
+    <string name="emailAdess">Please enter the correct email address</string>
+
+    <string name="stringToday">Today</string>
+    <string name="Calendar_Settings">Calendar Settings</string>
+    <string name="Default_Color">Default Color</string>
+    <string name="Theme_Color">Theme Color</string>
+    <string name="Modify">Modify</string>
+    <string name="Color_Label_Management">Color Label Management</string>
+    <string name="Lable_Edit">Lable Edit</string>
+    <string name="Edit">Edit</string>
+
+    <string name="NoEvents">No Events</string>
+    <string name="Allday">All-day</string>
+    <string name="Evening">Evening</string>
+    <string name="Night">Night</string>
+    <string name="Morning">Morning</string>
+    <string name="Afternoon">Afternoon</string>
+    <string name="Completed_Events_Show">Whether to display completed events</string>
+    <string name="completed_events">Completed Events</string>
+    <string name="Select">Select</string>
+
+    <string name="noNetworkService">Network is unavailable.</string>
+<array name="stringRemind">
+    <item name="reminderNone">No reminder.</item>
+    <item name="reminderOnTime">On time of event.</item>
+    <item name="reminderFifteenBefore">15 min before.</item>
+    <item name="reminderOneHourBefore">1 hour before.</item>
+    <item name="reminderOneDayBefore">1 day before.</item>
+</array>
+
+
+    <string name="change_personal_information">Modify Personal Information</string>
+    <string name="new_pwd">Modify Password</string>
+    <string name="affirm_pwd">Confirm Password</string>
+    <string name="change_Chaname">Modify Chinese Name</string>
+    <string name="change_Engname">Modify English name</string>
+    <string name="modify_information"> Modify Information</string>
+    <string name="change_details">Change Personal Details</string>
+
+    <string name="completeEventEditRemindText">Complete event is uneditable</string>
+
+    <string name="toolbarSelectPhotoTitle">Select a photo to update.</string>
+    <string name="neverSelectPhoto">Select a photo</string>
+</resources>

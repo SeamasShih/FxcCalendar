@@ -1,0 +1,262 @@
+package com.honhai.foxconn.fxccalendar.eventpreview;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.addevent.AddEventActivity;
+import com.honhai.foxconn.fxccalendar.data.Data;
+import com.honhai.foxconn.fxccalendar.data.Event;
+import com.honhai.foxconn.fxccalendar.eventpreview.RecyclerView.GroupItem;
+import com.honhai.foxconn.fxccalendar.eventpreview.RecyclerView.GroupItemClickListener;
+import com.honhai.foxconn.fxccalendar.eventpreview.RecyclerView.GroupItemDecoration;
+import com.honhai.foxconn.fxccalendar.eventpreview.RecyclerView.GroupTestAdapter;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import static com.honhai.foxconn.fxccalendar.main.MainActivity.INTENT_EVENT;
+import static com.honhai.foxconn.fxccalendar.main.MainActivity.INTENT_IS_NO_TIME;
+
+
+public class MyDialog2 extends Dialog{
+
+    private ViewPager mViewPager;
+    private ImageView littleAddButton;
+    private Button bigAddButton;
+    private int[] monthdata;
+    private Calendar calendar = Calendar.getInstance();
+    private ArrayList<Event> times ;//获取所有事件
+    private ArrayList<Event> eventsOfDay2 ;//初始化数据
+    private Context context;
+
+    private String title;
+    private int startYear;
+    private int startMonth;
+    private int startDayOfMonth;
+    private int startHour;
+    private int startMinute;
+    private int endYear;
+    private int endMonth;
+    private int endDayOfMonth;
+    private int endHour;
+    private int endMinute;
+    private boolean isAllDay;
+    private int color;
+    private int repeat;
+    private boolean isChinese;
+    private int groupId;
+    private String note;
+    private String map;
+    private String url;
+    private boolean isNoTime;
+    private String objectId;
+
+    public MyDialog2(Context context,int[] data) {
+        //定义Dialog的主题风格
+        super(context, R.style.selfDefDialog2);
+        this.context = context;
+        this.monthdata = data;
+
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getWindow().setWindowAnimations(R.style.popupAnimation);
+
+        Event textEvent = new Event("textEvent",2018,11,28,22,22,2019,0,02,22,22,false,2,1,true,1,"cesgi","ss","sss",false,"ss");
+        Event textEvent2 = new Event("textEvent2",2018,11,28,22,22,2018,11,28,22,23,false,2,1,true,1,"cesgi","ss","ssss",false,"ss");
+        Event textEvent3 = new Event("textEvent3",2018,11,28,22,22,2019,0,02,22,22,false,2,1,true,1,"cesgi","ss","sss",false,"ss");
+
+        textEvent3.setStartHour(17);
+        Data.getInstance().getEvents().add(textEvent);
+        Data.getInstance().getEvents().add(textEvent2);
+        Data.getInstance().getEvents().add(textEvent3);
+        times = Data.getInstance().getEvents();//获取所有事件
+        eventsOfDay2 = initEvents(times);//初始化数据
+
+        setContentView(R.layout.dialog_layout);
+        mViewPager = findViewById(R.id.viewpager);
+        mViewPager.setAdapter(createAdapter());
+        mViewPager.setPageMargin(40);
+        mViewPager.setOffscreenPageLimit(1);
+        mViewPager.setCurrentItem(Integer.MAX_VALUE/2);
+
+//        View view = View.inflate(context,R.layout.dialog_layout,null);
+//        view.findViewById(R.id.little_add).setOnClickListener(new ImageView.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.e("點擊事件觸發",""+111111111);
+//            }
+//        });
+
+    }
+
+    private PagerAdapter createAdapter() {
+        calendar.set(monthdata[0],monthdata[1],monthdata[2]);
+        NoticeAdapter noticeAdapter = new NoticeAdapter(getContext(),calendar);
+        noticeAdapter.getEventOfDay(eventsOfDay2);
+        return noticeAdapter;
+    }
+
+    public ArrayList<Event> initEvents(ArrayList<Event> events) {
+        ArrayList<Event> myevents = new ArrayList<>();
+ Event event;
+//                = new Event("1",2018,12,18,22,22,2018,12,22,22,22,false,112,111,false,231,"cesgs2i","2sss","2sssss",false,"ssss");
+        int number ;
+        Calendar start = Calendar.getInstance();
+        Calendar end = Calendar.getInstance();
+
+        for(int i=0; i<events.size(); i++){
+
+
+            geteventNews(events.get(i));
+            start.set(events.get(i).getStartYear(),events.get(i).getStartMonth(),events.get(i).getStartDayOfMonth());
+            end.set(events.get(i).getEndYear(),events.get(i).getEndMonth(),events.get(i).getEndDayOfMonth());
+            if(!end.equals(start)){
+                long sd = start.getTime().getTime();
+                long ed = end.getTime().getTime();
+                number = Integer.parseInt(String.valueOf((ed - sd)/(1000*60*60*24)));//获取相差天数
+
+                Log.e("差了多少天",""+number);
+                for(int n = 0; n<(number+1); n++){
+
+
+                    if(n == 0){
+                                             event = getevent();
+                        //   Event event = new Event("1",2018,12,18,22,22,2018,12,22,22,22,false,1112,1111,false,2331,"cessgs2i","2ssss","2ssssss",false,"sssss");
+                        event.setEndYear(events.get(i).getStartYear());
+                        event.setEndMonth(events.get(i).getStartMonth());
+                        event.setEndDayOfMonth(events.get(i).getStartDayOfMonth());
+                        event.setEndHour(0);
+                        event.setEndMinute(0);
+                        myevents.add(event);
+                        Log.e("第0天的时间",":"+myevents.get(0).getStartYear()+myevents.get(0).getStartHour());
+                        Log.e("第0天的时间是否为全天",":"+myevents.get(0).isAllDay());
+                    }else if( n == (number)){
+                                             event = getevent();
+                        //   Event event = new Event("1",2018,12,18,22,22,2018,12,22,22,22,false,1812,1181,false,2381,"cesgls2i","2lsss","2ssslss",false,"slsss");
+                        event.setStartYear(events.get(i).getEndYear());
+                        event.setStartMonth(events.get(i).getEndMonth());
+                        event.setStartDayOfMonth(events.get(i).getEndDayOfMonth());
+                        event.setStartHour(0);
+                        event.setStartMinute(0);
+                        myevents.add(event);
+                        Log.e("最后一天的时间",":"+event.getStartYear()+event.getStartHour());
+                        Log.e("最后一天的时间是否为全天",":"+event.isAllDay());
+                    }else if(n>0 && n<number){
+                                              event = getevent();
+                        // Event event = new Event("1",2018,12,18,22,22,2018,12,22,22,22,false,5112,5111,false,2531,"coesgs2i","2ssos","2osssss",false,"ssoss");
+                        start.add(Calendar.DAY_OF_YEAR, 1);
+                        int msyear = start.get(Calendar.YEAR);
+                        int msmonth = start.get(Calendar.MONTH);
+                        int msday = start.get(Calendar.DAY_OF_MONTH);
+                        event.setStartYear(msyear);
+                        event.setStartMonth(msmonth);
+                        event.setStartDayOfMonth(msday);
+                        event.setStartHour(0);
+                        event.setStartMinute(0);
+                        event.setEndYear(msyear);
+                        event.setEndMonth(msmonth);
+                        event.setEndDayOfMonth(msday);
+                        event.setEndHour(0);
+                        event.setEndMinute(0);
+                        event.setAllDay(true);
+                        myevents.add(event);
+                    }
+
+                }
+            }
+        }
+
+        for(int i=0; i<events.size(); i++){
+
+            start.set(events.get(i).getStartYear(),events.get(i).getStartMonth(),events.get(i).getStartDayOfMonth());
+            end.set(events.get(i).getEndYear(),events.get(i).getEndMonth(),events.get(i).getEndDayOfMonth());
+            Log.e("开始与结束时间",""+start.get(Calendar.YEAR)+(start.get(Calendar.MONTH)+1)+";"+end.get(Calendar.YEAR)+(end.get(Calendar.MONTH)+1));
+            if(!end.equals(start)){
+                events.remove(i);
+            }
+        }
+        events.addAll(myevents);
+        return events;
+    }
+
+    //使用前必須要用geteventNews方法初始化數據
+    public Event getevent() {
+
+        Event event1 = new Event(title,startYear,startMonth,
+                startDayOfMonth,startHour,startMinute,
+                endYear,endMonth,endDayOfMonth,endHour,
+                endMinute,isAllDay,color,repeat,isChinese,
+                groupId,note,map,url,isNoTime,objectId);
+//        event.setTitle(title);
+//        event.setStartYear(startYear);
+//        event.setStartMonth(startMonth);
+//        event.setStartDayOfMonth(startDayOfMonth);
+//        event.setStartHour(startHour);
+//        event.setStartMinute(startMinute);
+//         event.setEndYear(endYear);
+//        event.setEndMonth(endMonth);
+//        event.setEndDayOfMonth(endDayOfMonth);
+//        event.setEndHour(endHour);
+//        event.setEndMinute(endMinute);
+//        event.setAllDay(isAllDay);
+//        event.setColor(color);
+//        event.setRepeat(repeat);
+//        event.setChinese(isChinese);
+//        event.setGroupId(groupId);
+//        event.setNote(note);
+//        event.setMap(map);
+//        event.setUrl(url);
+//        event.setNoTime(isNoTime);
+//        event.setObjectId(objectId);
+
+        return event1;
+    }
+
+    public void geteventNews(Event event){
+        this.title = event.getTitle();
+        this.startYear = event.getStartYear();
+        this.startMonth = event.getStartMonth();
+        this.startDayOfMonth = event.getStartDayOfMonth();
+        this.startHour = event.getStartHour();
+        this.startMinute = event.getStartMinute();
+        this.endYear = event.getEndYear();
+        this.endMonth = event.getEndMonth();
+        this.endDayOfMonth = event.getEndDayOfMonth();
+        this.endHour = event.getEndHour();
+        this.endMinute = event.getEndMinute();
+        this.isAllDay = event.isAllDay();
+        this.color = event.getColor();
+        this.repeat = event.getRepeat();
+        this.isChinese = event.isChinese();
+        this.groupId = event.getGroupId();
+        this.note = event.getNote();
+        this.map = event.getMap();
+        this.url = event.getUrl();
+        this.isNoTime = event.isNoTime();
+        this.objectId = event.getObjectId();
+
+    }
+
+
+}

@@ -1,0 +1,39 @@
+package com.honhai.foxconn.fxccalendar.agenda;
+
+import android.content.Context;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.util.AttributeSet;
+import android.view.LayoutInflater;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.weekly.adapter.WeeklyViewPagerAdapter;
+
+public class AgendaViewFragment extends Fragment {
+
+    /**
+     * 显示日程的 ListView
+     */
+    public AgendaListView mAgendaListView;
+
+    // region Constructors
+
+
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View layout = inflater.inflate(R.layout.fragment_agend_layout, container, false);
+        //mAgendaListView = (AgendaListView) findViewById(R.id.agenda_listview);
+        return layout;
+    }
+
+    /**
+     * 得到 AgendaView 下的日程 View AgendaListView
+     */
+    public AgendaListView getAgendaListView() {
+        return mAgendaListView;
+    }
+}

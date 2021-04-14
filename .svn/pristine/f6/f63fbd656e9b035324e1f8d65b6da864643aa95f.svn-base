@@ -1,0 +1,201 @@
+package com.honhai.foxconn.fxccalendar.login;
+
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Paint;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import static android.view.View.OnClickListener;
+
+import android.text.Editable;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
+import android.preference.PreferenceManager;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.data.Data;
+import com.honhai.foxconn.fxccalendar.data.User;
+import com.honhai.foxconn.fxccalendar.main.MainActivity;
+
+import java.util.ArrayList;
+
+public class Register extends AppCompatActivity {
+
+    private Button bt_register;
+    private Button bt_button1;
+    private Button bt_fPwd;
+    private EditText et_pwd = null;
+    private EditText et_name = null;
+    private CheckBox cb_ischeck;
+    private Button pwd_clear;
+    private Button pwd_eye;
+    private Button name_clear;
+    private boolean isOpen = false;
+    private SharedPreferences pref;
+    private SharedPreferences.Editor editor;
+    Data data;
+    boolean isLogin;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.register_login_ui_layout);
+        data = Data.getInstance();
+        data.refreshUsersForCloud();
+        //初始化实例
+        pref = PreferenceManager.getDefaultSharedPreferences(this);
+        et_name = (EditText) findViewById(R.id.et_userName);
+        et_pwd = (EditText) findViewById(R.id.et_passWord);
+        bt_fPwd = (Button) findViewById(R.id.bt_forgetPassword);
+        bt_button1 = (Button) findViewById(R.id.bt_button);
+        bt_register = (Button) findViewById(R.id.bt_register);
+        cb_ischeck = (CheckBox) findViewById(R.id.cb_ischeck);
+        pwd_clear = (Button) findViewById(R.id.bt_pwd_clear);
+        pwd_eye = (Button) findViewById(R.id.bt_pwd_eye);
+        name_clear = (Button) findViewById(R.id.bt_name_clear);
+        boolean isRemenber = pref.getBoolean("remember_password", false);
+        if (isRemenber) {
+            //将账号和密码都设置到文本中
+            String account = pref.getString("account", "");
+            String password = pref.getString("password", "");
+            et_name.setText(account);
+            et_pwd.setText(password);
+            cb_ischeck.setChecked(true);
+        }
+        //底部添加横线
+        bt_fPwd.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
+
+        //判断清除文本框里面的内容
+        et_name.addTextChangedListener(new TextWatcher() { // 监听文本框内容变化
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {// 获得文本框中的用户
+                String user = et_name.getText().toString().trim();
+                if ("".equals(user)) {// 用户名为空,设置按钮不可见
+                    name_clear.setVisibility(View.INVISIBLE);
+                } else {            // 用户名不为空，设置按钮可见
+                    name_clear.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+        et_pwd.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {    // 获得文本框中的用户密码
+                String pwd = et_pwd.getText().toString().trim();
+                if ("".equals(pwd)) {    // 用户名为空,设置按钮不可见
+                    pwd_clear.setVisibility(View.INVISIBLE);
+                } else {             // 用户名不为空，设置按钮可见
+                    pwd_clear.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        bt_register.setOnClickListener(new MyClickListener());
+        bt_fPwd.setOnClickListener(new MyClickListener());
+        bt_button1.setOnClickListener(new MyClickListener());
+        pwd_clear.setOnClickListener(new MyClickListener());
+        pwd_eye.setOnClickListener(new MyClickListener());
+        name_clear.setOnClickListener(new MyClickListener());
+    }
+
+    private class MyClickListener implements OnClickListener {
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.bt_button:
+                    String name = et_name.getText().toString().trim();
+                    String pwd = et_pwd.getText().toString().trim();
+                    if (TextUtils.isEmpty(name) || TextUtils.isEmpty(pwd)) {
+                        Toast.makeText(Register.this, "工号和密码不能为空！！", Toast.LENGTH_SHORT).show();
+                    } else {
+                        isLogin =false;
+                        ArrayList<User> myal = data.getUsers();
+                        for (int i = 0; i < myal.size(); i++) {
+                            String WorkId = data.getUsers().get(i).getWorkId();
+                            String password = data.getUsers().get(i).getPassword();
+                            if (et_name.getText().toString().equals(WorkId) && et_pwd.getText().toString().equals(password)) {
+                                editor = pref.edit();
+                                if (cb_ischeck.isChecked()) {
+                                    editor.putBoolean("remember_password", true);
+                                    editor.putString("account", name);
+                                    editor.putString("password", pwd);
+                                } else {
+                                    editor.clear();
+                                }
+                                editor.apply();
+                                finish();
+                                Intent intent = new Intent(Register.this, MainActivity.class);
+                                startActivity(intent);
+                                isLogin =true;
+                            }
+                        }
+                        if(!isLogin){
+                            accountError();
+                        }
+                    }
+                    break;
+                case R.id.bt_forgetPassword:
+                    Intent i = new Intent(Register.this, Resetpassword.class);
+                    startActivity(i);
+                    break;
+                case R.id.bt_register:
+                    Intent i1 = new Intent(Register.this, Registernumber.class);
+                    startActivity(i1);
+                    break;
+                case R.id.bt_name_clear:
+                    // 清除登录名
+                    et_name.setText("");
+                    break;
+                case R.id.bt_pwd_clear:
+                    et_pwd.setText("");
+                    break;
+                case R.id.bt_pwd_eye:
+                    if (isOpen) { // 密码可见与不可见的切换
+                        isOpen = false;
+                    } else {
+                        isOpen = true;
+                    }      // 默认isOpen是false,密码不可见
+                    changePwdOpenOrClose(isOpen);
+
+                    break;
+                default:
+            }
+        }
+    }
+
+    private void changePwdOpenOrClose(boolean flag) {
+        if (flag) {   // 第一次过来是false，密码不可见
+            pwd_eye.setBackgroundResource(R.drawable.ic_visibility_black_24dp);// 密码可见
+            et_pwd.setTransformationMethod(HideReturnsTransformationMethod.getInstance());// 设置EditText的密码可见
+        } else {   // 密码不可见
+            pwd_eye.setBackgroundResource(R.drawable.ic_visibility_off_black_24dp);
+            et_pwd.setTransformationMethod(PasswordTransformationMethod.getInstance()); // 设置EditText的密码隐藏
+        }
+    }
+    private void accountError(){
+        Toast.makeText(Register.this, "工号或密码错误，请重新登录！！！", Toast.LENGTH_SHORT).show();
+    }
+}
+

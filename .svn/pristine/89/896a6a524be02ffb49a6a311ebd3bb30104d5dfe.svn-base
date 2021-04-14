@@ -1,0 +1,125 @@
+package com.honhai.foxconn.fxccalendar.mine;
+
+import android.content.Intent;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.support.annotation.ColorInt;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.data.Data;
+import com.honhai.foxconn.fxccalendar.data.User;
+import com.honhai.foxconn.fxccalendar.main.MainActivity;
+import com.honhai.foxconn.fxccalendar.welcome.WelcomeActivity;
+
+import java.lang.reflect.Field;
+
+public class MyInfoFragment extends Fragment {
+    private View workId, password, name, englishName, logout;
+    private EditText edtWorkId, edtPassword, edtName, edtEnglishName;
+    private View icLogout;
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View layout = inflater.inflate(R.layout.fragment_mine_layout, container, false);
+        findViews(layout);
+        setMineInfo(Data.getUserInfo());
+        setOnClickListener();
+        return layout;
+    }
+
+    @Override
+    public void onResume() {
+        setThemeColor();
+        super.onResume();
+    }
+
+    private void setThemeColor() {
+        icLogout.getBackground().setTint(Data.getInstance().getThemeColor());
+        setCursorColor(edtWorkId, Data.getInstance().getThemeColor());
+        setCursorColor(edtPassword, Data.getInstance().getThemeColor());
+        setCursorColor(edtName, Data.getInstance().getThemeColor());
+        setCursorColor(edtEnglishName, Data.getInstance().getThemeColor());
+    }
+
+    public void setCursorColor(EditText view, @ColorInt int color) {
+        try {
+            // Get the cursor resource id
+            Field field = TextView.class.getDeclaredField("mCursorDrawableRes");
+            field.setAccessible(true);
+            int drawableResId = field.getInt(view);
+
+            // Get the editor
+            field = TextView.class.getDeclaredField("mEditor");
+            field.setAccessible(true);
+            Object editor = field.get(view);
+
+            // Get the drawable and set a color filter
+            Drawable drawable = ContextCompat.getDrawable(view.getContext(), drawableResId);
+            drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+            Drawable[] drawables = {drawable, drawable};
+
+            // Set the drawables
+            field = editor.getClass().getDeclaredField("mCursorDrawable");
+            field.setAccessible(true);
+            field.set(editor, drawables);
+        } catch (Exception ignored) {
+        }
+    }
+
+    private void setOnClickListener() {
+        edtWorkId.setFocusable(false);
+        edtWorkId.setClickable(false);
+        edtPassword.setFocusable(false);
+        edtPassword.setClickable(false);
+        edtName.setFocusable(false);
+        edtName.setClickable(false);
+        edtEnglishName.setFocusable(false);
+        edtEnglishName.setClickable(false);
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setClass(getContext(), WelcomeActivity.class);
+                getContext().startActivity(intent);
+                ((MainActivity) getContext()).finish();
+            }
+        });
+    }
+
+
+    private void setMineInfo(User userInfo) {
+        edtWorkId.setText(userInfo.getWorkId());
+        edtPassword.setText(userInfo.getPassword());
+        edtName.setText(userInfo.getName());
+        edtEnglishName.setText(userInfo.getEnglishName());
+    }
+
+    private void findViews(View layout) {
+        workId = layout.findViewById(R.id.work_id);
+        edtWorkId = layout.findViewById(R.id.work_id_info);
+
+        password = layout.findViewById(R.id.password);
+        edtPassword = layout.findViewById(R.id.password_info);
+
+        name = layout.findViewById(R.id.name);
+        edtName = layout.findViewById(R.id.name_info);
+
+        englishName = layout.findViewById(R.id.english_name);
+        edtEnglishName = layout.findViewById(R.id.english_name_info);
+
+        icLogout = layout.findViewById(R.id.logout_icon);
+        logout = layout.findViewById(R.id.logout);
+    }
+
+}

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/view_agenda_event_StartTime"
+        android:layout_width="50dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="20dp"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:textSize="15sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/view_agenda_event_color"
+        app:layout_constraintBottom_toTopOf="@id/view_agenda_event_EndTime"/>
+
+    <TextView
+        android:id="@+id/view_agenda_event_EndTime"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:textColor="@android:color/darker_gray"
+        android:gravity="center"
+        android:textSize="15sp"
+        app:layout_constraintLeft_toLeftOf="@id/view_agenda_event_StartTime"
+        app:layout_constraintTop_toBottomOf="@id/view_agenda_event_StartTime"
+        app:layout_constraintRight_toRightOf="@id/view_agenda_event_StartTime"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <com.honhai.foxconn.fxccalendar.colormanager.ColorImageView
+        android:id="@+id/view_agenda_event_color"
+        android:layout_width="15dp"
+        android:layout_height="match_parent"
+        app:layout_constraintLeft_toRightOf="@id/view_agenda_event_StartTime" />
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        app:layout_constraintRight_toLeftOf="@id/view_agenda_event_alarm"
+        app:layout_constraintLeft_toRightOf="@id/view_agenda_event_color" >
+
+        <TextView
+            android:id="@+id/view_agenda_event_title"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:maxEms="11"
+            android:gravity="center"
+            android:textColor="@android:color/black"
+            android:textSize="20sp"/>
+
+    </android.support.constraint.ConstraintLayout>
+
+    <ImageView
+        android:id="@+id/view_agenda_event_alarm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:src="@drawable/ic_alarm_on_black_24dp"
+        app:layout_constraintRight_toLeftOf="@id/view_agenda_user"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <ImageView
+        android:id="@+id/view_agenda_user"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintRight_toRightOf= "parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+</android.support.constraint.ConstraintLayout>

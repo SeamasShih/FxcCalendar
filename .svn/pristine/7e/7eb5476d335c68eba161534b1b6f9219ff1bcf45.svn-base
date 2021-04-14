@@ -1,0 +1,33 @@
+package com.honhai.foxconn.fxccalendar.welcome;
+
+import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.data.Data;
+import com.honhai.foxconn.fxccalendar.login.Register;
+
+public class WelcomeActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_welcome);
+//        Data.getInstance().refreshUsersForCloud();
+        Data.getInstance().createUser();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    Thread.sleep(3000);
+                    startActivity(new Intent().setClass(WelcomeActivity.this,Register.class));
+                    finish();
+                }catch (InterruptedException e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+    }
+}

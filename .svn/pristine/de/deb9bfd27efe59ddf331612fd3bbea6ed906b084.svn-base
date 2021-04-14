@@ -1,0 +1,18 @@
+package com.honhai.foxconn.fxccalendar.month;
+
+public class monthDay {
+    public int maxItems;
+    public Boolean isHoliday;
+    public boolean isLongEvent[];
+    public int eventNum;
+    public int count;
+
+    monthDay(){
+        maxItems = -1;
+        isHoliday = false;
+        isLongEvent = new boolean[4];
+        eventNum = 0;
+        count = 0;
+    }
+
+}

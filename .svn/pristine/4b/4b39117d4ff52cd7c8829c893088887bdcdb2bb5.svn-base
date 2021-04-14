@@ -1,0 +1,81 @@
+package com.honhai.foxconn.fxccalendar.colormanager;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ImageView;
+
+import com.honhai.foxconn.fxccalendar.R;
+
+import java.util.List;
+
+public class ColorAdapter extends ArrayAdapter {
+    private int resourceId;
+    private ImageView clear;
+    private EditText colorName;
+    private String mColorName;
+
+    public ColorAdapter(Context context,int editTextResourceId,List<ColorItem> objects)
+        {
+            super(context, editTextResourceId, objects);
+            resourceId = editTextResourceId;
+        }
+
+
+    @Override
+    public View getView(final int position, View convertView, ViewGroup parent) {
+        ColorItem colorItem = (ColorItem) getItem(position);
+        View view = LayoutInflater.from(getContext()).inflate(resourceId, null);
+        ColorImageView colorImage = view.findViewById(R.id.color_img);
+        colorName = view.findViewById(R.id.color_name);
+        colorImage.setColor(colorItem.getColorImageId());
+        colorName.setHint(colorItem.getColorName());
+        clear = view.findViewById(R.id.clear);
+        clear.setImageDrawable(getContext().getDrawable(R.drawable.ic_clear));
+
+        SharedPreferences mSharedPreferences = getContext().getSharedPreferences("colorLabel", Context.MODE_PRIVATE);
+        mSharedPreferences.edit().putString("colorName",mColorName).commit();
+        colorName.setText(mSharedPreferences.getString("colorName",""));
+
+        colorName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                Log.d("test", "beforeTextChanged: s : " + s + ", start : " + start +",count:"+count+",after:"+after);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            Log.d("test","onTextChanged: s: "+s+",start:" + start+", before:"+before+",count:"+count);
+                if (s.length() > 0) {
+                    clear.setVisibility(View.VISIBLE);
+                } else {
+                    clear.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                mColorName= s.toString();
+                Log.d("test","s:"+s+",position:"+ position);
+            }
+        });
+
+            clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            colorName.setText("");
+            }
+        });
+        return view;
+    }
+    }
+
+
+

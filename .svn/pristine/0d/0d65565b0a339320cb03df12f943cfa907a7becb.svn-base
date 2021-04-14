@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_gravity="center"
+    android:layout_margin="5dp"
+    card_view:cardCornerRadius="8dp">
+
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/deleteWarningMessage"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:text="@string/addEventDeleteMessage"
+            app:layout_constraintVertical_weight="1.5"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/deleteCancelBtn"/>
+
+        <TextView
+            android:id="@+id/deleteCancelBtn"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:text="@string/addEventDeleteNoText"
+            app:layout_constraintVertical_weight="1"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/deleteConfirmBtn"
+            app:layout_constraintTop_toBottomOf="@id/deleteWarningMessage"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@color/colorPopupSwitchCalendarText"
+            app:layout_constraintLeft_toRightOf="@id/deleteCancelBtn"
+            app:layout_constraintRight_toLeftOf="@id/deleteConfirmBtn"
+            app:layout_constraintTop_toTopOf="@id/deleteCancelBtn"
+            app:layout_constraintBottom_toBottomOf="@id/deleteCancelBtn"/>
+
+        <TextView
+            android:id="@+id/deleteConfirmBtn"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:text="@string/addEventDeleteYesText"
+            app:layout_constraintVertical_weight="1"
+            app:layout_constraintLeft_toRightOf="@id/deleteCancelBtn"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/deleteCancelBtn"
+            app:layout_constraintBottom_toBottomOf="@id/deleteCancelBtn"/>
+
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.v7.widget.CardView>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:layout_margin="5dp"
+    card_view:cardCornerRadius="8dp">
+
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/colorPickerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="false">
+
+        <com.honhai.foxconn.fxccalendar.elsemember.PopupWindow.ColorPicker
+            android:id="@+id/colorPicker"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/colorPickerCancel"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/colorPickerCancel"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/eventItemHeight"
+            android:gravity="center"
+            android:text="@string/colorPickerCancel"
+            android:textColor="@color/colorPopupSwitchCalendarText"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/colorPickerConfirm" />
+
+        <ImageView
+            android:id="@+id/splitLine"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="17dp"
+            android:layout_marginBottom="17dp"
+            android:background="@color/colorPopupSwitchCalendarText"
+            app:layout_constraintBottom_toBottomOf="@id/colorPickerConfirm"
+            app:layout_constraintLeft_toRightOf="@id/colorPickerCancel"
+            app:layout_constraintRight_toLeftOf="@id/colorPickerConfirm"
+            app:layout_constraintTop_toTopOf="@id/colorPickerConfirm" />
+
+        <TextView
+            android:id="@+id/colorPickerConfirm"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/eventItemHeight"
+            android:gravity="center"
+            android:text="@string/addEventColorPopupWindowConfirm"
+            android:textColor="@color/colorPopupSwitchCalendarText"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/colorPickerCancel"
+            app:layout_constraintRight_toRightOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+</android.support.v7.widget.CardView>

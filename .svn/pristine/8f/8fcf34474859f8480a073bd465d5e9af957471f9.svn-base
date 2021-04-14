@@ -1,0 +1,66 @@
+package com.honhai.foxconn.fxccalendar.weekly.layout;
+
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.weekly.adapter.WeeklyViewPagerAdapter;
+
+public class CalendarWeeklyFragment extends Fragment {
+
+    ViewPager viewPager;
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View layout = inflater.inflate(R.layout.fragment_weekly_layout, container, false);
+        viewPager = layout.findViewById(R.id.weeklyViewPager);
+        viewPager.setAdapter(new WeeklyViewPagerAdapter(getContext()));
+        viewPager.setCurrentItem(WeeklyViewPagerAdapter.CENTER);
+        return layout;
+    }
+
+    public void rollback() {
+        int current = viewPager.getCurrentItem();
+        int sign = checkSign();
+        WeeklyViewPagerAdapter.CENTER = current + sign * 2;
+        viewPager.addOnPageChangeListener(new PageChangeListener());
+        viewPager.setCurrentItem(current + sign, true);
+    }
+
+    private int checkSign() {
+        int position = WeeklyViewPagerAdapter.CENTER;
+        int current = viewPager.getCurrentItem();
+        if (current == position)
+            return 0;
+        return current > position ? -1 : 1;
+    }
+
+    private class PageChangeListener implements ViewPager.OnPageChangeListener {
+
+        @Override
+        public void onPageScrolled(int i, float v, int i1) {
+
+        }
+
+        @Override
+        public void onPageSelected(int i) {
+
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int i) {
+            if (i == 0) {
+                viewPager.setCurrentItem(viewPager.getCurrentItem() + checkSign(), true);
+                if (viewPager.getCurrentItem() == WeeklyViewPagerAdapter.CENTER)
+                    viewPager.removeOnPageChangeListener(this);
+            }
+        }
+    }
+}

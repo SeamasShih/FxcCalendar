@@ -1,0 +1,38 @@
+package com.honhai.foxconn.fxccalendar.eventpreview;
+
+import android.support.annotation.NonNull;
+import android.support.v4.view.PagerAdapter;
+import android.view.View;
+import android.view.ViewGroup;
+
+import java.util.List;
+
+public class NoticeAdapter extends PagerAdapter {
+
+    private List<View> mListViews;
+
+    public NoticeAdapter(List<View> mListViews){
+        this.mListViews = mListViews;
+    }
+    @Override
+    public int getCount() {
+        return mListViews.size();
+    }
+
+    @Override
+    public boolean isViewFromObject(@NonNull View view, @NonNull Object o) {
+        return view == o;
+    }
+
+    @NonNull
+    @Override
+    public Object instantiateItem(@NonNull ViewGroup container, int position) {
+        container.addView(mListViews.get(position),0);
+        return mListViews.get(position);
+    }
+
+    @Override
+    public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+        container.removeView(mListViews.get(position));
+    }
+}

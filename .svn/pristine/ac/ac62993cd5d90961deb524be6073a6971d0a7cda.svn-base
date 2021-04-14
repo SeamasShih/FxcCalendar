@@ -1,0 +1,19 @@
+package com.honhai.foxconn.fxccalendar.colormanager;
+
+public class ColorItem {
+    private String colorName;
+    private int colorImageId;
+
+    public ColorItem(String colorName, int colorImageId ){
+        this.colorName = colorName;
+        this.colorImageId = colorImageId;
+    }
+
+    public String getColorName(){
+        return colorName;
+    }
+
+    public int getColorImageId() {
+        return colorImageId;
+    }
+}

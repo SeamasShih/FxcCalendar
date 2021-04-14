@@ -1,0 +1,87 @@
+package com.honhai.foxconn.fxccalendar.agenda.adapter;
+
+import android.content.Context;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.honhai.foxconn.fxccalendar.R;
+
+public class AgendaListAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    public static final int GROUP_ITEM_HEADER = 1;
+    public static final int CHILD_ITEM_TYPE = 2;
+    private LayoutInflater inflater;
+    private Context mContext;
+
+
+    public AgendaListAdapter (Context context) {
+        this.mContext = context;
+        inflater = LayoutInflater.from(context);
+    }
+
+
+    @Override
+    public RecyclerView.ViewHolder  onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = null;
+        RecyclerView.ViewHolder holder = null;
+        if (viewType == GROUP_ITEM_HEADER) {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.agenda_view_header, parent, false);
+            System.err.println("onCreateViewHolder");
+            holder = new  HeaderViewHolder(view);
+        } else {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.agenda_view_event, parent, false);
+            System.err.println("onCreateViewHolder");
+            holder = new  HeaderViewHolder(view);
+        }
+        return  holder;
+    }
+
+    @Override
+    public void onBindViewHolder( RecyclerView.ViewHolder holder, int position) {
+
+        Boolean isToday = true;
+        int type = GROUP_ITEM_HEADER;//getItemViewType();
+        if (type == GROUP_ITEM_HEADER) {
+            HeaderViewHolder holder1 = (HeaderViewHolder) holder;
+            holder1.timeday.setText("2018年12月3日");
+            holder1.week.setText("周一");
+            if (isToday) {
+                holder1.today.setText("今天");
+            }
+        } else {
+            EventViewHolder holder1 = (EventViewHolder) holder;
+            holder1.stattime.setText("1");
+            holder1.endtime.setText("2");
+            holder1.title.setText("3");
+            /*holder1.color.setImageResource();
+            holder1.user.setImageResource();*/
+            holder1.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
+        }
+    }
+
+
+
+    public int getItemCount() {
+        return 1;
+    }
+
+
+   /** public int getItemViewType(int position) {
+        System.err.println("getItemViewType");
+        if () {
+            return GROUP_ITEM_HEADER;
+        } else {
+            return CHILD_ITEM_TYPE;
+        }
+    }
+    */
+
+
+}

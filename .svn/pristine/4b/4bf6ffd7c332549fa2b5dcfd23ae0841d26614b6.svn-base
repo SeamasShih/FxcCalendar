@@ -1,0 +1,128 @@
+package com.honhai.foxconn.fxccalendar.search;
+
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorInt;
+import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.data.Data;
+
+import java.lang.reflect.Field;
+
+public class SearchEventActivity extends AppCompatActivity {
+
+    private Toolbar toolbar;
+    private EditText searchTitle;
+    private View cancelBtn;
+    private RecyclerView recyclerView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_search_event);
+
+        findViews();
+        setToolbar();
+        setEditText();
+        setRecyclerView();
+    }
+
+    private void setRecyclerView() {
+
+    }
+
+    private void setEditText() {
+        searchTitle.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+    }
+
+    private void setToolbar() {
+//        toolbar.inflateMenu(R.menu.menu_search_event_toolbar);
+        setCursorColor(searchTitle, getResources().getColor(R.color.colorPopupSwitchCalendarText));
+        Drawable drawable = getDrawable(R.drawable.ic_arrow_back_black_24dp);
+        drawable.setTint(Data.getInstance().getThemeColor());
+        toolbar.setNavigationIcon(drawable);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
+
+    public void setCursorColor(EditText view, @ColorInt int color) {
+        try {
+            // Get the cursor resource id
+            Field field = TextView.class.getDeclaredField("mCursorDrawableRes");
+            field.setAccessible(true);
+            int drawableResId = field.getInt(view);
+
+            // Get the editor
+            field = TextView.class.getDeclaredField("mEditor");
+            field.setAccessible(true);
+            Object editor = field.get(view);
+
+            // Get the drawable and set a color filter
+            Drawable drawable = ContextCompat.getDrawable(view.getContext(), drawableResId);
+            drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+            Drawable[] drawables = {drawable, drawable};
+
+            // Set the drawables
+            field = editor.getClass().getDeclaredField("mCursorDrawable");
+            field.setAccessible(true);
+            field.set(editor, drawables);
+        } catch (Exception ignored) {
+        }
+    }
+
+    private void findViews() {
+        toolbar = findViewById(R.id.search_toolbar);
+        searchTitle = findViewById(R.id.search_topEditText);
+        cancelBtn = findViewById(R.id.search_imgClearEditText);
+        recyclerView = findViewById(R.id.search_Recycler);
+    }
+
+    private class Adapter extends RecyclerView.Adapter{
+        @NonNull
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+            return null;
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return 0;
+        }
+    }
+}

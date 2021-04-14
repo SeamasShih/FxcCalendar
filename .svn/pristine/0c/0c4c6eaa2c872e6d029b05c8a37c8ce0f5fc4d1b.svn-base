@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/mineFragmentItemHeight"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:layout_marginTop="5dp"
+        android:id="@+id/work_id"
+        app:layout_constraintTop_toTopOf="parent"
+        app:cardCornerRadius="8dp">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/work_id_banner"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/fragmentMineBannerWorkId"
+                app:layout_constraintHorizontal_chainStyle="spread_inside"
+                app:layout_constraintHorizontal_weight="2"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/work_id_info" />
+
+            <EditText
+                android:id="@+id/work_id_info"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:background="@null"
+                app:layout_constraintLeft_toRightOf="@id/work_id_banner"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintHorizontal_weight="3"/>
+
+
+        </android.support.constraint.ConstraintLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/mineFragmentItemHeight"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:layout_marginTop="5dp"
+        android:id="@+id/password"
+        app:layout_constraintTop_toBottomOf="@id/work_id"
+        app:cardCornerRadius="8dp">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/password_banner"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/fragmentMineBannerPassword"
+                app:layout_constraintHorizontal_chainStyle="spread_inside"
+                app:layout_constraintHorizontal_weight="2"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/password_info" />
+
+            <EditText
+                android:id="@+id/password_info"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:background="@null"
+                app:layout_constraintLeft_toRightOf="@id/password_banner"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintHorizontal_weight="3"/>
+
+        </android.support.constraint.ConstraintLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/mineFragmentItemHeight"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:layout_marginTop="5dp"
+        android:id="@+id/name"
+        app:layout_constraintTop_toBottomOf="@id/password"
+        app:cardCornerRadius="8dp">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/name_banner"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/fragmentMineBannerName"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/name_info"
+                app:layout_constraintHorizontal_weight="2"/>
+
+            <EditText
+                android:id="@+id/name_info"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:background="@null"
+                app:layout_constraintLeft_toRightOf="@id/name_banner"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintHorizontal_weight="3"/>
+
+        </android.support.constraint.ConstraintLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/mineFragmentItemHeight"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:layout_marginTop="5dp"
+        android:id="@+id/english_name"
+        app:layout_constraintTop_toBottomOf="@id/name"
+        app:cardCornerRadius="8dp">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/english_name_banner"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/fragmentMineBannerEnglishName"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/english_name_info"
+                app:layout_constraintHorizontal_weight="2"/>
+
+            <EditText
+                android:id="@+id/english_name_info"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:background="@null"
+                app:layout_constraintLeft_toRightOf="@id/english_name_banner"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintHorizontal_weight="3"/>
+
+        </android.support.constraint.ConstraintLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/mineFragmentItemHeight"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:layout_marginTop="5dp"
+        android:id="@+id/logout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:cardCornerRadius="8dp">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <View
+                android:id="@+id/logout_icon"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:layout_margin="10dp"
+                android:background="@drawable/drawable_bottom_logout"
+                app:layout_constraintRight_toLeftOf="@id/logout_text"
+                app:layout_constraintDimensionRatio="1" />
+
+            <TextView
+                android:id="@+id/logout_text"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="@string/fragmentMineBannerLogout"
+                android:textSize="25sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"/>
+
+        </android.support.constraint.ConstraintLayout>
+
+    </android.support.v7.widget.CardView>
+
+</android.support.constraint.ConstraintLayout>

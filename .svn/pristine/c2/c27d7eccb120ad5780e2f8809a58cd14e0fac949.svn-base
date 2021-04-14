@@ -1,0 +1,74 @@
+package com.honhai.foxconn.fxccalendar.agenda;
+
+
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.agenda.adapter.AgendaListAdapter;
+import com.honhai.foxconn.fxccalendar.data.Data;
+import com.honhai.foxconn.fxccalendar.data.Event;
+import com.honhai.foxconn.fxccalendar.data.interfaces.Rollback;
+
+import java.util.ArrayList;
+import java.util.List;
+
+
+public class AgendaViewFragment extends Fragment implements Rollback {
+
+    private View view;
+    public RecyclerView mAgendaListRecyclerView;
+    public AgendaListAdapter mAdapter;
+    public List<Object> objects;
+
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.fragment_agend_layout, container, false);
+        initRecyclerView();
+        initData();
+        mAdapter.setData(objects);
+        return view;
+    }
+
+    private void initRecyclerView() {
+        mAgendaListRecyclerView = view.findViewById(R.id.agendalist_recyclerview);
+        mAgendaListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+        mAgendaListRecyclerView.setAdapter(mAdapter);
+        mAgendaListRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(),
+                DividerItemDecoration.VERTICAL));
+
+    }
+
+    private void initData() {
+        ArrayList<Event> events = Data.getInstance().getEvents();
+        AgendaManager.getInstance().sortOutbyDay(events);
+        ArrayList<AgendaDayEvent> mAgendaDayEvents = AgendaManager.getInstance().getmAgendaDayEvents();
+        List<Object> objects = sortData( mAgendaDayEvents);
+
+    }
+    private List<Object> sortData(ArrayList<AgendaDayEvent> mAgendaDayEvents) {
+        List<Object> arrays_obj = new ArrayList<>();
+        for (AgendaDayEvent mAgendaDayEvent : mAgendaDayEvents) {
+            arrays_obj.add(mAgendaDayEvent.getAgendaDay());
+            ArrayList<AgendaDayEvent.AgendaEvent> mAgendaEvents = mAgendaDayEvent.getAgendaEventList();
+            if (mAgendaEvents != null && mAgendaEvents.size() > 0) {
+                for (AgendaDayEvent.AgendaEvent mAgendaEvent : mAgendaEvents) {
+                    arrays_obj.add(mAgendaEvent);
+                }
+            }
+        }
+        return arrays_obj;
+    }
+
+    public void rollback(){
+        //todo Lily complete rollback function
+    }
+
+}

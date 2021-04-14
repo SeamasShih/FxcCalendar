@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".login.Register">
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/weeklyViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="1"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp">
+        <TextView
+            android:id="@+id/tv_register"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="注册账号"
+            android:textColor="@color/colorCalendarWorkday"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:layout_marginTop="30dp"/>
+
+        <EditText
+            android:drawableLeft="@android:drawable/ic_menu_myplaces"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:inputType="textPersonName"
+            android:layout_below="@+id/tv_register"
+            android:ems="10"
+            android:id="@+id/resetpwd_edit_name"
+            android:hint="请输入您的工号"
+            android:layout_alignLeft="@+id/resetpwd_edit_pwd_new"
+            android:layout_alignStart="@+id/resetpwd_edit_pwd_new"
+            android:layout_alignRight="@+id/resetpwd_edit_pwd_new"
+            android:layout_alignEnd="@+id/resetpwd_edit_pwd_new"
+            android:background="@drawable/bg_edit_ui"
+            android:layout_marginTop="20dp"/>
+
+        <EditText
+            android:drawableLeft="@android:drawable/ic_lock_idle_lock"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:inputType="textPassword"
+            android:ems="10"
+            android:id="@+id/resetpwd_edit_pwd_old"
+            android:hint="请输入您的密码"
+            android:layout_below="@+id/resetpwd_edit_name"
+            android:layout_alignRight="@+id/resetpwd_edit_name"
+            android:layout_alignEnd="@+id/resetpwd_edit_name"
+            android:layout_alignLeft="@+id/resetpwd_edit_name"
+            android:layout_alignStart="@+id/resetpwd_edit_name"
+            android:background="@drawable/bg_edit_ui"/>
+        <EditText
+            android:drawableLeft="@android:drawable/ic_lock_idle_lock"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:inputType="textPassword"
+            android:ems="10"
+            android:id="@+id/resetpwd_edit_pwd_new"
+            android:layout_below="@+id/resetpwd_edit_pwd_old"
+            android:layout_centerHorizontal="true"
+            android:hint="请确认您的密码"
+            android:background="@drawable/bg_edit_ui"/>
+
+        <EditText
+            android:drawableLeft="@android:drawable/ic_menu_myplaces"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:inputType="text"
+            android:ems="10"
+            android:id="@+id/resetChine_edit_pwd_new"
+            android:layout_below="@+id/resetpwd_edit_pwd_new"
+            android:layout_centerHorizontal="true"
+            android:hint="请输入中文名字"
+            android:background="@drawable/bg_edit_ui"/>
+        <EditText
+            android:drawableLeft="@android:drawable/ic_menu_myplaces"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:inputType="text"
+            android:ems="10"
+            android:id="@+id/resetEng_edit_pwd_new"
+            android:layout_below="@+id/resetChine_edit_pwd_new"
+            android:layout_centerHorizontal="true"
+            android:hint="请输入英文名字"
+            android:background="@drawable/bg_edit_ui"/>
+
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="取消"
+            android:id="@+id/register_btn_cancel"
+            android:textSize="20dp"
+            android:background="@drawable/bg_button_ui"
+            android:textColor="#ffffff"
+            android:layout_below="@+id/register_btn_sure"
+            android:layout_alignLeft="@+id/register_btn_sure"
+            android:layout_alignStart="@+id/register_btn_sure"
+            android:layout_marginTop="10dp"
+            />
+
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="确定"
+            android:id="@+id/register_btn_sure"
+            android:textSize="20dp"
+            android:textColor="#ffffff"
+            android:background="@drawable/bg_button_ui"
+            android:layout_below="@+id/resetpwd_edit_pwd_new"
+            android:layout_alignLeft="@+id/resetpwd_edit_pwd_new"
+            android:layout_alignStart="@+id/resetpwd_edit_pwd_new"
+            android:layout_marginTop="140dp"
+            />
+
+    </RelativeLayout>
+
+</android.support.constraint.ConstraintLayout>

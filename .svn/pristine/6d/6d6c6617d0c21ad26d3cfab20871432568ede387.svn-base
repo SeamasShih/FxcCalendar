@@ -1,0 +1,62 @@
+package com.honhai.foxconn.fxccalendar.eventpreview;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.os.Bundle;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
+
+import com.honhai.foxconn.fxccalendar.R;
+
+import java.util.ArrayList;
+import java.util.List;
+
+
+public class MyDialog2 extends Dialog {
+
+    private ViewPager mViewPager;
+    RecyclerView recyclerView;
+    private Context context;
+
+
+    public MyDialog2( Context context) {
+        //定义Dialog的主题风格
+        super(context, R.style.selfDefDialog2);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getWindow().setWindowAnimations(R.style.popupAnimation);
+
+        setContentView(R.layout.dialog_layout);
+
+
+        mViewPager = (ViewPager)findViewById(R.id.viewpager);
+        mViewPager.setAdapter(createAdapter());
+
+    }
+
+    private PagerAdapter createAdapter() {
+
+        List<View> adapterViews = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            View view = LayoutInflater.from(getContext()).inflate(R.layout.adapter_view_layout2, null);
+            TextView tvTitle = (TextView) view.findViewById(R.id.tv_adapter_title);
+            tvTitle.setText("我是第" + (i + 1) + "页");
+            adapterViews.add(view);
+        }
+
+        return new NoticeAdapter(adapterViews);
+
+    }
+
+
+
+
+
+}

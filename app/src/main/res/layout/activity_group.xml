@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_centerInParent="true"
+        android:layout_width="match_parent"
+        android:layout_height="500dp">
+        <TextView
+            android:id="@+id/tv_adapter_title_4"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="15dp"
+            android:text="标题"
+            android:textColor="#1E90FF"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tv_adapter_title_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="35dp"
+            android:text="标题"
+            android:textColor="#C0C0C0"
+            android:textSize="8sp" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="50dp"
+            android:background="?attr/colorControlHighlight" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@+id/tv_adapter_title"
+            android:layout_marginRight="25dp"
+            android:background="@drawable/ic_add_black_24dp" />
+
+        <TextView
+            android:id="@+id/tv_adapter_title_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="117dp"
+            android:text="無活動"
+            android:textColor="#C0C0C0"
+            android:textSize="29sp" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView_1"
+            android:layout_width="match_parent"
+            android:layout_height="445dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="55dp"
+            android:background="@color/gray" />
+    </RelativeLayout>
+</RelativeLayout>

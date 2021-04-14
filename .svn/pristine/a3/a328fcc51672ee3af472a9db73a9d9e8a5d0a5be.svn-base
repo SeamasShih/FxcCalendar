@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/add_event_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize" />
+
+        <Spinner
+            android:id="@+id/event_groupId"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            app:layout_constraintTop_toTopOf="@id/add_event_toolbar"
+            app:layout_constraintBottom_toBottomOf="@id/add_event_toolbar"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"/>
+
+    </android.support.constraint.ConstraintLayout>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/alarm_title"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="5dp"
+                android:background="@null"
+                android:gravity="center"
+                android:hint="@string/alarm_title"
+                android:inputType=""
+                android:singleLine="true" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#4fa3a3a3" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:id="@+id/all_day_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+
+                    <ImageView
+                        android:id="@+id/iv_all_day"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="10dp" />
+
+                    <TextView
+                        android:id="@+id/tvAllDayText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="40dp"
+                        android:layout_toEndOf="@id/iv_all_day"
+                        android:text="@string/calendarWeeklyAllDayText"
+                        android:textColor="@color/colorPopupSwitchCalendarText" />
+
+                    <Switch
+                        android:id="@+id/sw_all_day"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="10dp" />
+                </RelativeLayout>
+
+                <android.support.constraint.ConstraintLayout
+                    android:id="@+id/customer_calendar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/alarm_start_year"
+                        android:layout_width="160dp"
+                        android:layout_height="30dp"
+                        android:gravity="center"
+                        android:text="开始年月日"
+                        android:textColor="#000"
+                        app:layout_constraintBottom_toTopOf="@id/alarm_start_time"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toLeftOf="@id/iv_time"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/alarm_start_time"
+                        android:layout_width="160dp"
+                        android:layout_height="30dp"
+                        android:gravity="center"
+                        android:text="开始时间"
+                        android:textColor="#000"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toLeftOf="@id/iv_time"
+                        app:layout_constraintTop_toBottomOf="@id/alarm_start_year" />
+
+                    <com.honhai.foxconn.fxccalendar.addevent.DirectorView
+                        android:id="@+id/iv_time"
+                        android:layout_width="50dp"
+                        android:layout_height="60dp"
+                        android:scaleType="centerCrop"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/alarm_end_year"
+                        android:layout_width="160dp"
+                        android:layout_height="30dp"
+                        android:layout_alignParentEnd="true"
+                        android:gravity="center"
+                        android:text="结束年月日"
+                        android:textColor="#000"
+                        app:layout_constraintBottom_toTopOf="@id/alarm_end_time"
+                        app:layout_constraintLeft_toRightOf="@id/iv_time"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/alarm_end_time"
+                        android:layout_width="160dp"
+                        android:layout_height="30dp"
+                        android:layout_alignParentEnd="true"
+                        android:gravity="center"
+                        android:text="结束时间"
+                        android:textColor="#000"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toRightOf="@id/iv_time"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/alarm_end_year" />
+                </android.support.constraint.ConstraintLayout>
+
+                <RelativeLayout
+                    android:id="@+id/lunar_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+
+                    <ImageView
+                        android:id="@+id/iv_lunar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="10dp"
+                        android:background="@drawable/ic_brightness_3_black_24dp" />
+
+                    <TextView
+                        android:id="@+id/tvLunarText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="40dp"
+                        android:layout_toEndOf="@id/iv_lunar"
+                        android:text="@string/tvLunarText"
+                        android:textColor="@color/colorPopupSwitchCalendarText" />
+
+                    <Switch
+                        android:id="@+id/sw_lunar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="10dp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+
+                    android:id="@+id/layout_alarm_color"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:clickable="true"
+                    android:onClick="onClick">
+
+                    <ImageView
+                        android:id="@+id/iv_color"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="10dp"
+                        android:background="@drawable/ic_edit_black_24dp"
+                        android:contentDescription="TODO" />
+
+                    <TextView
+                        android:id="@+id/alarm_color"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="40dp"
+                        android:layout_toEndOf="@id/iv_color"
+                        android:focusable="true"
+                        android:text="@string/alarm_color"
+                        android:textColor="@color/colorPopupSwitchCalendarText" />
+
+                    <com.honhai.foxconn.fxccalendar.addevent.DirectorView
+                        android:id="@+id/iv_point"
+                        android:layout_width="30dp"
+                        android:layout_height="35dp"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="15dp"
+                        android:layout_marginBottom="5dp"
+                        android:contentDescription="TODO"
+                        android:scaleType="centerCrop" />
+                    />
+                </RelativeLayout>
+
+                <!--<View-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="1dp"-->
+                    <!--android:background="#4fa3a3a3" />-->
+
+                <RelativeLayout
+                    android:id="@+id/layout_alarm_remind"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+
+                    <ImageView
+                        android:id="@+id/iv_remind"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="10dp" />
+
+                    <TextView
+                        android:id="@+id/alarm_remind"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="40dp"
+                        android:layout_toEndOf="@id/iv_remind"
+                        android:text="@string/alarm_remind"
+                        android:textColor="@color/colorPopupSwitchCalendarText" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#4fa3a3a3" />
+
+                <RelativeLayout
+                    android:id="@+id/layout_alarm_vibrate"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+
+                    <ImageView
+                        android:id="@+id/iv_vibrate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="10dp"
+                        android:background="@drawable/ic_system_update_alt_black_24dp" />
+
+                    <TextView
+                        android:id="@+id/alarm_vibrate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="40dp"
+                        android:layout_toEndOf="@id/iv_vibrate"
+                        android:text="@string/alarm_vibrate"
+                        android:textColor="@color/colorPopupSwitchCalendarText" />
+
+                    <Switch
+                        android:id="@+id/sw_vibrate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="10dp" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#4fa3a3a3" />
+
+                <RelativeLayout
+                    android:id="@+id/layout_alarm_tone_Path"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+
+                    <ImageView
+                        android:id="@+id/iv_alarm_tone_Path"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="10dp"
+                        android:background="@drawable/ic_attach_file_black_24dp" />
+
+                    <EditText
+                        android:id="@+id/alarm_tone_Path"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="40dp"
+                        android:layout_toEndOf="@id/iv_alarm_tone_Path"
+                        android:background="@null"
+                        android:hint="@string/alarm_tone_Path"
+                        android:textColor="@color/colorPopupSwitchCalendarText"
+                        android:textColorHint="@color/colorPopupSwitchCalendarText"
+                        android:textSize="13sp" />
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#4fa3a3a3" />
+
+                <RelativeLayout
+                    android:id="@+id/layout_alarm_local"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+
+                    <ImageView
+                        android:id="@+id/iv_local"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="10dp"
+                        android:background="@drawable/ic_location_on_black_24dp" />
+
+                    <EditText
+                        android:id="@+id/alarm_local"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="40dp"
+                        android:layout_toEndOf="@id/iv_local"
+                        android:background="@null"
+                        android:hint="@string/alarm_local"
+                        android:textColor="@color/colorPopupSwitchCalendarText"
+                        android:textColorHint="@color/colorPopupSwitchCalendarText"
+                        android:textSize="13sp" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#4fa3a3a3" />
+
+                <RelativeLayout
+                    android:id="@+id/layout_alarm_replay"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+
+                    <ImageView
+                        android:id="@+id/iv_replay"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="10dp"
+                        android:background="@drawable/ic_cached_black_24dp"
+                        android:backgroundTint="@color/colorPopupSwitchCalendarText" />
+
+                    <TextView
+                        android:id="@+id/alarm_replay"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="40dp"
+                        android:layout_toEndOf="@id/iv_replay"
+                        android:text="@string/alarm_replay"
+                        android:textColor="@color/colorPopupSwitchCalendarText" />
+                </RelativeLayout>
+
+                <!--<View-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="1dp"-->
+                    <!--android:background="#4fa3a3a3" />-->
+
+                <RelativeLayout
+                    android:id="@+id/layout_alarm_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+
+                    <ImageView
+                        android:id="@+id/iv_description"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="10dp"
+                        android:background="@drawable/ic_message_black_24dp"
+                        android:contentDescription="TODO" />
+
+                    <EditText
+                        android:id="@+id/alarm_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="5dp"
+                        android:background="@null"
+                        android:hint="@string/alarm_description"
+                        android:inputType=""
+                        android:paddingStart="75dp"
+                        android:textColorHint="@color/colorPopupSwitchCalendarText"
+                        android:textSize="13sp" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#4fa3a3a3" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.honhai.foxconn.fxccalendar">
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <application
+        android:name=".data.CloudApp"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme.Marshmallow">
+        <service android:name="com.avos.avoscloud.PushService" />
+
+        <receiver android:name="com.avos.avoscloud.AVBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.USER_PRESENT" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+
+        <activity android:name=".main.MainActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.avos.avoscloud.feedback.ThreadActivity" />
+        <activity
+            android:name=".addevent.AddEventActivity"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".colormanager.ColorManagerActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".colorunits.ColorUtils"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".elsemember.SettingsActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".login.Register"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".login.Registernumber"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".login.Resetpassword"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".login.Usersuccefully"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".welcome.WelcomeActivity"
+            android:theme="@style/AppTheme.welcomActivityApp"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".search.SearchEventActivity"
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".elsemember.GroupMemberList.GroupMemberActivity"
+            android:screenOrientation="portrait"/>
+    </application>
+
+</manifest>

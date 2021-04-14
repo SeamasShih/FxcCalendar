@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    android:orientation="vertical"
+    tools:context=".login.ModifyActivity">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#4fa3a3a3" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginRight="25dp"
+        android:background="@drawable/bg_edit_change">
+
+        <TextView
+            android:id="@+id/tv"
+            android:layout_width="90dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="15dp"
+            android:gravity="center_vertical"
+            android:text="@string/pwd"
+          />
+
+        <EditText
+            android:id="@+id/et_newPassword"
+            style="?android:attr/textViewStyle"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_toEndOf="@+id/tv"
+            android:background="@null"
+
+            android:hint="@string/new_pwd"
+            android:inputType="textPassword"
+            android:textColorHint="#b3b3b3"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/new_pwd_clear"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="60dp"
+            android:background="@null"
+            android:drawableRight="@drawable/ic_clear_black_24dp"
+            android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/bt_pwd_eye"
+            android:layout_width="@dimen/eye_icon_size"
+            android:layout_height="@dimen/eye_icon_size"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="15dp"
+            android:background="@drawable/ic_visibility_off_black_24dp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:background="@drawable/bg_edit_change">
+        <TextView
+            android:id="@+id/tv2"
+            android:layout_width="90dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="15dp"
+            android:gravity="center_vertical"
+            android:text="@string/checkpwd"
+             />
+
+        <EditText
+            android:id="@+id/et_checkPassword"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            style="?android:attr/textViewStyle"
+            android:background="@null"
+            android:layout_toEndOf="@+id/tv2"
+            android:hint="@string/affirm_pwd"
+            android:inputType="textPassword"
+            android:textColorHint="#b3b3b3"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/check_pwd_clear"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="60dp"
+            android:background="@null"
+            android:drawableRight="@drawable/ic_clear_black_24dp"
+            android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/check_pwd_eye"
+            android:layout_width="@dimen/eye_icon_size"
+            android:layout_height="@dimen/eye_icon_size"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="15dp"
+            android:background="@drawable/ic_visibility_off_black_24dp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:background="@drawable/bg_edit_change">
+        <TextView
+            android:id="@+id/tv3"
+            android:layout_width="90dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="15dp"
+            android:gravity="center_vertical"
+            android:text="@string/name"
+            />
+
+        <com.honhai.foxconn.fxccalendar.login.LimitEditText
+            android:id="@+id/et_chineseName"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_toEndOf="@+id/tv3"
+            style="?android:attr/textViewStyle"
+            android:background="@null"
+            android:hint="@string/change_Chaname"
+            android:inputType="text"
+            android:textColorHint="#b3b3b3"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/chinese_name_clear"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="15dp"
+            android:background="@null"
+            android:drawableRight="@drawable/ic_clear_black_24dp"
+            android:visibility="invisible" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:background="@drawable/bg_edit_change">
+        <TextView
+            android:id="@+id/tv4"
+            android:layout_width="90dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="15dp"
+            android:gravity="center_vertical"
+            android:text="@string/englishname"
+            />
+
+        <EditText
+            android:id="@+id/et_englishName"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_toEndOf="@+id/tv4"
+            style="?android:attr/textViewStyle"
+            android:background="@null"
+            android:digits="qwertyuioplkjhgfdsazxcvbnmQWERTYUIOPLKJHGFDSAZXCVBNM"
+            android:hint="@string/change_Engname"
+            android:inputType="text"
+            android:textColorHint="#b3b3b3"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/english_name_clear"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="15dp"
+            android:background="@null"
+            android:drawableRight="@drawable/ic_clear_black_24dp"
+            android:visibility="invisible" />
+    </RelativeLayout>
+
+
+</LinearLayout>

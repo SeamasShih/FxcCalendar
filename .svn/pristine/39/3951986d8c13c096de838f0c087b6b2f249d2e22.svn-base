@@ -1,0 +1,72 @@
+package com.honhai.foxconn.fxccalendar.data;
+
+public class User {
+    private String workId;
+    private String password;
+    private String name;
+    private String englishName;
+    private String objectId;
+
+    private long localId;
+
+    public User(String workId, String password, String name, String englishName, String objectId) {
+        this.workId = workId;
+        this.password = password;
+        this.name = name;
+        this.englishName = englishName;
+        this.objectId = objectId;
+    }
+
+    public User() {
+
+    }
+
+    public String getWorkId() {
+        return workId;
+    }
+
+    public void setWorkId(String workId) {
+        this.workId = workId;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getObjectId() {
+        return objectId;
+    }
+
+    public void setObjectId(String objectId) {
+        this.objectId = objectId;
+    }
+
+    public String getEnglishName() {
+        return englishName;
+    }
+
+    public void setEnglishName(String englishName) {
+        this.englishName = englishName;
+    }
+
+
+    public long getLocalId() {
+        return localId;
+    }
+
+    public void setLocalId(long localId) {
+        this.localId = localId;
+    }
+}

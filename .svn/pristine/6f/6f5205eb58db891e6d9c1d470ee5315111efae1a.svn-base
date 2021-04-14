@@ -1,0 +1,52 @@
+package com.honhai.foxconn.fxccalendar.elsemember.GroupMemberList;
+
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.data.Data;
+
+import java.util.List;
+
+public class GroupMemberAdapter extends RecyclerView.Adapter<GroupMemberAdapter.ViewHolder> {
+    private List<GroupMember> mGroupMember;
+
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        ImageView memberImage;
+        TextView memberName;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            memberImage = itemView.findViewById(R.id.iv_member_icon);
+            memberName = itemView.findViewById(R.id.tv_member_name);
+        }
+    }
+
+    public GroupMemberAdapter(List<GroupMember> memberList) {
+
+        mGroupMember = memberList;
+    }
+
+    public GroupMemberAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.group_member_list_item, viewGroup, false);
+        ViewHolder viewHolder = new ViewHolder(view);
+        return viewHolder;
+    }
+
+
+    public void onBindViewHolder(GroupMemberAdapter.ViewHolder viewHolder, int i) {
+        GroupMember groupMember = mGroupMember.get(i);
+        viewHolder.memberImage.setImageResource(groupMember.getMemberImageID());
+        viewHolder.memberName.setText(groupMember.getMemberName());
+        viewHolder.memberImage.getDrawable().setTint(Data.getInstance().getThemeColor());
+    }
+
+
+    public int getItemCount() {
+        return mGroupMember.size();
+    }
+}

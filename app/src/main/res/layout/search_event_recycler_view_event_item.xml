@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/searchRecyclerViewEventItemHeight"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.honhai.foxconn.fxccalendar.search.ColorImageView
+        android:id="@+id/imgEventColor"
+        android:layout_width="5dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginStart="20dp"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <TextView
+        android:id="@+id/tvEventTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:textSize="18sp"
+        android:textColor="@color/colorCalendarWorkday"
+        android:gravity="center"
+        android:layout_marginStart="15dp"
+        app:layout_constraintVertical_weight="3"
+        app:layout_constraintTop_toTopOf="@id/imgEventColor"
+        app:layout_constraintLeft_toRightOf="@id/imgEventColor"
+        app:layout_constraintBottom_toTopOf="@id/tvEventTime"/>
+
+    <TextView
+        android:id="@+id/tvEventTime"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:textSize="13sp"
+        android:textColor="@color/colorPopupSwitchCalendarText"
+        app:layout_constraintVertical_weight="2"
+        app:layout_constraintLeft_toLeftOf="@id/tvEventTitle"
+        app:layout_constraintTop_toBottomOf="@id/tvEventTitle"
+        app:layout_constraintBottom_toBottomOf="@id/imgEventColor"/>
+
+</android.support.constraint.ConstraintLayout>

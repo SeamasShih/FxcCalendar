@@ -1,0 +1,439 @@
+package com.honhai.foxconn.fxccalendar.month;
+
+
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Paint;
+
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+import android.graphics.Canvas;
+
+import com.avos.avoscloud.LogUtil;
+import com.honhai.foxconn.fxccalendar.R;
+
+import static android.content.ContentValues.TAG;
+import static com.honhai.foxconn.fxccalendar.month.CalendarUtil.getWeekNumOfMonth;
+import static com.honhai.foxconn.fxccalendar.month.CalendarUtil.solarToLunar;
+
+
+public class CalendarMonthView extends View {
+    /**
+     * 使用枚举表示日期状态（今天、本月、非本月）
+     *
+     * @author xiejinxiong
+     *
+     */
+    public static enum CalendarState {
+        TODAY, CURRENT_MONTH, LAST_MONTH,NEXT_MONTH
+    }
+
+    String[] weeks = {
+            "周日",
+            "周一",
+            "周二",
+            "周三",
+            "周四",
+            "周五",
+            "周六",
+                };
+    /** 屏幕宽度 */
+    private int width;
+    /** 屏幕高度 */
+    private int height;
+    /** 日历数组 */
+    private int[][] dateNum;
+    /** 日历日期状态数组 */
+    private CalendarState[][] calendarStates;
+    /**月視圖要顯示的週數*/
+    private int weekNum;
+    /** 年 */
+    private int year;
+    /** 月 */
+    private int month;
+    //转换农历年
+    private int lunarYear;
+    //转换农历月
+    private int lunarMonth;
+
+
+    /** 绘画类 */
+    private DrawCalendar drawCalendar;
+
+    /**日历星期栏高度*/
+    private float weekHeight;
+
+    /** 日历表格宽度 */
+    private float dateNumWidth;
+
+    private float dateNumHight;
+
+    private float  dateNumHighter;
+
+
+    public CalendarMonthView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        initUI(context);
+    }
+
+    public CalendarMonthView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        initUI(context);
+    }
+
+    public CalendarMonthView(Context context) {
+        super(context);
+        initUI(context);
+    }
+
+    /**
+     * 初始化UI
+     *
+     * @param context
+     */
+    private void initUI(Context context) {
+        // 初始化日期
+        year = CalendarUtil.getYear();
+        month = CalendarUtil.getMonth();
+        lunarYear = year;
+        lunarMonth = month;
+        calendarStates = new CalendarState[6][7];
+        drawCalendar = new DrawCalendar(year, month);
+
+    }
+    /**
+     * 设置日历时间并刷新日历视图
+     *
+     * @param year
+     * @param month
+     */
+    public void setYearMonth(int year, int month) {
+        this.year = year;
+        this.month = month;
+        drawCalendar = new DrawCalendar(year, month);
+        invalidate();
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        // TODO Auto-generated method stub
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        // 获得控件宽度
+        width = getMeasuredWidth();
+        //星期控件高度
+        weekHeight = height / 16.0f;
+        // 计算日历表格宽度
+        dateNumWidth = width / 7.0f;
+        // 计算日历高度
+        height = getMeasuredHeight();
+        // 设置控件宽高
+        dateNumHight = (height - weekHeight) / 6.0f;
+
+        dateNumHighter =  (height - weekHeight) / 5.0f;
+
+        setMeasuredDimension(width, height);
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        // TODO Auto-generated method stub
+        super.onDraw(canvas);
+        drawCalendar.drawCalendarCanvas(canvas);
+
+    }
+
+    /**
+     * 封装绘画日历方法的绘画类
+     *
+     * @author xiejinxiong
+     *
+     */
+    class DrawCalendar {
+
+        /**绘画普通横线画笔*/
+        private Paint mPaintLine;
+        /**绘画当前周横线画笔*/
+        private Paint mPaintWeekLine;
+        /**绘画星期画笔*/
+        private Paint mPaintWeek;
+        /** 绘画日期画笔 */
+        private Paint mPaintText;
+        /** 绘画本日的蓝圆 背景的画笔 */
+        private Paint mPaintCircle;
+        /** 字体高度 */
+        private float fontHeight;
+        /**农历日期画笔*/
+        private Paint mLunerPaintText;
+
+        private float fontLunarHeight;
+
+        private int[] lunar;
+
+
+
+        public DrawCalendar(int year, int month) {
+
+            // 获得月份日期排布数组
+            dateNum = CalendarUtil.getMonthNumFromDate(year, month);
+            weekNum = getWeekNumOfMonth(year,month);
+
+
+                    //初始化绘画星期栏画笔
+            mPaintWeek = new Paint();
+            mPaintWeek.setTextSize(25);
+            mPaintWeek.setColor(Color.GRAY);
+            mPaintWeek.setAntiAlias(true);// 设置画笔的锯齿效果。
+            // 初始化绘画文本的画笔
+            mPaintText = new Paint();
+            mPaintText.setTextSize(25);
+            mPaintText.setColor(Color.GRAY);// 设置灰色
+            mPaintText.setAntiAlias(true);// 设置画笔的锯齿效果。
+            // 获得字体高度
+            Paint.FontMetrics fm = mPaintText.getFontMetrics();
+            fontHeight = (float) Math.ceil(fm.descent - fm.top) / 2;
+
+            //农历绘画文本的画笔
+            mLunerPaintText = new Paint();
+            mLunerPaintText.setTextSize(20);
+            mLunerPaintText.setColor(Color.LTGRAY);
+            mLunerPaintText.setAntiAlias(true);
+            //获得农历字体高度
+            Paint.FontMetrics fmLuner = mLunerPaintText.getFontMetrics();
+            fontLunarHeight = (float) Math.ceil(fmLuner.descent - fmLuner.top) / 2;
+
+            //普通日历线
+            mPaintLine = new Paint();
+            mPaintLine.setColor(getResources().getColor(R.color.colorCalendarLine));
+            mPaintLine.setStyle(Paint.Style.STROKE);
+            mPaintLine.setStrokeWidth(1f);
+
+            // 初始化绘画日期框的画笔
+            mPaintCircle = new Paint();
+            mPaintCircle.setStyle(Paint.Style.FILL);
+            mPaintCircle.setStrokeWidth(2);
+            mPaintCircle.setColor(Color.LTGRAY);
+            mPaintCircle.setAntiAlias(true);// 设置画笔的锯齿效果。
+        }
+
+
+        /**
+         * 绘画日历
+         *
+         * @param canvas
+         */
+        public void drawCalendarCanvas(Canvas canvas) {
+
+            if (weekNum < 6){
+                dateNumHight = dateNumHighter;
+            }
+                       //星期绘制
+            for(int i = 0;i < 7; i++ ){
+                if(i==0){
+                    mPaintWeek.setColor(Color.RED);
+                }else{
+                    if (i==6){
+                        mPaintWeek.setColor(Color.BLUE);
+                    }
+                    else{
+                        mPaintWeek.setColor(Color.GRAY);
+                    }
+                }
+                canvas.drawText(weeks[i],dateNumWidth * i + dateNumWidth
+                                / 2 - mPaintWeek.measureText(weeks[i] + "") / 2,
+                         weekHeight/2.0f + fontHeight / 2.0f,mPaintWeek);
+                //Log.i(TAG, "drawCalendarCanvas: i="+i);
+            }
+
+            //日历绘制
+            for (int i = 0; i < weekNum; i++) {
+                canvas.drawLine(0,weekHeight + dateNumHight*i,width,weekHeight +dateNumHight*i,mPaintLine);
+                for (int j = 0; j < dateNum[i].length; j++) {
+
+                    if (i == 0 && dateNum[i][j] > 20) {// 上个月的日期
+                        drawCalendarCell(i, j, CalendarState.LAST_MONTH,
+                                canvas);
+                    } else if ((i == 5 || i == 4) && dateNum[i][j] < 20) {// 下个月的日期
+                        drawCalendarCell(i, j, CalendarState.NEXT_MONTH,
+                                canvas);
+                    } else {// 本月日期
+                        if (dateNum[i][j] == CalendarUtil.getCurrentMonthDay()) {// 是否为今天的日期号
+                            if (year == CalendarUtil.getYear()
+                                    && month == CalendarUtil.getMonth()) {// 是否为今年今月
+                                drawCalendarCell(i, j, CalendarState.TODAY,
+                                        canvas);
+                            }
+                            drawCalendarCell(i, j, CalendarState.CURRENT_MONTH,
+                                    canvas);
+                        } else {
+                            drawCalendarCell(i, j, CalendarState.CURRENT_MONTH,
+                                    canvas);
+                        }
+                    }
+                }
+            }
+        }
+
+        /**
+         * 绘画日历表格
+         *
+         * @param i
+         *            横序号
+         * @param j
+         *            列序号
+         * @param state
+         *            状态
+         * @param canvas
+         *            画布
+         */
+        private void drawCalendarCell(int i, int j, CalendarState state,
+                                      Canvas canvas) {
+            switch (state) {
+                case TODAY:// 今天
+                    lunarYear = year;
+                    lunarMonth = month;
+                    calendarStates[i][j] = CalendarState.TODAY;
+                    //mPaintText.setColor(Color.WHITE);
+                    if(j==0){
+                        mPaintText.setColor(Color.RED);
+                    }else{
+                        if (j==6){
+                            mPaintText.setColor(Color.BLUE);
+                        }
+                        else{
+                            mPaintText.setColor(Color.BLACK);
+                        }
+                    }
+                    canvas.drawRect(dateNumWidth * j ,
+                            weekHeight + dateNumHight * i , dateNumWidth * (j+1) ,weekHeight + dateNumHight * i + 2 * fontHeight ,
+                            mPaintCircle);
+
+                   // Log.i(TAG, "drawCalendarCell: drawRect:i j "+i+j);
+                    break;
+                case CURRENT_MONTH:// 本月
+                    lunarYear = year;
+                    lunarMonth = month;
+                    calendarStates[i][j] = CalendarState.CURRENT_MONTH;
+                    if(j==0){
+                        mPaintText.setColor(Color.RED);
+                    }else{
+                        if (j==6){
+                            mPaintText.setColor(Color.BLUE);
+                        }
+                        else{
+                            mPaintText.setColor(Color.BLACK);
+                        }
+                    }
+                    break;
+                case LAST_MONTH:// 上月
+                    if (month == 1){
+                        lunarYear = year - 1;
+                        lunarMonth = 12;
+                    }else{
+                        lunarMonth = month - 1;
+                    }
+                    calendarStates[i][j] = CalendarState.LAST_MONTH;
+                    if(j==0){
+                        mPaintText.setColor(Color.rgb(250,128,114));
+                    }else{
+                        if (j==6){
+                            mPaintText.setColor(Color.rgb(61,89,171));
+                        }
+                        else{
+                            mPaintText.setColor(Color.GRAY);
+                        }
+                    }
+                    break;
+                case NEXT_MONTH://下月
+                    if (month == 12){
+                        lunarYear = year + 1;
+                        lunarMonth = 1;
+                    }else{
+                        lunarMonth = month + 1;
+                    }
+                    calendarStates[i][j] = CalendarState.LAST_MONTH;
+                    if(j==0){
+                        mPaintText.setColor(Color.rgb(250,128,114)); //淺紅
+                    }else{
+                        if (j==6){
+                            mPaintText.setColor(Color.rgb(61,89,171));//淺藍
+                        }
+                        else{
+                            mPaintText.setColor(Color.GRAY);
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+
+            // 绘画日期
+            canvas.drawText(dateNum[i][j] + "", dateNumWidth * j + dateNumWidth
+                            / 2 - mPaintText.measureText(dateNum[i][j] + "") / 2,
+                    weekHeight + dateNumHight * i  + fontHeight / 1.0f + fontHeight / 2.0f,
+                    mPaintText);
+            //绘画农历日期
+            //Log.i("lunarYear:", String.valueOf(lunarYear));
+            //Log.i("lunarMonth:",String.valueOf(lunarMonth));
+            lunar = solarToLunar(lunarYear,lunarMonth,dateNum[i][j]);
+            canvas.drawText(lunar[1]+"."+lunar[2],dateNumWidth * j + dateNumWidth
+                    / 2 - mLunerPaintText.measureText(lunar[1]+"."+lunar[2] + "")/2, weekHeight + dateNumHight *(i+1) - fontLunarHeight/1.0f,mLunerPaintText);
+
+
+
+        }
+    }
+    /**
+     * 日历监听类
+     *
+     * @author xiejinxiong
+     *
+     */
+    public interface onCalendarClickListener {
+
+        /**
+         * 日历日期点击监听
+         *
+         * @param dateNum
+         *            日期数字
+         * @param calendarState
+         *            日期状态
+         */
+        public void onCalendarClick(int dateNum, CalendarState calendarState);
+
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+       /* float touchSlop;
+        touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                // 记录点击的坐标
+                float  touchX = event.getX();
+                float  touchY = event.getY();
+                break;
+            case MotionEvent.ACTION_UP:
+                float touchLastX = event.getX();
+                float touchLastY = event.getY();
+                if (Math.abs(touchLastX - touchX) < touchSlop
+                        && Math.abs(touchLastY - touchY) < touchSlop) {// 判断是否符合正常点击
+                    // 计算出所点击的数组序列
+                    int dateNumX = (int) (touchLastX / dateNumWidth);
+                    int dateNumY = (int) (touchLastY / dateNumWidth);
+                    // 使用回调函数响应点击日历日期
+                    onCalendarClickListener.onCalendaeClick(
+                            dateNum[dateNumY][dateNumX],
+                            calendarStates[dateNumY][dateNumX]);
+                }
+                break;
+            default:
+                break;
+        }*/
+        return true;
+    }
+
+}

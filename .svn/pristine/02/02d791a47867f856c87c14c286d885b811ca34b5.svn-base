@@ -1,0 +1,785 @@
+package com.honhai.foxconn.fxccalendar.data;
+
+import android.content.Context;
+import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.widget.Toast;
+
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVObject;
+import com.avos.avoscloud.AVQuery;
+import com.avos.avoscloud.FindCallback;
+import com.avos.avoscloud.SaveCallback;
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.data.holiday.APIConsumer;
+import com.honhai.foxconn.fxccalendar.data.holiday.Holiday;
+import com.honhai.foxconn.fxccalendar.data.holiday.HolidayAPIConsumer;
+import com.honhai.foxconn.fxccalendar.data.holiday.HolidayAPIResponse;
+import com.honhai.foxconn.fxccalendar.data.holiday.HolidayUtils;
+import com.honhai.foxconn.fxccalendar.data.holiday.QueryParams;
+import com.honhai.foxconn.fxccalendar.data.interfaces.RefreshData;
+import com.honhai.foxconn.fxccalendar.data.local.remindersql.Reminder;
+import com.honhai.foxconn.fxccalendar.data.users.UserCreator;
+
+import org.xml.sax.SAXException;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+public class Data {
+
+    private static Data instance = new Data();
+    private static User userInfo = new User();
+
+    private ArrayList<Event> events = new ArrayList<>();
+    private ArrayList<Group> groups = new ArrayList<>();
+    private ArrayList<User> users = new ArrayList<>();
+    private ArrayList<String> userNames = new ArrayList<>();
+    private ArrayList<RefreshData> views = new ArrayList<>();
+    private ArrayList<Holiday> holidays = new ArrayList<>();
+    private ArrayList<Reminder> reminders = new ArrayList<>();
+    private int themeColor = Color.RED;
+
+    private OnDownloadEventCompleteCallBack onDownloadEventCompleteCallBack;
+    private OnDownLoadGroupCompleteCallBack onDownLoadGroupCompleteCallBack;
+    private OnDownLoadUserCompleteCallBack onDownLoadUserCompleteCallBack;
+
+    private Data() {
+    }
+
+    public static Data getInstance() {
+        return instance;
+    }
+
+    public int getThemeColor() {
+        return themeColor;
+    }
+
+    public void setThemeColor(int themeColor) {
+        this.themeColor = themeColor;
+    }
+
+    public ArrayList<Event> getEvents() {
+        return events;
+    }
+
+    public ArrayList<Group> getGroups() {
+        return groups;
+    }
+
+    public ArrayList<User> getUsers() {
+        return users;
+    }
+
+    public ArrayList<Reminder> getReminders() {
+        return reminders;
+    }
+
+    public void setReminders(ArrayList<Reminder> reminders) {
+        this.reminders = reminders;
+    }
+
+    public void addRefreshView(RefreshData view) {
+        this.views.add(view);
+    }
+
+    public void clearRefreshView() {
+        views.clear();
+    }
+
+
+    public void addEventForCloud(String title, int startYear, int startMonth, int startDayOfMonth, int startHour,
+                                 int startMinute, int endYear, int endMonth, int endDayOfMonth, int endHour, int endMinute,
+                                 boolean isAllDay, int color, int repeat, boolean isChinese, int groupId, String note,
+                                 String map, String url, boolean isNoTime) {
+        AVObject event = new AVObject("Event");
+        event.put("title", title);
+        event.put("startYear", startYear);
+        event.put("startMonth", startMonth);
+        event.put("startDayOfMonth", startDayOfMonth);
+        event.put("startHour", startHour);
+        event.put("startMinute", startMinute);
+        event.put("endYear", endYear);
+        event.put("endMonth", endMonth);
+        event.put("endDayOfMonth", endDayOfMonth);
+        event.put("endHour", endHour);
+        event.put("endMinute", endMinute);
+        event.put("isAllDay", isAllDay);
+        event.put("color", color);
+        event.put("repeat", repeat);
+        event.put("isComplete", isChinese);
+        event.put("groupId", groupId);
+        event.put("note", note);
+        event.put("map", map);
+        event.put("url", url);
+        event.put("isNoTime", isNoTime);
+        event.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(AVException e) {
+                if (e == null) {
+                    refreshEventsForCloud();
+                } else {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+    }
+
+    public void updateEventForCloud(String title, int startYear, int startMonth, int startDayOfMonth, int startHour,
+                                    int startMinute, int endYear, int endMonth, int endDayOfMonth, int endHour, int endMinute,
+                                    boolean isAllDay, int color, int repeat, boolean isChinese, int groupId, String note,
+                                    String map, String url, boolean isNoTime, String objectId) {
+        AVObject event = AVObject.createWithoutData("Event", objectId);
+        event.put("title", title);
+        event.put("startYear", startYear);
+        event.put("startMonth", startMonth);
+        event.put("startDayOfMonth", startDayOfMonth);
+        event.put("startHour", startHour);
+        event.put("startMinute", startMinute);
+        event.put("endYear", endYear);
+        event.put("endMonth", endMonth);
+        event.put("endDayOfMonth", endDayOfMonth);
+        event.put("endHour", endHour);
+        event.put("endMinute", endMinute);
+        event.put("isAllDay", isAllDay);
+        event.put("color", color);
+        event.put("repeat", repeat);
+        event.put("isComplete", isChinese);
+        event.put("groupId", groupId);
+        event.put("note", note);
+        event.put("map", map);
+        event.put("url", url);
+        event.put("isNoTime", isNoTime);
+        event.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(AVException e) {
+                if (e == null) {
+                    refreshEventsByWorkId(getUserInfo().getWorkId());
+                } else {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+    }
+
+    public void refreshEventsForCloud() {
+        final ArrayList<AVObject> avList = new ArrayList<>();
+        avList.clear();
+        AVQuery<AVObject> avQuery = new AVQuery<>("Event");
+        avQuery.whereEqualTo("isClose", false);
+        avQuery.findInBackground(new FindCallback<AVObject>() {
+            @Override
+            public void done(List<AVObject> aList, AVException e) {
+                if (e == null) {
+                    avList.addAll(aList);
+                    ArrayList<Event> allEvents = new ArrayList<>();
+                    events.clear();
+                    for (AVObject object : avList) {
+                        Event event = new Event();
+                        event.setTitle(object.get("title").toString());
+
+                        event.setStartYear((int) (object.get("startYear")));
+                        event.setStartMonth((int) (object.get("startMonth")));
+                        event.setStartDayOfMonth((int) (object.get("startDayOfMonth")));
+                        event.setStartHour((int) (object.get("startHour")));
+                        event.setStartMinute((int) (object.get("startMinute")));
+
+                        event.setEndYear((int) (object.get("endYear")));
+                        event.setEndMonth((int) (object.get("endMonth")));
+                        event.setEndDayOfMonth((int) (object.get("endDayOfMonth")));
+                        event.setEndHour((int) (object.get("endHour")));
+                        event.setEndMinute((int) (object.get("endMinute")));
+
+                        event.setAllDay((boolean) (object.get("isAllDay")));
+                        event.setColor(new Long(object.get("color").toString()).intValue());
+                        event.setRepeat((int) (object.get("repeat")));
+                        event.setComplete((boolean) (object.get("isComplete")));
+                        event.setGroupId((int) (object.get("groupId")));
+
+                        event.setNote(object.get("note").toString());
+                        event.setMap(object.get("map").toString());
+                        event.setUrl(object.get("url").toString());
+
+                        event.setNoTime((boolean) (object.get("isNoTime")));
+                        event.setObjectId(object.getObjectId());
+                        allEvents.add(event);
+                        for (int i = 0; i < groups.size(); i++) {
+                            if (event.getGroupId() == groups.get(i).getGroupId()) {
+                                events.add(event);
+                                break;
+                            }
+                        }
+                    }
+                    if (onDownloadEventCompleteCallBack != null)
+                        onDownloadEventCompleteCallBack.onComplete(allEvents);
+                    redrawViews();
+                } else {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+    }
+
+    public void deleteEventForCloud(String objectId) {
+        AVObject event = AVObject.createWithoutData("Event", objectId);
+        event.put("isClose", true);
+        event.saveInBackground(new SaveCallback() {
+            public void done(AVException e) {
+                if (e == null) {
+                    refreshEventsByWorkId(getUserInfo().getWorkId());
+                } else {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public void refreshEventsForCloudFromGroup(ArrayList<String> GroupIds) {
+        final ArrayList<AVObject> avList = new ArrayList<>();
+        avList.clear();
+        AVQuery<AVObject> avQuery = new AVQuery<>("Event");
+        avQuery.whereContainedIn("groupId", GroupIds);
+        avQuery.whereEqualTo("isClose", false);
+        avQuery.findInBackground(new FindCallback<AVObject>() {
+            @Override
+            public void done(List<AVObject> aList, AVException e) {
+                if (e == null) {
+                    avList.addAll(aList);
+                    events.clear();
+                    for (AVObject object : avList) {
+                        Event event = new Event();
+                        event.setTitle(object.get("title").toString());
+
+                        event.setStartYear((int) (object.get("startYear")));
+                        event.setStartMonth((int) (object.get("startMonth")));
+                        event.setStartDayOfMonth((int) (object.get("startDayOfMonth")));
+                        event.setStartHour((int) (object.get("startHour")));
+                        event.setStartMinute((int) (object.get("startMinute")));
+
+                        event.setEndYear((int) (object.get("endYear")));
+                        event.setEndMonth((int) (object.get("endMonth")));
+                        event.setEndDayOfMonth((int) (object.get("endDayOfMonth")));
+                        event.setEndHour((int) (object.get("endHour")));
+                        event.setEndMinute((int) (object.get("endMinute")));
+
+                        event.setAllDay((boolean) (object.get("isAllDay")));
+                        event.setColor(new Long(object.get("color").toString()).intValue());
+                        event.setRepeat((int) (object.get("repeat")));
+                        event.setComplete((boolean) (object.get("isComplete")));
+                        event.setGroupId((int) (object.get("groupId")));
+
+                        event.setNote(object.get("note").toString());
+                        event.setMap(object.get("map").toString());
+                        event.setUrl(object.get("url").toString());
+
+                        event.setNoTime((boolean) (object.get("isNoTime")));
+                        event.setObjectId(object.getObjectId());
+                        events.add(event);
+                    }
+                    redrawViews();
+                } else {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+    }
+
+    public void addGroupForCloud(int groupId, String groupName, ArrayList<String> workIds) {
+        AVObject group = new AVObject("Group");
+        group.put("groupId", groupId);
+        group.put("groupName", groupName);
+        for (String workId : workIds) {
+            group.addUnique("workId", workId);
+        }
+        group.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(AVException e) {
+                if (e == null) {
+                    refreshGroupsByWorkId(getUserInfo().getWorkId());
+                } else {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+    }
+
+    public void updateGroupForCloud(int groupId, String groupName, ArrayList<String> workIds, String objectId) {
+        AVObject group = AVObject.createWithoutData("Group", objectId);
+        group.put("groupId", groupId);
+        group.put("groupName", groupName);
+        group.remove("workId");
+        for (String workId : workIds) {
+            group.addUnique("workId", workId);
+        }
+        group.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(AVException e) {
+                if (e == null) {
+                    refreshGroupsByWorkId(getUserInfo().getWorkId());
+                } else {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public void refreshGroupsForCloud() {
+        final ArrayList<AVObject> avList = new ArrayList<>();
+        avList.clear();
+        AVQuery<AVObject> avQuery = new AVQuery<>("Group");
+        avQuery.whereEqualTo("isClose", false);
+        avQuery.findInBackground(new FindCallback<AVObject>() {
+            @Override
+            public void done(List<AVObject> aList, AVException e) {
+                if (e == null) {
+                    avList.addAll(aList);
+                    ArrayList<Group> allGroups = new ArrayList<>();
+                    groups.clear();
+                    for (AVObject object : avList) {
+                        Group group = new Group();
+                        group.setGroupId((int) (object.get("groupId")));
+                        group.setGroupName(object.get("groupName").toString());
+                        group.setWorkId((ArrayList<String>) object.getList("workId"));
+                        group.setGroupIcon((byte[]) object.get("groupIcon"));
+                        group.setObjectId(object.getObjectId());
+                        allGroups.add(group);
+                        for (int i = 0; i < group.getWorkId().size(); i++) {
+                            if (userInfo.getWorkId().equals(group.getWorkId().get(i))) {
+                                groups.add(group);
+                                break;
+                            }
+                        }
+                    }
+                    if (onDownLoadGroupCompleteCallBack != null)
+                        onDownLoadGroupCompleteCallBack.onComplete(allGroups);
+                    redrawViews();
+                } else {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+    }
+
+    public void deleteGroupForCloud(String objectId) {
+        AVObject group = AVObject.createWithoutData("Group", objectId);
+        group.put("isClose", true);
+        group.saveInBackground(new SaveCallback() {
+            public void done(AVException e) {
+                if (e == null) {
+                    refreshGroupsByWorkId(getUserInfo().getWorkId());
+                } else {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public void addUserForCloud(final String workId, String password, final String name, String englishName) {
+        AVObject userInfo = new AVObject("UserInfo");
+        userInfo.put("workId", workId);
+        userInfo.put("password", password);
+        userInfo.put("name", name);
+        userInfo.put("englishName", englishName);
+        userInfo.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(AVException e) {
+                if (e == null) {
+                    AVObject newGroup = new AVObject("Group");
+                    newGroup.put("groupName", name);
+                    newGroup.addUnique("workId", workId);
+                    newGroup.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(AVException e) {
+                            if (e == null) {
+                                refreshUsersForCloud();
+                                refreshGroupsByWorkId(getUserInfo().getWorkId());
+                            } else {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
+                } else {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+    }
+
+    public void updateUserForCloud(final String workId, String password, final String name, String englishName, final String objectId) {
+        AVObject userInfo = AVObject.createWithoutData("UserInfo", objectId);
+        userInfo.put("workId", workId);
+        userInfo.put("password", password);
+        userInfo.put("name", name);
+        userInfo.put("englishName", englishName);
+        userInfo.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(AVException e) {
+                if (e == null) {
+                    String groupObjectId="";
+                    for (Group group:getGroups()){
+                        if (group.getGroupName().equals(getUserInfo().getName())){
+                            groupObjectId=group.getObjectId();
+                        }
+                    }
+                    AVObject group = AVObject.createWithoutData("Group", groupObjectId);
+                    group.put("groupName", name);
+                    group.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(AVException e) {
+                            refreshGroupsByWorkId(workId);
+                            refreshUsersForCloud();
+                        }
+                    });
+
+
+                } else {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public void createUser() {
+        users = UserCreator.create();
+    }
+
+    public void refreshUsersForCloud() {
+        final ArrayList<AVObject> avList = new ArrayList<>();
+        avList.clear();
+        AVQuery<AVObject> avQuery = new AVQuery<>("UserInfo");
+        avQuery.whereEqualTo("isClose", false);
+        avQuery.findInBackground(new FindCallback<AVObject>() {
+            @Override
+            public void done(List<AVObject> aList, AVException e) {
+                if (e == null) {
+                    avList.addAll(aList);
+                    users.clear();
+                    for (AVObject object : avList) {
+                        User user = new User();
+                        user.setWorkId(object.get("workId").toString());
+                        user.setPassword(object.get("password").toString());
+                        user.setName(object.get("name").toString());
+                        user.setEnglishName(object.get("englishName").toString());
+                        user.setObjectId(object.getObjectId());
+                        users.add(user);
+                    }
+                    if (onDownLoadUserCompleteCallBack != null)
+                        onDownLoadUserCompleteCallBack.onComplete(users);
+                    redrawViews();
+                } else {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+    }
+
+    public void deleteUserForCloud(String objectId) {
+        AVObject userInfo = AVObject.createWithoutData("UserInfo", objectId);
+        userInfo.put("isClose", true);
+        userInfo.saveInBackground(new SaveCallback() {
+            public void done(AVException e) {
+                if (e == null) {
+                    refreshUsersForCloud();
+                } else {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public void redrawViews() {
+        for (RefreshData view : views) {
+            if (view != null) {
+                view.refresh();
+            }
+        }
+    }
+
+    public ArrayList<Holiday> getHolidaysFromInternet() {
+        return holidays;
+    }
+
+    public ArrayList<Holiday> getHolidays(Context context, Locale locale) {
+        return HolidayUtils.getHoliday(context, locale);
+    }
+
+    public void refreshHolidaysFromInternet() {
+        holidays.clear();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 1; i <= 12; i++)
+                    getHolidaysForMonth(i);
+                redrawViews();
+            }
+        }).start();
+    }
+
+
+    private void getHolidaysForMonth(int month) {
+        final APIConsumer consumer = new HolidayAPIConsumer("https://holidayapi.com/v1/holidays");
+        final QueryParams params = new QueryParams();
+        params.key("6607e14a-8904-4c79-81bf-17dfe295b370")
+                .month(month)
+                .country(QueryParams.Country.AUSTRALIA)
+                .year(2019)
+                .format(QueryParams.Format.XML)
+                .pretty(true);
+        try {
+            HolidayAPIResponse response = consumer.getHolidays(params);
+            int status = response.getStatus();
+            if (status == 200) {
+                List<Holiday> holidays = response.getHolidays();
+                if (holidays != null)
+                    this.holidays.addAll(holidays);
+            }
+        } catch (IOException | SAXException | ParserConfigurationException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void refreshGroupsByWorkId(String workId) {
+        AVQuery<AVObject> avQuery = new AVQuery<>("Group");
+        avQuery.whereEqualTo("workId", workId);
+        avQuery.whereEqualTo("isClose", false);
+        avQuery.findInBackground(new FindCallback<AVObject>() {
+            @Override
+            public void done(List<AVObject> aList, AVException e) {
+                if (e == null) {
+                    groups.clear();
+                    for (AVObject object : aList) {
+                        Group group = new Group();
+                        group.setGroupId((int) (object.get("groupId")));
+                        group.setGroupName(object.get("groupName").toString());
+                        group.setWorkId((ArrayList<String>) object.getList("workId"));
+                        group.setObjectId(object.getObjectId());
+                        groups.add(group);
+                    }
+                    redrawViews();
+                } else {
+                    e.printStackTrace();
+                }
+            }
+
+        });
+    }
+
+    public static User getUserInfo() {
+        return userInfo;
+    }
+
+    public static void setUserInfo(User userInfo) {
+        Data.userInfo = userInfo;
+    }
+
+
+    public void addEventForCloud(Event cEvent) {
+        AVObject event = new AVObject("Event");
+        event.put("title", cEvent.getTitle());
+        event.put("startYear", cEvent.getStartYear());
+        event.put("startMonth", cEvent.getStartMonth());
+        event.put("startDayOfMonth", cEvent.getStartDayOfMonth());
+        event.put("startHour", cEvent.getStartHour());
+        event.put("startMinute", cEvent.getStartMinute());
+        event.put("endYear", cEvent.getEndYear());
+        event.put("endMonth", cEvent.getEndMonth());
+        event.put("endDayOfMonth", cEvent.getEndDayOfMonth());
+        event.put("endHour", cEvent.getEndHour());
+        event.put("endMinute", cEvent.getEndMinute());
+        event.put("isAllDay", cEvent.isAllDay());
+        event.put("color", cEvent.getColor());
+        event.put("repeat", cEvent.getRepeat());
+        event.put("isComplete", cEvent.isComplete());
+        event.put("groupId", cEvent.getGroupId());
+        event.put("note", cEvent.getNote());
+        event.put("map", cEvent.getMap());
+        event.put("url", cEvent.getUrl());
+        event.put("isNoTime", cEvent.isNoTime());
+        event.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(AVException e) {
+                if (e == null) {
+                    refreshEventsForCloud();
+                } else {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+    }
+
+    public void refreshEventsByWorkId(String workId) {
+        final ArrayList<Integer> GroupIds = new ArrayList<>();
+        GroupIds.clear();
+        AVQuery<AVObject> avQuery = new AVQuery<>("Group");
+        avQuery.whereEqualTo("workId", workId);
+        avQuery.whereEqualTo("isClose", false);
+        avQuery.findInBackground(new FindCallback<AVObject>() {
+            @Override
+            public void done(List<AVObject> aList, AVException e) {
+                if (e == null) {
+                    for (AVObject object : aList) {
+                        GroupIds.add((Integer) object.get("groupId"));
+                    }
+                    AVQuery<AVObject> avQuery = new AVQuery<>("Event");
+                    avQuery.whereEqualTo("isClose", false);
+                    avQuery.addAscendingOrder("startYear");
+                    avQuery.addAscendingOrder("startMonth");
+                    avQuery.addAscendingOrder("startDayOfMonth");
+                    avQuery.addAscendingOrder("startHour");
+                    avQuery.addAscendingOrder("startMinute");
+                    avQuery.whereContainedIn("groupId", GroupIds);
+                    avQuery.limit(1000);
+                    avQuery.findInBackground(new FindCallback<AVObject>() {
+                        @Override
+                        public void done(List<AVObject> aList, AVException e) {
+                            if (e == null) {
+                                events.clear();
+                                for (AVObject object : aList) {
+                                    Event event = new Event();
+                                    event.setTitle(object.get("title").toString());
+
+                                    event.setStartYear((int) (object.get("startYear")));
+                                    event.setStartMonth((int) (object.get("startMonth")));
+                                    event.setStartDayOfMonth((int) (object.get("startDayOfMonth")));
+                                    event.setStartHour((int) (object.get("startHour")));
+                                    event.setStartMinute((int) (object.get("startMinute")));
+
+                                    event.setEndYear((int) (object.get("endYear")));
+                                    event.setEndMonth((int) (object.get("endMonth")));
+                                    event.setEndDayOfMonth((int) (object.get("endDayOfMonth")));
+                                    event.setEndHour((int) (object.get("endHour")));
+                                    event.setEndMinute((int) (object.get("endMinute")));
+
+                                    event.setAllDay((boolean) (object.get("isAllDay")));
+                                    event.setColor(new Long(object.get("color").toString()).intValue());
+                                    event.setRepeat((int) (object.get("repeat")));
+                                    event.setComplete((boolean) (object.get("isComplete")));
+                                    event.setGroupId((int) (object.get("groupId")));
+
+                                    event.setNote(object.get("note").toString());
+                                    event.setMap(object.get("map").toString());
+                                    event.setUrl(object.get("url").toString());
+
+                                    event.setNoTime((boolean) (object.get("isNoTime")));
+                                    event.setObjectId(object.getObjectId());
+                                    events.add(event);
+                                }
+                                if (onDownloadEventCompleteCallBack != null)
+                                    onDownloadEventCompleteCallBack.onComplete(events);
+                                redrawViews();
+                            } else {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                } else {
+                    e.printStackTrace();
+                }
+            }
+
+        });
+    }
+
+    public void refreshUserNamesByGroup(Group group) {
+        userNames.clear();
+        ArrayList<String> workIds = group.getWorkId();
+        ArrayList<User> users = getUsers();
+        for (String workId : workIds) {
+            for (User user : users) {
+                if (workId.equals(user.getWorkId())) {
+                    userNames.add(user.getName());
+                }
+            }
+        }
+    }
+
+    public ArrayList<String> getUserNames() {
+        return userNames;
+    }
+
+    public boolean isRemind(Event event) {
+        String objectId = event.getObjectId();
+        for (int i = 0; i < reminders.size(); i++) {
+            if (objectId.equals(reminders.get(i).getEventObjectId()))
+                return true;
+        }
+        return false;
+    }
+
+    public int getReminderType(Event event) {
+        String objectId = event.getObjectId();
+        for (int i = 0; i < reminders.size(); i++) {
+            Reminder reminder = reminders.get(i);
+            if (objectId.equals(reminder.getEventObjectId())) {
+                return reminder.getReminderType();
+            }
+        }
+        return 0;
+    }
+
+    public boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected())
+            return true;
+        Toast.makeText(context, context.getResources().getText(R.string.noNetworkService), Toast.LENGTH_SHORT).show();
+        return false;
+    }
+
+    public void setOnDownloadEventCompleteCallBack(OnDownloadEventCompleteCallBack callBack) {
+        onDownloadEventCompleteCallBack = callBack;
+    }
+
+    public void setOnDownLoadGroupCompleteCallBack(OnDownLoadGroupCompleteCallBack callBack) {
+        onDownLoadGroupCompleteCallBack = callBack;
+    }
+
+    public void setOnDownLoadUserCompleteCallBack(OnDownLoadUserCompleteCallBack callBack) {
+        onDownLoadUserCompleteCallBack = callBack;
+    }
+
+    public interface OnDownloadEventCompleteCallBack {
+        void onComplete(ArrayList<Event> events);
+    }
+
+    public interface OnDownLoadGroupCompleteCallBack {
+        void onComplete(ArrayList<Group> groups);
+    }
+
+    public interface OnDownLoadUserCompleteCallBack {
+        void onComplete(ArrayList<User> users);
+    }
+
+    public void uploadGroupsIcon(String groupObjectId ,File icon) {
+        AVObject group = AVObject.createWithoutData("Group", groupObjectId);
+        group.put("groupIcon", icon);
+        group.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(AVException e) {
+                if (e == null) {
+                    refreshGroupsForCloud();
+                } else {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+}
+

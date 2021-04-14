@@ -1,0 +1,76 @@
+package com.honhai.foxconn.fxccalendar.keepevent;
+
+import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.data.Data;
+import com.honhai.foxconn.fxccalendar.data.Event;
+
+import java.util.List;
+
+public class KeepEventAdapter extends RecyclerView.Adapter<KeepEventAdapter.MyHolder> {
+    Context context;
+    private List<String> keepEvent;
+
+    public KeepEventAdapter(){
+
+    }
+
+    public KeepEventAdapter(Context context, List<String> keepEvent) {
+        this.context = context;
+        this.keepEvent = keepEvent;
+    }
+
+
+    @NonNull
+    @Override
+    public KeepEventAdapter.MyHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.keep_item_layout, parent, false);
+        MyHolder holder = new MyHolder(view);
+        return holder;
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull KeepEventAdapter.MyHolder myHolder, int position) {
+     myHolder.keepEventTitle.setTextColor(Data.getInstance().getThemeColor());
+     String keepEventTitle = keepEvent.get(position);
+     myHolder.keepEventTitle.setText(keepEventTitle);
+
+     //TODO Joy jump to keepEventEdit activity
+     myHolder.keepEventItem.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View v) {
+
+         }
+     });
+    }
+
+    @Override
+    public int getItemCount() {
+        return keepEvent.size();
+    }
+
+    class MyHolder extends RecyclerView.ViewHolder {
+        LinearLayout keepEventItem;
+        TextView keepEventTitle;
+        TextView colorLabel;
+
+        public MyHolder(View itemView) {
+            super(itemView);
+            keepEventItem = itemView.findViewById(R.id.keepEventItem);
+            keepEventTitle = itemView.findViewById(R.id.keepEventTitle);
+            colorLabel= itemView.findViewById(R.id.colorLabel);
+
+        }
+    }
+
+}

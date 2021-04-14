@@ -1,0 +1,38 @@
+package com.honhai.foxconn.fxccalendar.elsemember.photo;
+
+import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.view.ViewGroup;
+
+import java.util.ArrayList;
+
+public class PhotoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private ArrayList<String> photos;
+
+    PhotoAdapter(ArrayList<String> photos){
+        this.photos = photos;
+    }
+
+    @NonNull
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+        return null;
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+
+    }
+
+    @Override
+    public int getItemCount() {
+        return photos.size();
+    }
+
+    private class PhotoViewHolder extends RecyclerView.ViewHolder {
+        public PhotoViewHolder(@NonNull View itemView) {
+            super(itemView);
+        }
+    }
+}

@@ -1,0 +1,375 @@
+package com.honhai.foxconn.fxccalendar.data;
+
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVObject;
+import com.avos.avoscloud.AVQuery;
+import com.avos.avoscloud.DeleteCallback;
+import com.avos.avoscloud.FindCallback;
+import com.avos.avoscloud.SaveCallback;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Event {
+    private String title;
+    private int startYear;
+    private int startMonth;
+    private int startDayOfMonth;
+    private int startHour;
+    private int startMinute;
+    private int endYear;
+    private int endMonth;
+    private int endDayOfMonth;
+    private int endHour;
+    private int endMinute;
+    private boolean isAllDay;
+    private int color;
+    private int repeat;
+    private boolean isChinese;
+    private int groupId;
+    private String note;
+    private String map;
+    private String url;
+    private boolean isNoTime;
+    private String objectId;
+    private ArrayList<Event> events = new ArrayList<>();
+
+    public Event(String title, int startYear, int startMonth, int startDayOfMonth, int startHour,
+                 int startMinute, int endYear, int endMonth, int endDayOfMonth, int endHour, int endMinute,
+                 boolean isAllDay, int color, int repeat, boolean isChinese, int groupId, String note,
+                 String map, String url, boolean isNoTime, String objectId) {
+        this.title = title;
+        this.startYear = startYear;
+        this.startMonth = startMonth;
+        this.startDayOfMonth = startDayOfMonth;
+        this.startHour = startHour;
+        this.startMinute = startMinute;
+        this.endYear = endYear;
+        this.endMonth = endMonth;
+        this.endDayOfMonth = endDayOfMonth;
+        this.endHour = endHour;
+        this.endMinute = endMinute;
+        this.isAllDay = isAllDay;
+        this.color = color;
+        this.repeat = repeat;
+        this.isChinese = isChinese;
+        this.groupId = groupId;
+        this.note = note;
+        this.map = map;
+        this.url = url;
+        this.isNoTime = isNoTime;
+        this.objectId = objectId;
+    }
+
+    public Event() {
+
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public int getStartYear() {
+        return startYear;
+    }
+
+    public void setStartYear(int startYear) {
+        this.startYear = startYear;
+    }
+
+    public int getStartMonth() {
+        return startMonth;
+    }
+
+    public void setStartMonth(int startMonth) {
+        this.startMonth = startMonth;
+    }
+
+    public int getStartDayOfMonth() {
+        return startDayOfMonth;
+    }
+
+    public void setStartDayOfMonth(int startDayOfMonth) {
+        this.startDayOfMonth = startDayOfMonth;
+    }
+
+    public int getStartHour() {
+        return startHour;
+    }
+
+    public void setStartHour(int startHour) {
+        this.startHour = startHour;
+    }
+
+    public int getStartMinute() {
+        return startMinute;
+    }
+
+    public void setStartMinute(int startMinute) {
+        this.startMinute = startMinute;
+    }
+
+    public int getEndYear() {
+        return endYear;
+    }
+
+    public void setEndYear(int endYear) {
+        this.endYear = endYear;
+    }
+
+    public int getEndMonth() {
+        return endMonth;
+    }
+
+    public void setEndMonth(int endMonth) {
+        this.endMonth = endMonth;
+    }
+
+    public int getEndDayOfMonth() {
+        return endDayOfMonth;
+    }
+
+    public void setEndDayOfMonth(int endDayOfMonth) {
+        this.endDayOfMonth = endDayOfMonth;
+    }
+
+    public int getEndHour() {
+        return endHour;
+    }
+
+    public void setEndHour(int endHour) {
+        this.endHour = endHour;
+    }
+
+    public int getEndMinute() {
+        return endMinute;
+    }
+
+    public void setEndMinute(int endMinute) {
+        this.endMinute = endMinute;
+    }
+
+    public boolean isAllDay() {
+        return isAllDay;
+    }
+
+    public void setAllDay(boolean allDay) {
+        isAllDay = allDay;
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
+
+    public int getRepeat() {
+        return repeat;
+    }
+
+    public void setRepeat(int repeat) {
+        this.repeat = repeat;
+    }
+
+    public boolean isChinese() {
+        return isChinese;
+    }
+
+    public void setChinese(boolean chinese) {
+        isChinese = chinese;
+    }
+
+    public int getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(int groupId) {
+        this.groupId = groupId;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public String getMap() {
+        return map;
+    }
+
+    public void setMap(String map) {
+        this.map = map;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public boolean isNoTime() {
+        return isNoTime;
+    }
+
+    public void setNoTime(boolean noTime) {
+        isNoTime = noTime;
+    }
+
+    public long getStartTime() {
+        return (startYear * 100000000 + startMonth * 1000000 + startDayOfMonth * 10000 + startHour * 100 + startMinute);
+    }
+
+    public long getEndTime() {
+        return (endYear * 100000000 + endMonth * 1000000 + endDayOfMonth * 10000 + endHour * 100 + endMinute);
+    }
+
+    public String getObjectId() {
+        return objectId;
+    }
+
+    public void setObjectId(String objectId) {
+        this.objectId = objectId;
+    }
+
+    public void addEvent(String title, int startYear, int startMonth, int startDayOfMonth, int startHour,
+                         int startMinute, int endYear, int endMonth, int endDayOfMonth, int endHour, int endMinute,
+                         boolean isAllDay, int color, int repeat, boolean isChinese, int groupId, String note,
+                         String map, String url, boolean isNoTime) {
+        AVObject event = new AVObject("Event");
+        event.put("title", title);
+        event.put("startYear", startYear);
+        event.put("startMonth", startMonth);
+        event.put("startDayOfMonth", startDayOfMonth);
+        event.put("startHour", startHour);
+        event.put("startMinute", startMinute);
+        event.put("endYear", endYear);
+        event.put("endMonth", endMonth);
+        event.put("endDayOfMonth", endDayOfMonth);
+        event.put("endHour", endHour);
+        event.put("endMinute", endMinute);
+        event.put("isAllDay", isAllDay);
+        event.put("color", color);
+        event.put("repeat", repeat);
+        event.put("isChinese", isChinese);
+        event.put("groupId", groupId);
+        event.put("note", note);
+        event.put("map", map);
+        event.put("url", url);
+        event.put("isNoTime", isNoTime);
+        event.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(AVException e) {
+                if (e != null) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+    }
+
+    public void updateEvent(String title, int startYear, int startMonth, int startDayOfMonth, int startHour,
+                            int startMinute, int endYear, int endMonth, int endDayOfMonth, int endHour, int endMinute,
+                            boolean isAllDay, int color, int repeat, boolean isChinese, int groupId, String note,
+                            String map, String url, boolean isNoTime, String objectId) {
+        AVObject event = AVObject.createWithoutData("Event", objectId);
+        event.put("title", title);
+        event.put("startYear", startYear);
+        event.put("startMonth", startMonth);
+        event.put("startDayOfMonth", startDayOfMonth);
+        event.put("startHour", startHour);
+        event.put("startMinute", startMinute);
+        event.put("endYear", endYear);
+        event.put("endMonth", endMonth);
+        event.put("endDayOfMonth", endDayOfMonth);
+        event.put("endHour", endHour);
+        event.put("endMinute", endMinute);
+        event.put("isAllDay", isAllDay);
+        event.put("color", color);
+        event.put("repeat", repeat);
+        event.put("isChinese", isChinese);
+        event.put("groupId", groupId);
+        event.put("note", note);
+        event.put("map", map);
+        event.put("url", url);
+        event.put("isNoTime", isNoTime);
+        event.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(AVException e) {
+                if (e != null) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+    }
+
+    public ArrayList<Event> getEvents() {
+        final ArrayList<AVObject> avList = new ArrayList<>();
+        avList.clear();
+        AVQuery<AVObject> avQuery = new AVQuery<>("Event");
+        avQuery.findInBackground(new FindCallback<AVObject>() {
+            @Override
+            public void done(List<AVObject> aList, AVException e) {
+                if (e == null) {
+                    avList.addAll(aList);
+                } else {
+                    e.printStackTrace();
+                }
+            }
+        });
+        for (AVObject object : avList) {
+            events.clear();
+            Event event = new Event();
+            event.setTitle(object.get("title").toString());
+
+            event.setStartYear((int) (object.get("startYear")));
+            event.setStartMonth((int) (object.get("startMonth")));
+            event.setStartDayOfMonth((int) (object.get("startDayOfMonth")));
+            event.setStartHour((int) (object.get("startHour")));
+            event.setStartMinute((int) (object.get("startMinute")));
+
+            event.setEndYear((int) (object.get("endYear")));
+            event.setEndMonth((int) (object.get("endMonth")));
+            event.setEndDayOfMonth((int) (object.get("endDayOfMonth")));
+            event.setEndHour((int) (object.get("endHour")));
+            event.setEndMinute((int) (object.get("endMinute")));
+
+            event.setAllDay((boolean) (object.get("isAllDay")));
+            event.setColor((int) (object.get("color")));
+            event.setRepeat((int) (object.get("repeat")));
+            event.setChinese((boolean) (object.get("isChinese")));
+            event.setGroupId((int) (object.get("groupId")));
+
+            event.setNote(object.get("note").toString());
+            event.setMap(object.get("map").toString());
+            event.setUrl(object.get("url").toString());
+
+            event.setNoTime((boolean) (object.get("isNoTime")));
+            event.setObjectId(object.getObjectId());
+            events.add(event);
+        }
+        return events;
+    }
+
+    public void deleteEvent(String objectId) {
+        AVObject event = AVObject.createWithoutData("Event", objectId);
+        event.deleteInBackground(new DeleteCallback() {
+            public void done(AVException e) {
+                if (e != null) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+}

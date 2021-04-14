@@ -1,0 +1,139 @@
+package com.honhai.foxconn.fxccalendar.agenda;
+
+
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.agenda.adapter.AgendaListAdapter;
+import com.honhai.foxconn.fxccalendar.data.Data;
+import com.honhai.foxconn.fxccalendar.data.Event;
+import com.honhai.foxconn.fxccalendar.data.interfaces.RefreshData;
+import com.honhai.foxconn.fxccalendar.data.interfaces.Rollback;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
+
+
+public class AgendaViewFragment extends Fragment implements Rollback, RefreshData {
+
+    private View view;
+    public RecyclerView mAgendaListRecyclerView;
+    public AgendaListAdapter mAdapter;
+    public List<Object> objects = new ArrayList<>();
+    public ArrayList<Event> events = new ArrayList<>();
+    private ArrayList<AgendaDayEvent> agendaDayEvents = new ArrayList<>();
+
+
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.fragment_agend_layout, container, false);
+        initRecyclerView();
+        Data.getInstance().addRefreshView(this);
+        initData();
+        return view;
+    }
+
+    private void initRecyclerView() {
+        mAgendaListRecyclerView = view.findViewById(R.id.agendalist_recyclerview);
+        mAgendaListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+        mAgendaListRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(),
+                DividerItemDecoration.VERTICAL));
+    }
+
+    private void initData() {
+        ArrayList<Event> events = Data.getInstance().getEvents();
+        /**  Event event = new Event("1yyyyyy",1,2,3,0,5,6,7,8,9,10,true,Data.getInstance().getThemeColor(),1,true,1,"","1","1",true,"1");
+         events.add(event);
+         Day mday = new Day(event);
+         AgendaDayEvent  agendaDayEvent = new AgendaDayEvent(getContext(),mday);
+         agendaDayEvent.addEvent(event);
+         agendaDayEvents.add(agendaDayEvent);*/
+        refreshAgendaEventList(events);
+        sortData(agendaDayEvents);
+        mAdapter = new AgendaListAdapter(getActivity(), objects);
+        mAgendaListRecyclerView.setAdapter(mAdapter);
+        mAdapter.notifyDataSetChanged();
+
+
+    }
+
+    private void sortData(ArrayList<AgendaDayEvent> mAgendaDayEvents) {
+        objects.clear();
+        for (AgendaDayEvent mAgendaDayEvent : mAgendaDayEvents) {
+            objects.add(mAgendaDayEvent.getAgendaDay());
+            ArrayList<AgendaDayEvent.AgendaEvent> mAgendaEvents = mAgendaDayEvent.getAgendaEventList();
+            /*if (mAgendaEvents != null && mAgendaEvents.size() > 0) {
+             for (AgendaDayEvent.AgendaEvent mAgendaEvent : mAgendaEvents) {
+             objects.add(mAgendaEvent);
+
+             }*/
+            objects.addAll(mAgendaEvents);
+        }
+
+        //return objects;
+    }
+
+    private void refreshAgendaEventList(ArrayList<Event> events) {
+        agendaDayEvents.clear();
+        for (int i = 0; i < events.size(); i++) {
+            Event event = events.get(i);
+            if (!event.isNoTime())
+                createEventDay(event);
+        }
+        Collections.sort(agendaDayEvents);
+    }
+
+    private void createEventDay(Event event) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(event.getStartYear(), event.getStartMonth(), event.getStartDayOfMonth());
+        for (; !isCalendarEventEndDay(calendar, event); calendar.add(Calendar.DAY_OF_YEAR, 1)) {
+            addEventToAgendaDayEvent(event, calendar);
+        }
+    }
+
+    private void addEventToAgendaDayEvent(Event event, Calendar calendar) {
+        for (int i = 0; i < agendaDayEvents.size(); i++) {
+            AgendaDayEvent agendaDayEvent = agendaDayEvents.get(i);
+            if (agendaDayEvent.getDay().equal(calendar)) {
+                agendaDayEvent.addEvent(event);
+                return;
+            }
+        }
+        AgendaDayEvent agendaDayEvent = new AgendaDayEvent(getContext(), calendar);
+        agendaDayEvent.addEvent(event);
+        agendaDayEvents.add(agendaDayEvent);
+    }
+
+    private boolean isCalendarEventEndDay(Calendar calendar, Event event) {
+        calendar.add(Calendar.DAY_OF_YEAR,-1);
+        boolean r = (calendar.get(Calendar.YEAR) == event.getEndYear() &&
+                calendar.get(Calendar.MONTH) == event.getEndMonth() &&
+                calendar.get(Calendar.DAY_OF_MONTH) == event.getEndDayOfMonth());
+        calendar.add(Calendar.DAY_OF_YEAR,1);
+        return r;
+    }
+
+
+    @Override
+    public void refresh() {
+        ArrayList<Event> events = Data.getInstance().getEvents();
+        refreshAgendaEventList(events);
+        sortData(agendaDayEvents);
+        mAdapter.notifyDataSetChanged();
+    }
+
+    public void rollback() {
+    }
+
+}

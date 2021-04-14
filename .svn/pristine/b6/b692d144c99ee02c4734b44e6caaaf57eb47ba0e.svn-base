@@ -1,0 +1,80 @@
+package com.honhai.foxconn.fxccalendar.colormanager;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ImageView;
+
+import com.honhai.foxconn.fxccalendar.R;
+
+import java.util.List;
+
+public class ColorAdapter extends ArrayAdapter {
+    private int resourceId;
+    private SharedPreferences mSharedPreferences;
+    public static String SP_COLOR_LABEL = "colorLabel";
+
+    public ColorAdapter(Context context, int editTextResourceId, List<ColorItem> objects) {
+        super(context, editTextResourceId, objects);
+        resourceId = editTextResourceId;
+        mSharedPreferences = getContext().getSharedPreferences(SP_COLOR_LABEL, Context.MODE_PRIVATE);
+    }
+
+
+    @Override
+    public View getView(final int position, View convertView, ViewGroup parent) {
+        final ColorItem colorItem = (ColorItem) getItem(position);
+        View view = LayoutInflater.from(getContext()).inflate(resourceId, null);
+        ColorImageView colorImage = view.findViewById(R.id.color_img);
+        final EditText colorName = view.findViewById(R.id.color_name);
+        colorImage.setColor(colorItem.getColorImageId());
+        colorName.setHint(colorItem.getColorName());
+        final ImageView clear = view.findViewById(R.id.clear);
+        Drawable drawable = getContext().getDrawable(R.drawable.ic_clear);
+        drawable.setTint(colorItem.getColorImageId());
+        drawable.setAlpha(255);
+        clear.setImageDrawable(drawable);
+
+        colorName.setText(mSharedPreferences.getString(colorItem.getColorName(), ""));
+        colorName.setTextColor(colorItem.getColorImageId());
+
+        colorName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 0) {
+                    clear.setVisibility(View.VISIBLE);
+                } else {
+                    clear.setVisibility(View.INVISIBLE);
+                }
+                mSharedPreferences.edit().putString(colorItem.getColorName(), s.toString()).apply();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                colorName.setText("");
+            }
+        });
+        return view;
+    }
+}
+
+
+

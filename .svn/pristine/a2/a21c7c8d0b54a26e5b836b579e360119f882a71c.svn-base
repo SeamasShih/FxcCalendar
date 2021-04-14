@@ -1,0 +1,195 @@
+package com.honhai.foxconn.fxccalendar.agenda;
+
+import android.content.Context;
+import android.support.annotation.NonNull;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.data.Data;
+import com.honhai.foxconn.fxccalendar.data.Event;
+import com.honhai.foxconn.fxccalendar.weekly.data.Day;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Locale;
+
+public class AgendaDayEvent implements Comparable<AgendaDayEvent> {
+    public static final String LABEL_IN_DAY = "se_";
+    public static final String LABEL_START_DAY = "s_";
+    public static final String LABEL_END_DAY = "e_";
+    public static final String LABEL_ALL_DAY = "a_";
+
+    private Context context;
+    private Day day;
+    private ArrayList<AgendaEvent> arrayList = new ArrayList<>();
+
+    public AgendaDayEvent(Context context, Calendar calendar) {
+        this.context = context;
+        day = new Day(calendar);
+    }
+
+    public AgendaDayEvent(Context context, Day calendar) {
+        this.context = context;
+        day = calendar;
+    }
+
+    public void setDay(Calendar calendar) {
+        day.set(calendar);
+    }
+
+    public void addEvent(Event event) {
+        arrayList.add(new AgendaEvent(event));
+        Collections.sort(arrayList);
+    }
+
+    public ArrayList<AgendaEvent> getEvents() {
+        return arrayList;
+    }
+
+    public int getEventSize(){
+        return arrayList.size();
+    }
+
+    ArrayList<AgendaEvent> getAgendaEventList() {
+        return arrayList;
+    }
+
+    String getAgendaDay() {
+        return (day.year + "." + doubleDigit(day.month + 1) + "." + doubleDigit(day.dayOfMonth) + " (" + day.getWeekString(context, Calendar.SHORT) + ")");
+    }
+
+    Calendar getCalendar() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(day.year, day.month, day.dayOfMonth);
+        return calendar;
+    }
+
+    private String doubleDigit(int i) {
+        return i < 10 ? "0" + i : "" + i;
+    }
+
+    public Day getDay() {
+        return day;
+    }
+
+    @Override
+    public int compareTo(@NonNull AgendaDayEvent o) {
+        int mTime = day.year * 10000 + day.month * 100 + day.dayOfMonth;
+        int oTime = o.day.year * 10000 + o.day.month * 100 + o.day.dayOfMonth;
+        return mTime - oTime;
+    }
+
+
+    public class AgendaEvent implements Comparable<AgendaEvent> {
+        private Event event;
+        private String label;
+
+        AgendaEvent(Event event) {
+            this.event = event;
+            if (event.isAllDay())
+                label = LABEL_ALL_DAY;
+            else if (day.equal(event.getStartYear(), event.getStartMonth(), event.getStartDayOfMonth()) &&
+                    day.equal(event.getEndYear(), event.getEndMonth(), event.getEndDayOfMonth())) {
+                label = LABEL_IN_DAY;
+            } else if (day.equal(event.getStartYear(), event.getStartMonth(), event.getStartDayOfMonth())) {
+                label = LABEL_START_DAY;
+            } else if (day.equal(event.getEndYear(), event.getEndMonth(), event.getEndDayOfMonth())) {
+                label = LABEL_END_DAY;
+            } else {
+                label = LABEL_ALL_DAY;
+            }
+        }
+
+        public Event getEvent() {
+            return event;
+        }
+
+        public String getTitle() {
+            return event.getTitle();
+        }
+
+        public String getTime() {
+            switch (label) {
+                case LABEL_IN_DAY:
+                    return LABEL_IN_DAY +
+                            event.getStartHour() + "-" + event.getStartMinute() + "-" +
+                            event.getEndHour() + "-" + event.getEndMinute();
+                case LABEL_START_DAY:
+                    return LABEL_START_DAY +
+                            event.getStartHour() + "-" + event.getStartMinute() + "-" +
+                            "0-00";
+                case LABEL_END_DAY:
+                    return LABEL_END_DAY +
+                            "0-00" +
+                            event.getEndHour() + "-" + event.getEndMinute();
+                default:
+                    return LABEL_ALL_DAY + context.getString(R.string.calendarWeeklyAllDayText);
+            }
+        }
+
+        public String getStartTime() {
+            switch (label) {
+                case LABEL_IN_DAY:
+                case LABEL_START_DAY:
+                    return event.getStartHour() + ":" + doubleDigit(event.getStartMinute());
+                case LABEL_END_DAY:
+                    return " 0:00";
+                default:
+                    return context.getString(R.string.calendarWeeklyAllDayText);
+            }
+        }
+
+        public String getEndTime() {
+            switch (label) {
+                case LABEL_IN_DAY:
+                case LABEL_END_DAY:
+                    return event.getEndHour() + ":" + doubleDigit(event.getEndMinute());
+                case LABEL_START_DAY:
+                    return " 0:00";
+                default:
+                    return null;
+            }
+        }
+
+        private String doubleDigit(int i) {
+            return i < 10 ? "0" + i : "" + i;
+        }
+
+        public int getColor() {
+            return event.getColor();
+        }
+
+        public boolean isComplete() { return  event.isComplete();}
+
+        public boolean isRemind() {return Data.getInstance().isRemind(event);
+        }
+
+        @Override
+        public int compareTo(@NonNull AgendaEvent ae) {
+            int mPrior, aPrior;
+            switch (label) {
+                case LABEL_IN_DAY:
+                case LABEL_START_DAY:
+                case LABEL_END_DAY:
+                    mPrior = Integer.valueOf("" + event.getStartHour() + event.getStartMinute() + event.getEndHour() + event.getEndMinute());
+                    break;
+                default:
+                    mPrior = 99999999;
+                    break;
+            }
+            switch (label) {
+                case LABEL_IN_DAY:
+                case LABEL_START_DAY:
+                case LABEL_END_DAY:
+                    aPrior = Integer.valueOf("" + ae.event.getStartHour() + ae.event.getStartMinute() + ae.event.getEndHour() + ae.event.getEndMinute());
+                    break;
+                default:
+                    aPrior = 99999999;
+                    break;
+            }
+            return mPrior - aPrior;
+        }
+    }
+
+}

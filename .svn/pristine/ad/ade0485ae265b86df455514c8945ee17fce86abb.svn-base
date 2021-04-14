@@ -1,0 +1,511 @@
+package com.honhai.foxconn.fxccalendar.weekly.view;
+
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Region;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.util.AttributeSet;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.View;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.addevent.AddEventActivity;
+import com.honhai.foxconn.fxccalendar.data.Data;
+import com.honhai.foxconn.fxccalendar.data.Event;
+import com.honhai.foxconn.fxccalendar.data.holiday.Holiday;
+import com.honhai.foxconn.fxccalendar.data.interfaces.RefreshData;
+import com.honhai.foxconn.fxccalendar.weekly.data.CalendarDay;
+import com.honhai.foxconn.fxccalendar.weekly.data.Day;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Locale;
+
+import static com.honhai.foxconn.fxccalendar.main.MainActivity.INTENT_EVENT;
+
+public class CalendarWeeklyView extends View implements RefreshData {
+
+    private Paint linePaint;
+    private Paint dayTextPaint;
+    private Paint eventTextPaint;
+    private float eventTextAdjY;
+    private Paint themePaint;
+    private Paint cursorPaint;
+
+    private CalendarDay cursor;
+
+    protected Day[] days;
+
+    private float dayHeight;
+    private float mWidth;
+    private float eventRectLeft;
+    private float eventHeight;
+    private float eventGapHeight;
+    private float eventRectWidth;
+    private float eventTextLeft = 200;
+    private float eventTimeLeft = 40;
+    private int maxEvent;
+
+    private OnEventClickListener eventClickListener;
+    private GestureDetector gestureDetector;
+    private Context activity;
+
+    private final String ALL_DAY = getResources().getString(R.string.calendarWeeklyAllDayText);
+    private final String HOLIDAY = getResources().getString(R.string.calendarWeeklyHolidayText);
+    private final String WORKDAY = getResources().getString(R.string.calendarWeeklyWorkdayText);
+    private final String OBSERVED = getResources().getString(R.string.calendarWeeklyObservedText);
+
+    public CalendarWeeklyView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        activity = context;
+
+        linePaint = new Paint();
+        linePaint.setColor(getResources().getColor(R.color.colorCalendarLine));
+        linePaint.setStyle(Paint.Style.STROKE);
+        linePaint.setStrokeWidth(1f);
+
+        dayTextPaint = new Paint();
+        dayTextPaint.setAntiAlias(true);
+        dayTextPaint.setTextAlign(Paint.Align.CENTER);
+
+        eventTextPaint = new Paint();
+        eventTextPaint.setAntiAlias(true);
+        eventTextPaint.setTextAlign(Paint.Align.LEFT);
+
+        themePaint = new Paint();
+
+        cursorPaint = new Paint();
+        cursorPaint.setColor(getResources().getColor(R.color.colorCalendarCursor));
+
+        days = new Day[7];
+        for (int i = 0; i < days.length; i++) {
+            days[i] = new Day();
+        }
+
+        gestureDetector = new GestureDetector(context, new EventGestureDetectorListener());
+        setClickable(true);
+        setOnEventClickListener(new OnEventClickListener() {
+            @Override
+            public void onEventClick(Event event) {
+                Intent intent = new Intent();
+                intent.setClass(activity, AddEventActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putParcelable(INTENT_EVENT, event);
+                intent.putExtras(bundle);
+                activity.startActivity(intent);
+            }
+        });
+
+        Data.getInstance().addRefreshView(this);
+    }
+
+    @Override
+    public void refresh() {
+        refreshDayEvents(days);
+        invalidate();
+    }
+
+    public void setCursor(CalendarDay day) {
+        cursor = day;
+    }
+
+    public void setOnEventClickListener(OnEventClickListener listener) {
+        eventClickListener = listener;
+    }
+
+    protected void refreshDayEvents(Day[] days) {
+        ArrayList<Event> events = Data.getInstance().getEvents();
+        Locale locale = getResources().getConfiguration().locale;
+        ArrayList<Holiday> holidays;
+        holidays = Data.getInstance().getHolidays(activity, locale.equals(Locale.CHINA) ? locale : Locale.TAIWAN);
+        for (Day day : days) {
+            day.events.clear();
+        }
+        for (int i = 0; i < days.length; i++) {
+            for (int k = 0; k < holidays.size(); k++) {
+                Holiday holiday = holidays.get(k);
+                String[] time = holiday.getDate().split("-");
+                int year = Integer.valueOf(time[0]);
+                int month = Integer.valueOf(time[1]);
+                int dayOfMonth = Integer.valueOf(time[2]);
+                if (days[i].equal(year, month, dayOfMonth)) {
+                    if (holiday.getName().equals(WORKDAY) || holiday.getName().equals(OBSERVED))
+                        days[i].events.add(new DayEvent(holiday.getName(), holiday.getName(), -1));
+                    else
+                        days[i].events.add(new DayEvent(holiday.getName(), HOLIDAY, -1));
+                }
+            }
+            for (int j = 0; j < events.size(); j++) {
+                Event event = events.get(j);
+                checkEventTime(event, days[i], j);
+            }
+            arrangeDayEvents(days[i]);
+        }
+        invalidate();
+    }
+
+    private void arrangeDayEvents(Day day) {
+        if (day.events.size() != 0) {
+            ArrayList<DayEvent> events = day.events;
+            Collections.sort(events);
+        }
+    }
+
+    private void checkEventTime(Event event, Day day, int order) {
+        if (event.isNoTime() || !isEventTimeCorrect(event))
+            return;
+        int startStatus = checkStartTime(event, day);
+        int endStatus = checkEndTime(event, day);
+        if (startStatus != 1 && endStatus != -1) {
+            if (startStatus == 0) {
+                if (event.isAllDay())
+                    day.events.add(new DayEvent(event, ALL_DAY, order));
+                else
+                    day.events.add(new DayEvent(event,
+                            twoDigits(event.getStartHour()) + ":" + twoDigits(event.getStartMinute()),
+                            order));
+            } else {
+                if (endStatus == 0)
+                    day.events.add(new DayEvent(event,
+                            "~" + twoDigits(event.getEndHour()) + ":" + twoDigits(event.getEndMinute()),
+                            order));
+                else
+                    day.events.add(new DayEvent(event, ALL_DAY, order));
+            }
+        }
+    }
+
+    private boolean isEventTimeCorrect(Event event) {
+        Calendar s = Calendar.getInstance();
+        Calendar e = Calendar.getInstance();
+        s.set(event.getStartYear(), event.getStartMonth(), event.getStartDayOfMonth(), event.getStartHour(), event.getStartMinute());
+        e.set(event.getEndYear(), event.getEndMonth(), event.getEndDayOfMonth(), event.getEndHour(), event.getEndMinute());
+        return e.after(s);
+    }
+
+    private String twoDigits(int number) {
+        return number < 10 ? "0" + number : String.valueOf(number);
+    }
+
+    private int checkStartTime(Event event, Day day) {
+        int y = Integer.compare(event.getStartYear(), day.year);
+        if (y == 0) {
+            Calendar e = Calendar.getInstance();
+            Calendar d = Calendar.getInstance();
+            e.set(event.getStartYear(), event.getStartMonth(), event.getStartDayOfMonth());
+            d.set(day.year, day.month, day.dayOfMonth);
+            int wE = e.get(Calendar.DAY_OF_YEAR);
+            int wD = d.get(Calendar.DAY_OF_YEAR);
+            return Integer.compare(wE, wD);
+        } else
+            return y;
+    }
+
+    private int checkEndTime(Event event, Day day) {
+        int y = Integer.compare(event.getEndYear(), day.year);
+        if (y == 0) {
+            Calendar e = Calendar.getInstance();
+            Calendar d = Calendar.getInstance();
+            e.set(event.getEndYear(), event.getEndMonth(), event.getEndDayOfMonth());
+            d.set(day.year, day.month, day.dayOfMonth);
+            int wE = e.get(Calendar.DAY_OF_YEAR);
+            int wD = d.get(Calendar.DAY_OF_YEAR);
+            return Integer.compare(wE, wD);
+        } else
+            return y;
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        dayHeight = (float) getMeasuredHeight() / 7;
+        mWidth = getMeasuredWidth();
+        eventHeight = 40;
+        eventGapHeight = eventHeight / 5;
+        maxEvent = (int) ((dayHeight - eventGapHeight) / (eventHeight + eventGapHeight));
+        eventRectLeft = mWidth * .2f;
+        eventRectWidth = 13;
+
+        eventTextPaint.setTextSize(eventHeight);
+        Paint.FontMetrics metrics = eventTextPaint.getFontMetrics();
+        eventTextAdjY = (metrics.descent - metrics.ascent) / 2 - metrics.descent;
+        invalidate();
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+            int y = (int) event.getY();
+            int dayOrder = (int) (y / dayHeight);
+            if (cursor != null)
+                cursor.set(days[dayOrder]);
+            invalidate();
+        }
+        return gestureDetector.onTouchEvent(event);
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+
+        canvas.save();
+        drawWeek(canvas, days);
+        canvas.restore();
+
+        canvas.drawLine(0, getHeight() - 1, mWidth, getHeight() - 1, linePaint);
+    }
+
+    protected void drawWeek(Canvas canvas, Day[] days) {
+        drawDay(canvas, days[0]);
+        for (int i = 1; i < 7; i++) {
+            canvas.translate(0, dayHeight);
+            drawDay(canvas, days[i]);
+        }
+    }
+
+    private void drawDay(Canvas canvas, Day day) {
+        canvas.save();
+
+        if (day.isToday) {
+            themePaint.setColor(Data.getInstance().getThemeColor());
+            themePaint.setAlpha(30);
+            canvas.drawRect(0, 0, mWidth, dayHeight, themePaint);
+        } else if (cursor != null && day.equal(cursor))
+            canvas.drawRect(0, 0, mWidth, dayHeight, cursorPaint);
+        canvas.drawLine(0, 0, mWidth, 0, linePaint);
+
+        //--- draw dayOfMonth
+        if (day.dayOfMonth != -1) {
+            dayTextPaint.setTextSize(dayHeight * 1.3f / 4);
+            if (day.events.size() != 0) {
+                dayTextPaint.setColor(getDayTextColorByEvent(day.events.get(0), day.dayOfWeek));
+            } else
+                dayTextPaint.setColor(getDayTextColor(day.dayOfWeek));
+            canvas.drawText(String.valueOf(day.dayOfMonth), eventRectLeft / 2, dayHeight / 2, dayTextPaint);
+        }
+        dayTextPaint.setTextSize(dayHeight * 1.3f / 8);
+        dayTextPaint.setColor(getResources().getColor(R.color.colorCalendarSubtitle));
+        canvas.drawText(day.getWeekString(getContext(), Calendar.LONG), eventRectLeft / 2, dayHeight * 3 / 4, dayTextPaint);
+        //--- draw dayOfMonth
+
+        //--- draw events
+        int amount = day.events.size();
+        amount = amount > maxEvent ? maxEvent : amount;
+        canvas.translate(eventRectLeft, dayHeight / 2);
+        canvas.translate(0, -(eventHeight + eventGapHeight) * (amount - 1) / 2);
+        for (int i = 0; i < amount; i++) {
+            DayEvent event = day.events.get(i);
+            eventTextPaint.setColor(event.color);
+            canvas.drawRoundRect(0, -eventHeight / 2, eventRectWidth, eventHeight / 2, eventRectWidth, eventRectWidth, eventTextPaint);
+            canvas.save();
+            canvas.clipRect(eventTimeLeft, -eventHeight, eventTextLeft - 20, eventHeight);
+            canvas.drawText(event.time, eventTimeLeft, eventTextAdjY, eventTextPaint);
+            canvas.restore();
+            eventTextPaint.setColor(getResources().getColor(R.color.colorCalendarWorkday));
+            canvas.drawText(event.title, eventTextLeft, eventTextAdjY, eventTextPaint);
+            canvas.translate(0, eventHeight + eventGapHeight);
+        }
+        //---draw events
+
+        canvas.restore();
+    }
+
+    private int getDayTextColorByEvent(DayEvent event, int dayOfWeek) {
+        if (event.time.equals(HOLIDAY) || event.time.equals(OBSERVED))
+            return getResources().getColor(R.color.colorCalendarHoliday);
+        else if (event.time.equals(WORKDAY))
+            return getResources().getColor(R.color.colorCalendarWorkday);
+        else
+            return getDayTextColor(dayOfWeek);
+    }
+
+    private int getDayTextColor(int dayOfWeek) {
+        switch (dayOfWeek) {
+            case Calendar.SUNDAY:
+                return getResources().getColor(R.color.colorCalendarHoliday);
+            case Calendar.SATURDAY:
+                return getResources().getColor(R.color.colorCalendarSaturday);
+            default:
+                return getResources().getColor(R.color.colorCalendarWorkday);
+        }
+    }
+
+    public void setWeekday(Calendar calendar) {
+        setWeekday(calendar, days);
+        invalidate();
+    }
+
+    protected void setWeekday(Calendar calendar, Day[] days) {
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        int weekOrder = getWeekOrder(dayOfWeek);
+        calendar.add(Calendar.DAY_OF_MONTH, -1 * weekOrder);
+        for (Day day : days) {
+            day.set(calendar);
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+        }
+        refreshDayEvents(days);
+    }
+
+    private int getWeekOrder(int dayOfWeek) {
+        switch (dayOfWeek) {
+            case Calendar.SUNDAY:
+                return 0;
+            case Calendar.MONDAY:
+                return 1;
+            case Calendar.TUESDAY:
+                return 2;
+            case Calendar.WEDNESDAY:
+                return 3;
+            case Calendar.THURSDAY:
+                return 4;
+            case Calendar.FRIDAY:
+                return 5;
+            case Calendar.SATURDAY:
+                return 6;
+            default:
+                return -1;
+        }
+    }
+
+    public class DayEvent implements Comparable<DayEvent> {
+
+        int color;
+        String time;
+        String title;
+        String eventId;
+        int eventOrder;
+
+        DayEvent() {
+        }
+
+        DayEvent(Event event, String time, int order) {
+            this.color = event.getColor();
+            this.time = time;
+            this.title = event.getTitle();
+            eventId = event.getObjectId();
+            eventOrder = order;
+        }
+
+        DayEvent(String title, String time, int order) {
+            this.title = title;
+            this.time = time;
+            this.eventOrder = order;
+            if (title.equals(WORKDAY))
+                this.color = getResources().getColor(R.color.colorCalendarWorkday);
+            else
+                this.color = getResources().getColor(R.color.colorCalendarHoliday);
+        }
+
+        @Override
+        public int compareTo(@NonNull DayEvent o) {
+            int mPriority = 0;
+            int oPriority = 0;
+            String oTime = o.time;
+            if (time.equals(ALL_DAY))
+                mPriority = 4;
+            else if (time.equals(HOLIDAY) || time.equals(OBSERVED) || time.equals(WORKDAY))
+                mPriority = 5;
+            else if (time.startsWith("~"))
+                mPriority = 2;
+            else if (time.contains(":"))
+                mPriority = 3;
+            if (oTime.equals(ALL_DAY))
+                oPriority = 4;
+            else if (oTime.equals(HOLIDAY) || oTime.equals(OBSERVED) || oTime.equals(WORKDAY))
+                oPriority = 5;
+            else if (oTime.startsWith("~"))
+                oPriority = 2;
+            else if (oTime.contains(":"))
+                oPriority = 3;
+            if (oPriority == mPriority) {
+                String[] mTimeString;
+                String[] oTimeString;
+                int[] mTimeInt = new int[2];
+                int[] oTimeInt = new int[2];
+                switch (oPriority) {
+                    case 2:
+                        String mS = time.substring(1);
+                        String oS = time.substring(1);
+                        mTimeString = mS.split(":");
+                        oTimeString = oS.split(":");
+                        mTimeInt[0] = Integer.parseInt(mTimeString[0]);
+                        mTimeInt[1] = Integer.parseInt(mTimeString[1]);
+                        oTimeInt[0] = Integer.parseInt(oTimeString[0]);
+                        oTimeInt[1] = Integer.parseInt(oTimeString[1]);
+                        if (mTimeInt[0] != oTimeInt[0])
+                            return oTimeInt[0] - mTimeInt[0];
+                        return oTimeInt[1] - mTimeInt[1];
+                    case 3:
+                        mTimeString = time.split(":");
+                        oTimeString = oTime.split(":");
+                        mTimeInt[0] = Integer.parseInt(mTimeString[0]);
+                        mTimeInt[1] = Integer.parseInt(mTimeString[1]);
+                        oTimeInt[0] = Integer.parseInt(oTimeString[0]);
+                        oTimeInt[1] = Integer.parseInt(oTimeString[1]);
+                        if (mTimeInt[0] != oTimeInt[0])
+                            return mTimeInt[0] - oTimeInt[0];
+                        return mTimeInt[1] - oTimeInt[1];
+                }
+            }
+            return oPriority - mPriority;
+        }
+    }
+
+    private class EventGestureDetectorListener extends GestureDetector.SimpleOnGestureListener {
+
+        @Override
+        public boolean onDown(MotionEvent e) {
+            return true;
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            int y = (int) e.getY();
+            int dayOrder = (int) (y / dayHeight);
+            if (eventClickListener != null) {
+                ArrayList<DayEvent> events = days[dayOrder].events;
+                int amountOfDayEvent = events.size();
+                amountOfDayEvent = amountOfDayEvent > maxEvent ? maxEvent : amountOfDayEvent;
+                if (amountOfDayEvent != 0) {
+                    Region region = new Region();
+                    for (int i = 0; i < amountOfDayEvent; i++) {
+                        region.set((int) eventRectLeft, (int) (-eventHeight / 2), (int) mWidth, (int) (eventHeight / 2));
+                        region.translate(0, (int) (dayOrder * dayHeight + dayHeight / 2));
+                        region.translate(0, (int) (-(eventHeight + eventGapHeight) * (amountOfDayEvent - 1) / 2));
+                        region.translate(0, (int) (i * (eventHeight + eventGapHeight)));
+                        if (region.contains((int) e.getX(), y)) {
+                            int order = events.get(i).eventOrder;
+                            if (order == -1)
+                                return true;
+                            String id = events.get(i).eventId;
+                            ArrayList<Event> allEvents = Data.getInstance().getEvents();
+                            Event event = allEvents.get(order);
+                            if (id.equals(event.getObjectId())) {
+                                eventClickListener.onEventClick(event);
+                                return true;
+                            }
+                            for (int k = 0; k < allEvents.size(); k++) {
+                                event = allEvents.get(k);
+                                if (id.equals(event.getObjectId())) {
+                                    eventClickListener.onEventClick(event);
+                                    return true;
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+    }
+
+    public interface OnEventClickListener {
+        void onEventClick(Event event);
+    }
+}

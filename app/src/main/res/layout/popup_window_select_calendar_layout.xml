@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/tvPupSwitchCalendarTitle"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:text="@string/popupSwitchCalendarTitle"
+        android:textColor="@color/colorPopupSwitchCalendarText"
+        android:textSize="18sp"
+        android:gravity="center"
+        app:layout_constraintVertical_weight="1.3"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/tvPupSwitchCalendarSummary" />
+
+    <TextView
+        android:id="@+id/tvPupSwitchCalendarSummary"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/calendar_summary"
+        android:textColor="@color/colorPopupSwitchCalendarText"
+        android:paddingStart="@dimen/popupSwitchCalendarMargin"
+        android:gravity="center_vertical"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintVertical_weight="1"
+        app:layout_constraintTop_toBottomOf="@id/tvPupSwitchCalendarTitle"
+        app:layout_constraintBottom_toTopOf="@id/divider1"
+        app:layout_constraintLeft_toRightOf="@+id/imgPupSwitchCalendarSummary"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    <ImageView
+        android:id="@+id/divider1"
+        android:layout_width="0dp"
+        android:layout_height=".3dp"
+        android:background="@color/colorPopupSwitchCalendarDividerLine"
+        app:layout_constraintTop_toBottomOf="@id/tvPupSwitchCalendarSummary"
+        app:layout_constraintBottom_toTopOf="@id/tvPupSwitchCalendarWeekly"
+        app:layout_constraintLeft_toLeftOf="@id/tvPupSwitchCalendarSummary"
+        app:layout_constraintRight_toRightOf="@id/tvPupSwitchCalendarSummary"/>
+
+    <com.honhai.foxconn.fxccalendar.main.PopupCalendarImageView
+        android:id="@+id/imgPupSwitchCalendarSummary"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/popupSwitchCalendarMargin"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintTop_toTopOf="@id/tvPupSwitchCalendarSummary"
+        app:layout_constraintBottom_toBottomOf="@id/tvPupSwitchCalendarSummary"
+        app:layout_constraintLeft_toLeftOf="parent"
+        />
+
+    <ImageView
+        android:id="@+id/imgPupSwitchCalendarSummaryConfirm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/popupSwitchCalendarMargin"
+        android:background="@drawable/ic_confirm"
+        android:clickable="true"
+        android:focusable="true"
+        android:alpha="1"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintTop_toTopOf="@id/tvPupSwitchCalendarSummary"
+        app:layout_constraintBottom_toBottomOf="@id/tvPupSwitchCalendarSummary"
+        app:layout_constraintRight_toRightOf="@id/tvPupSwitchCalendarSummary"/>
+
+    <TextView
+        android:id="@+id/tvPupSwitchCalendarWeekly"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/calendar_weekly"
+        android:textColor="@color/colorPopupSwitchCalendarText"
+        android:paddingStart="@dimen/popupSwitchCalendarMargin"
+        android:gravity="center_vertical"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintVertical_weight="1"
+        app:layout_constraintTop_toBottomOf="@id/divider1"
+        app:layout_constraintBottom_toTopOf="@id/divider2"
+        app:layout_constraintLeft_toLeftOf="@id/tvPupSwitchCalendarSummary"
+        app:layout_constraintRight_toRightOf="@id/tvPupSwitchCalendarSummary"/>
+
+    <ImageView
+        android:id="@+id/divider2"
+        android:layout_width="0dp"
+        android:layout_height=".3dp"
+        android:background="@color/colorPopupSwitchCalendarDividerLine"
+        app:layout_constraintTop_toBottomOf="@id/tvPupSwitchCalendarWeekly"
+        app:layout_constraintBottom_toTopOf="@id/tvPupSwitchCalendarMonthly"
+        app:layout_constraintLeft_toLeftOf="@id/tvPupSwitchCalendarSummary"
+        app:layout_constraintRight_toRightOf="@id/tvPupSwitchCalendarSummary"/>
+
+    <com.honhai.foxconn.fxccalendar.main.PopupCalendarImageView
+        android:id="@+id/imgPupSwitchCalendarWeekly"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="1"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintTop_toTopOf="@id/tvPupSwitchCalendarWeekly"
+        app:layout_constraintBottom_toBottomOf="@id/tvPupSwitchCalendarWeekly"
+        app:layout_constraintLeft_toLeftOf="@id/imgPupSwitchCalendarSummary"
+        app:layout_constraintRight_toLeftOf="@id/tvPupSwitchCalendarWeekly"/>
+
+    <ImageView
+        android:id="@+id/imgPupSwitchCalendarWeeklyConfirm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_confirm"
+        android:clickable="true"
+        android:focusable="true"
+        android:alpha="1"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintTop_toTopOf="@id/tvPupSwitchCalendarWeekly"
+        app:layout_constraintBottom_toBottomOf="@id/tvPupSwitchCalendarWeekly"
+        app:layout_constraintRight_toRightOf="@id/imgPupSwitchCalendarSummaryConfirm"/>
+
+    <TextView
+        android:id="@+id/tvPupSwitchCalendarMonthly"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/calendar_monthly"
+        android:textColor="@color/colorPopupSwitchCalendarText"
+        android:paddingStart="@dimen/popupSwitchCalendarMargin"
+        android:gravity="center_vertical"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintVertical_weight="1"
+        app:layout_constraintTop_toBottomOf="@id/divider2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="@id/tvPupSwitchCalendarWeekly"
+        app:layout_constraintRight_toRightOf="@id/tvPupSwitchCalendarWeekly"/>
+
+    <com.honhai.foxconn.fxccalendar.main.PopupCalendarImageView
+        android:id="@+id/imgPupSwitchCalendarMonthly"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintTop_toTopOf="@id/tvPupSwitchCalendarMonthly"
+        app:layout_constraintBottom_toBottomOf="@id/tvPupSwitchCalendarMonthly"
+        app:layout_constraintLeft_toLeftOf="@id/imgPupSwitchCalendarWeekly"
+        app:layout_constraintRight_toLeftOf="@id/tvPupSwitchCalendarMonthly"/>
+
+    <ImageView
+        android:id="@+id/imgPupSwitchCalendarMonthlyConfirm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_confirm"
+        android:clickable="true"
+        android:focusable="true"
+        android:alpha="1"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintTop_toTopOf="@id/tvPupSwitchCalendarMonthly"
+        app:layout_constraintBottom_toBottomOf="@id/tvPupSwitchCalendarMonthly"
+        app:layout_constraintRight_toRightOf="@id/imgPupSwitchCalendarWeeklyConfirm"/>
+
+
+</android.support.constraint.ConstraintLayout>

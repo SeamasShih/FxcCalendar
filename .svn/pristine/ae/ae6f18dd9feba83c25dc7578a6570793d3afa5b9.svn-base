@@ -1,0 +1,119 @@
+package com.honhai.foxconn.fxccalendar.addevent;
+
+import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.ActionMode;
+import android.view.Gravity;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageSwitcher;
+import android.widget.ImageView;
+import android.widget.PopupWindow;
+import android.widget.TextView;
+
+import com.avos.avoscloud.feedback.Resources;
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.colormanager.ColorManagerActivity;
+import com.honhai.foxconn.fxccalendar.data.Data;
+import com.honhai.foxconn.fxccalendar.main.CalendarPopupWindow;
+
+public class AddEventActivity extends AppCompatActivity {
+    TextView alarm_color;
+    private Intent intent;
+    private EditText alarm_title;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_add_event);
+        Drawable drawable = getDrawable(R.drawable.ic_arrow_back_black_24dp);
+        drawable.setAlpha(255);
+        drawable.setTintList(ColorStateList.valueOf(Data.getInstance().getThemeColor()));
+        ImageButton imageButton = findViewById(R.id.left_clear);
+        imageButton.setImageDrawable(drawable);
+
+        drawable = getDrawable(R.drawable.ic_check_black_24dp);
+        drawable.setAlpha(255);
+        drawable.setTintList(ColorStateList.valueOf(Data.getInstance().getThemeColor()));
+        imageButton = findViewById(R.id.tv_save);
+        imageButton.setImageDrawable(drawable);
+
+        Drawable drawable1 = getDrawable(R.drawable.ic_keyboard_arrow_right_black_24dp);
+        ImageView imageView = findViewById(R.id.iv_time);
+        ImageView imageView1 = findViewById(R.id.iv_point);
+        imageView.setImageDrawable(drawable1);
+        imageView1.setImageDrawable(drawable1);
+        drawable1.setTint(Data.getInstance().getThemeColor());
+
+        EditText editText = findViewById(R.id.alarm_title);
+        editText.setHintTextColor(Data.getInstance().getThemeColor());
+
+        Drawable drawable2 = getDrawable(R.drawable.ic_alarm_on_black_24dp);
+        ImageView remind = findViewById(R.id.iv_remind);
+        ImageView allday = findViewById(R.id.iv_all_day);
+        remind.setImageDrawable(drawable2);
+        allday.setImageDrawable(drawable2);
+        drawable2.setTint(Data.getInstance().getThemeColor());
+
+        ImageView defaultcolor = findViewById(R.id.iv_color);
+        Drawable drawable4 = defaultcolor.getBackground();
+        drawable4.setTint(Data.getInstance().getThemeColor());
+
+
+
+    }
+
+
+    public void onClick(View v) {
+//        Intent intent = new Intent(this, com.honhai.foxconn.fxccalendar.colorunits.ColorUtils.class);
+//        startActivity(intent);
+//        finish();
+        View popupLayout = getLayoutInflater().inflate(R.layout.add_event_color_popup_window, (ViewGroup) findViewById(R.id.add_event_color_window_layout));
+        final ColorPopupWindow popupWindow = new ColorPopupWindow(popupLayout, getWindow().getDecorView().getWidth() - 100, getWindow().getDecorView().getHeight() * 3 / 5);
+        popupWindow.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.colorDefaultBackground)));
+        popupWindow.setOutsideTouchable(true);
+        popupWindow.setFocusable(true);
+        TextView manage = popupLayout.findViewById(R.id.addEventColorPopupWindowManage);
+        manage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setClass(AddEventActivity.this, ColorManagerActivity.class);
+                startActivity(intent);
+            }
+        });
+        TextView confirm = popupLayout.findViewById(R.id.addEventColorPopupWindowConfirm);
+        confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //todo Spring change layout color
+
+                popupWindow.dismiss();
+            }
+        });
+        popupWindow.showAtLocation(getWindow().getDecorView(), Gravity.CENTER, 0, 0);
+        WindowManager.LayoutParams lp = getWindow().getAttributes();
+        lp.alpha = .5f;
+        getWindow().setAttributes(lp);
+        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                WindowManager.LayoutParams lp = getWindow().getAttributes();
+                lp.alpha = 1f;
+                getWindow().setAttributes(lp);
+            }
+        });
+    }
+}
+

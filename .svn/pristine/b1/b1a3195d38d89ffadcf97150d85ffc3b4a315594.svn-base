@@ -1,0 +1,562 @@
+package com.honhai.foxconn.fxccalendar.addevent;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.support.annotation.ColorInt;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
+import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.DatePicker;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
+import android.widget.Toast;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.colormanager.ColorManagerActivity;
+import com.honhai.foxconn.fxccalendar.data.Data;
+import com.honhai.foxconn.fxccalendar.data.Event;
+import com.honhai.foxconn.fxccalendar.widget.CustomDatePicker;
+
+import java.lang.reflect.Field;
+import java.util.Calendar;
+
+import static com.honhai.foxconn.fxccalendar.colormanager.ColorAdapter.SP_COLOR_LABEL;
+import static com.honhai.foxconn.fxccalendar.main.MainActivity.INTENT_EVENT;
+import static com.honhai.foxconn.fxccalendar.main.MainActivity.SP_LATEST_EVENT_COLOR;
+import static com.honhai.foxconn.fxccalendar.main.MainActivity.SP_THEME;
+
+public class AddEventActivity extends AppCompatActivity {
+    private TextView colorLabelText, noTimeText, lunarText, allDayText, remindText, repeatText;
+    private EditText title, urlText, mapText, noteText;
+    private ImageButton leftBackButton, confirmButton, deleteButton;
+    private ImageView allDayImg, colorLabelImg, remindImg, lunarImg, noTimeImg, urlImg, mapImg, noteImg, repeatImg;
+    private View timeDirectorImg, colorLabelDirectorImg;
+    private Switch allDaySwitch, lunarSwitch, noTimeSwitch;
+    private int prevColor;
+    private int currColor;
+    private Event event;
+    private boolean isDismiss = false;
+    private boolean isCreate = false;
+    private SharedPreferences colorLabelSP;
+    private String[] colorStringId;
+    private int[] colors;
+    private TextView startYearText, startTimeText, endYearText, endTimeText;
+    private CustomDatePicker customDatePicker1, customDatePicker2;
+    private ColorPopupWindow popupWindow;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_add_event);
+
+        colorLabelSP = getSharedPreferences(SP_COLOR_LABEL, Context.MODE_PRIVATE);
+        colorStringId = getResources().getStringArray(R.array.stringColor);
+        colors = getResources().getIntArray(R.array.eventColorArray);
+
+        findViews();
+
+        Intent intent = getIntent();
+        event = intent.getParcelableExtra(INTENT_EVENT);
+        if (event == null) {
+            Calendar start = Calendar.getInstance();
+            Calendar end = Calendar.getInstance();
+            end.add(Calendar.HOUR_OF_DAY, 1);
+            event = new Event("", start.get(Calendar.YEAR), start.get(Calendar.MONTH), start.get(Calendar.DAY_OF_MONTH), start.get(Calendar.HOUR_OF_DAY), start.get(Calendar.MINUTE),
+                    end.get(Calendar.YEAR), end.get(Calendar.MONTH), end.get(Calendar.DAY_OF_MONTH), end.get(Calendar.HOUR_OF_DAY), end.get(Calendar.MINUTE),
+                    false, getSharedPreferences(SP_THEME, Context.MODE_PRIVATE).getInt(SP_LATEST_EVENT_COLOR, getResources().getColor(R.color.colorEventRed)),
+                    0, false, 0, "", "", "", false, "");
+            isCreate = true;
+            deleteButton.setVisibility(View.INVISIBLE);
+        }
+        prevColor = event.getColor();
+
+        setImgDrawable();
+        colorChange(prevColor);
+        setEventDetailToUI();
+    }
+
+    private void setImgDrawable() {
+        leftBackButton.setImageDrawable(getDrawable(R.drawable.ic_arrow_back_black_24dp));
+        leftBackButton.getDrawable().setAlpha(255);
+
+        confirmButton.setImageDrawable(getDrawable(R.drawable.ic_check_black_24dp));
+        confirmButton.getDrawable().setAlpha(255);
+
+        timeDirectorImg.setBackground(getDrawable(R.drawable.ic_keyboard_arrow_right_black_24dp));
+        timeDirectorImg.getBackground().setTint(prevColor);
+        colorLabelDirectorImg.setBackground(getDrawable(R.drawable.ic_keyboard_arrow_right_black_24dp));
+
+        remindImg.setImageDrawable(getDrawable(R.drawable.ic_alarm_on_black_24dp));
+        allDayImg.setImageDrawable(getDrawable(R.drawable.ic_alarm_on_black_24dp));
+    }
+
+    private void setEventDetailToUI() {
+        title.setText(event.getTitle());
+        setEventTimeItem();
+        setTopToolsItem();
+        setSwitchTypeItem();
+        setEditTextTypeItem();
+    }
+
+    private void setEditTextTypeItem() {
+        urlText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() != 0)
+                    urlImg.getBackground().setTint(currColor);
+                else
+                    urlImg.getBackground().setTint(getResources().getColor(R.color.colorPopupSwitchCalendarText));
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        mapText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() != 0)
+                    mapImg.getBackground().setTint(currColor);
+                else
+                    mapImg.getBackground().setTint(getResources().getColor(R.color.colorPopupSwitchCalendarText));
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        noteText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() != 0)
+                    noteImg.getBackground().setTint(currColor);
+                else
+                    noteImg.getBackground().setTint(getResources().getColor(R.color.colorPopupSwitchCalendarText));
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void setEventTimeItem() {
+        startYearText.setText(event.getStartYear() + "/" + doubleDigit(event.getStartMonth()) + "/" + doubleDigit(event.getStartDayOfMonth()));
+        startTimeText.setText(doubleDigit(event.getStartHour()) + ":" + doubleDigit(event.getStartMinute()));
+        endYearText.setText(event.getEndYear() + "/" + doubleDigit(event.getEndMonth()) + "/" + doubleDigit(event.getEndDayOfMonth()));
+        endTimeText.setText(doubleDigit(event.getEndHour()) + ":" + doubleDigit(event.getEndMinute()));
+    }
+
+    private void setTopToolsItem() {
+        confirmButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (title.getText() == null || title.getText().length() == 0) {
+                    Toast.makeText(AddEventActivity.this, getString(R.string.addEventTitleCantBeEmpty), Toast.LENGTH_LONG).show();
+                    return;
+                }
+                if (isCreate)
+                    createEvent();
+                else
+                    modifiedEvent();
+                finish();
+            }
+        });
+        leftBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDeleteCheckPopupWindow();
+            }
+        });
+    }
+
+    private void showDeleteCheckPopupWindow() {
+        View layout = getLayoutInflater().inflate(R.layout.popup_window_delete_event_message, null);
+        final DeleteMessagePopupWindow popupWindow = new DeleteMessagePopupWindow(this, layout, 700, 300);
+        popupWindow.showAtLocation(getWindow().getDecorView(), Gravity.CENTER, 0, 0);
+        TextView cancel = layout.findViewById(R.id.deleteCancelBtn);
+        TextView confirm = layout.findViewById(R.id.deleteConfirmBtn);
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popupWindow.dismiss();
+            }
+        });
+        confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Data.getInstance().deleteEventForCloud(event.getObjectId());
+                Data.getInstance().getEvents().remove(event);
+                finish();
+            }
+        });
+    }
+
+    private void createEvent() {
+        setEvent();
+        Data.getInstance().addEventForCloud(event);
+        Data.getInstance().getEvents().add(event);
+    }
+
+    private String doubleDigit(int i) {
+        return i < 10 ? "0" + i : "" + i;
+    }
+
+    private void setSwitchTypeItem() {
+        allDayImg.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPopupSwitchCalendarText)));
+        allDaySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    allDayText.setTextColor(currColor);
+                    allDayImg.setImageTintList(ColorStateList.valueOf(currColor));
+                } else {
+                    allDayText.setTextColor(getResources().getColor(R.color.colorPopupSwitchCalendarText));
+                    allDayImg.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPopupSwitchCalendarText)));
+                }
+            }
+        });
+        lunarImg.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPopupSwitchCalendarText)));
+        lunarSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    lunarText.setTextColor(currColor);
+                    lunarImg.getBackground().setTintList(ColorStateList.valueOf(currColor));
+                } else {
+                    lunarText.setTextColor(getResources().getColor(R.color.colorPopupSwitchCalendarText));
+                    lunarImg.getBackground().setTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPopupSwitchCalendarText)));
+                }
+            }
+        });
+        noTimeImg.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPopupSwitchCalendarText)));
+        noTimeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    noTimeText.setTextColor(currColor);
+                    noTimeImg.getBackground().setTintList(ColorStateList.valueOf(currColor));
+                } else {
+                    noTimeText.setTextColor(getResources().getColor(R.color.colorPopupSwitchCalendarText));
+                    noTimeImg.getBackground().setTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPopupSwitchCalendarText)));
+                }
+            }
+        });
+        allDaySwitch.setChecked(event.isAllDay());
+        lunarSwitch.setChecked(event.isChinese());
+        noTimeSwitch.setChecked(event.isNoTime());
+    }
+
+    private void setEvent() {
+        event.setTitle(title.getText().toString());
+//        event.setStartYear();
+//        event.setStartMonth();
+//        event.setStartDayOfMonth();
+//        event.setStartHour();
+//        event.setStartMinute();
+//        event.setEndYear();
+//        event.setEndMonth();
+//        event.setStartDayOfMonth();
+//        event.setEndHour();
+//        event.setEndMinute();
+        event.setAllDay(allDaySwitch.isChecked());
+        event.setColor(currColor);
+//        event.setRepeat();
+        event.setChinese(lunarSwitch.isChecked());
+//        event.setGroupId();
+        event.setNote(noteText.getText().toString());
+        event.setMap(mapText.getText().toString());
+        event.setUrl(urlText.getText().toString());
+        event.setNoTime(noTimeSwitch.isChecked());
+    }
+
+    private void modifiedEvent() {
+        setEvent();
+        updateEvent(event);
+    }
+
+    private void updateEvent(Event event) {
+        Data.getInstance().updateEventForCloud(
+                event.getTitle(),
+                event.getStartYear(),
+                event.getStartMonth(),
+                event.getStartDayOfMonth(),
+                event.getStartHour(),
+                event.getStartMinute(),
+                event.getEndYear(),
+                event.getEndMonth(),
+                event.getStartDayOfMonth(),
+                event.getEndHour(),
+                event.getEndMinute(),
+                event.isAllDay(),
+                event.getColor(),
+                event.getRepeat(),
+                event.isChinese(),
+                event.getGroupId(),
+                event.getNote(),
+                event.getMap(),
+                event.getUrl(),
+                event.isNoTime(),
+                event.getObjectId()
+        );
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        View v = getCurrentFocus();
+        if (isShouldHideInput(v, ev)) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+            }
+        }
+        return super.dispatchTouchEvent(ev);
+    }
+
+    private boolean isShouldHideInput(View v, MotionEvent event) {
+        if (v instanceof EditText) {
+            int[] leftTop = {0, 0};
+            v.getLocationInWindow(leftTop);
+            int left = leftTop[0];
+            int top = leftTop[1];
+            int bottom = top + v.getHeight();
+            int right = left + v.getWidth();
+            return !(event.getX() > left) || !(event.getX() < right)
+                    || !(event.getY() > top) || !(event.getY() < bottom);
+        }
+        return false;
+    }
+
+    @Override
+    protected void onResume() {
+        if (popupWindow != null)
+            popupWindow.changColorLabel();
+        super.onResume();
+    }
+
+    private void findViews() {
+        title = findViewById(R.id.alarm_title);
+
+        colorLabelText = findViewById(R.id.alarm_color);
+        colorLabelImg = findViewById(R.id.iv_color);
+        colorLabelDirectorImg = findViewById(R.id.iv_point);
+
+        startYearText = findViewById(R.id.alarm_start_year);
+        startTimeText = findViewById(R.id.alarm_start_time);
+        endYearText = findViewById(R.id.alarm_end_year);
+        endTimeText = findViewById(R.id.alarm_end_time);
+        timeDirectorImg = findViewById(R.id.iv_time);
+
+        leftBackButton = findViewById(R.id.left_clear);
+        confirmButton = findViewById(R.id.tv_save);
+        deleteButton = findViewById(R.id.tv_delete);
+
+        allDayText = findViewById(R.id.tvAllDayText);
+        allDayImg = findViewById(R.id.iv_all_day);
+        allDaySwitch = findViewById(R.id.sw_all_day);
+
+        lunarText = findViewById(R.id.tvLunarText);
+        lunarImg = findViewById(R.id.iv_lunar);
+        lunarSwitch = findViewById(R.id.sw_lunar);
+
+        noTimeText = findViewById(R.id.alarm_vibrate);
+        noTimeImg = findViewById(R.id.iv_vibrate);
+        noTimeSwitch = findViewById(R.id.sw_vibrate);
+
+        remindImg = findViewById(R.id.iv_remind);
+        remindText = findViewById(R.id.alarm_remind);
+
+        urlText = findViewById(R.id.alarm_tone_Path);
+        urlImg = findViewById(R.id.iv_alarm_tone_Path);
+
+        mapText = findViewById(R.id.alarm_local);
+        mapImg = findViewById(R.id.iv_local);
+
+        noteText = findViewById(R.id.alarm_description);
+        noteImg = findViewById(R.id.iv_description);
+
+        repeatText = findViewById(R.id.alarm_replay);
+        repeatImg = findViewById(R.id.iv_replay);
+    }
+
+    public void colorChange(int color) {
+        leftBackButton.getDrawable().setTint(color);
+        confirmButton.getDrawable().setTint(color);
+        deleteButton.getDrawable().setTint(color);
+        timeDirectorImg.getBackground().setTint(color);
+
+        colorLabelDirectorImg.getBackground().setTint(color);
+        colorLabelImg.getBackground().setTint(color);
+        colorLabelText.setTextColor(color);
+
+        title.setTextColor(color);
+        title.setHintTextColor(Color.argb(100, Color.red(color), Color.green(color), Color.blue(color)));
+        setCursorColor(title, color);
+
+        allDaySwitch.getThumbDrawable().setTintList(createColorStateList(color, Color.rgb(240, 240, 240)));
+        allDaySwitch.getTrackDrawable().setTintList(createColorStateList(color, Color.GRAY));
+        if (allDaySwitch.isChecked()) {
+            allDayImg.setImageTintList(ColorStateList.valueOf(color));
+            allDayText.setTextColor(color);
+        }
+
+        lunarSwitch.getThumbDrawable().setTintList(createColorStateList(color, Color.rgb(240, 240, 240)));
+        lunarSwitch.getTrackDrawable().setTintList(createColorStateList(color, Color.GRAY));
+        if (lunarSwitch.isChecked()) {
+            lunarImg.getBackground().setTint(color);
+            lunarText.setTextColor(color);
+        }
+
+        noTimeSwitch.getThumbDrawable().setTintList(createColorStateList(color, Color.rgb(240, 240, 240)));
+        noTimeSwitch.getTrackDrawable().setTintList(createColorStateList(color, Color.GRAY));
+        if (noTimeSwitch.isChecked()) {
+            noTimeImg.getBackground().setTint(color);
+            noTimeText.setTextColor(color);
+        }
+
+        for (int i = 0; i < colors.length; i++) {
+            if (colors[i] == color) {
+                colorLabelText.setText(colorLabelSP.getString(colorStringId[i], colorStringId[i]));
+                break;
+            }
+        }
+
+        urlText.setTextColor(color);
+        setCursorColor(urlText, color);
+        mapText.setTextColor(color);
+        setCursorColor(mapText, color);
+        noteText.setTextColor(color);
+        setCursorColor(noteText, color);
+
+        currColor = color;
+    }
+
+    public void setCursorColor(EditText view, @ColorInt int color) {
+        try {
+            // Get the cursor resource id
+            Field field = TextView.class.getDeclaredField("mCursorDrawableRes");
+            field.setAccessible(true);
+            int drawableResId = field.getInt(view);
+
+            // Get the editor
+            field = TextView.class.getDeclaredField("mEditor");
+            field.setAccessible(true);
+            Object editor = field.get(view);
+
+            // Get the drawable and set a color filter
+            Drawable drawable = ContextCompat.getDrawable(view.getContext(), drawableResId);
+            drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+            Drawable[] drawables = {drawable, drawable};
+
+            // Set the drawables
+            field = editor.getClass().getDeclaredField("mCursorDrawable");
+            field.setAccessible(true);
+            field.set(editor, drawables);
+        } catch (Exception ignored) {
+        }
+    }
+
+    private ColorStateList createColorStateList(int checked, int normal) {
+        int[] colors = new int[]{checked, normal};
+        int[][] states = new int[2][];
+        states[0] = new int[]{android.R.attr.state_checked};
+        states[1] = new int[]{};
+        return new ColorStateList(states, colors);
+    }
+
+    public void onClick(View v) {
+        View popupLayout = getLayoutInflater().inflate(R.layout.add_event_color_popup_window, (ViewGroup) findViewById(R.id.add_event_color_window_layout));
+        popupWindow = new ColorPopupWindow(this, popupLayout, getWindow().getDecorView().getWidth() - 100, getWindow().getDecorView().getHeight() * 3 / 5);
+        popupWindow.setOutsideTouchable(true);
+        popupWindow.setFocusable(true);
+        TextView manage = popupLayout.findViewById(R.id.addEventColorPopupWindowManage);
+        manage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setClass(AddEventActivity.this, ColorManagerActivity.class);
+                startActivity(intent);
+            }
+        });
+        TextView confirm = popupLayout.findViewById(R.id.addEventColorPopupWindowConfirm);
+        confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isDismiss = true;
+                SharedPreferences sharedPreferences = getSharedPreferences(SP_THEME, Context.MODE_PRIVATE);
+                sharedPreferences.edit().putInt(SP_LATEST_EVENT_COLOR, currColor).apply();
+                popupWindow.dismiss();
+            }
+        });
+        isDismiss = false;
+        popupWindow.showAtLocation(getWindow().getDecorView(), Gravity.CENTER, 0, 0);
+        WindowManager.LayoutParams lp = getWindow().getAttributes();
+        lp.alpha = .5f;
+        getWindow().setAttributes(lp);
+        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                WindowManager.LayoutParams lp = getWindow().getAttributes();
+                lp.alpha = 1f;
+                getWindow().setAttributes(lp);
+                if (isDismiss)
+                    prevColor = currColor;
+                else
+                    colorChange(prevColor);
+            }
+        });
+    }
+}
+

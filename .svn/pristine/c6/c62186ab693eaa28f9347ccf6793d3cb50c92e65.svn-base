@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">FxcCalendar</string>
+
+
+    <string name="lovely_red">lovely_red</string>
+    <string name="color">color</string>
+
+    <string name="color_manager">标签的管理</string>
+
+    <string name="calendar_monthly">Monthly</string>
+    <string name="calendar_weekly">Weekly</string>
+    <string name="calendar_summary">Summary</string>
+    <string name="keep">Keep</string>
+    <string name="feed">Feed</string>
+    <string name="more">More</string>
+    <string name="underline"><u>忘记密码</u></string>
+
+</resources>

@@ -1,0 +1,322 @@
+package com.honhai.foxconn.fxccalendar.login;
+
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.honhai.foxconn.fxccalendar.R;
+import com.honhai.foxconn.fxccalendar.data.Data;
+import com.honhai.foxconn.fxccalendar.data.User;
+
+import static android.view.View.OnClickListener;
+
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
+
+import java.util.ArrayList;
+
+public class Registernumber extends AppCompatActivity {
+
+    private EditText et_name;
+    private EditText et_pwd;
+    private Button bt_button1;
+    private Button bt_bottom;
+    private Button bt_top;
+    private EditText checkpwd;
+    private EditText chineseName;
+    private EditText englishName;
+    private Button pwd_clear;
+    private Button pwd_eye;
+    private Button name_clear;
+    private Button chech_clear;
+    private Button check_eye;
+    private Button chinese_clear;
+    private Button english_clear;
+    private boolean isOpen = false;
+    private SharedPreferences.Editor editor;
+    Data data;
+    boolean isWorkIdRepeat;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.registerumber_ui_layout);
+
+        data = Data.getInstance();
+        data.refreshUsersForCloud();
+
+        et_name = (EditText) findViewById(R.id.et_userName);
+        et_pwd = (EditText) findViewById(R.id.et_passWord);
+        chineseName = (EditText) findViewById(R.id.et_chineseName);
+        checkpwd = (EditText) findViewById(R.id.et_checkPassword);
+        englishName = (EditText) findViewById(R.id.et_englishName);
+        //找到关心的Edittext里面的清除按钮和密码眼睛按钮
+        name_clear = (Button) findViewById(R.id.bt_name_clear);
+        pwd_clear = (Button) findViewById(R.id.bt_pwd_clear);
+        pwd_eye = (Button) findViewById(R.id.bt_pwd_eye);
+        chech_clear = (Button) findViewById(R.id.check_pwd_clear);
+        check_eye = (Button) findViewById(R.id.check_pwd_eye);
+        chinese_clear = (Button) findViewById(R.id.chinese_name_clear);
+        english_clear = (Button) findViewById(R.id.english_name_clear);
+
+        bt_button1 = (Button) findViewById(R.id.bt_creatbutton);
+        bt_bottom = (Button) findViewById(R.id.bt_possess);
+        bt_top = (Button) findViewById(R.id.close_button);
+
+        bt_bottom.setOnClickListener(m_register_Listener);
+        bt_top.setOnClickListener(m_register_Listener);
+        bt_button1.setOnClickListener(m_register_Listener);
+        //给清除按钮和密码眼睛按钮设置点击事件
+        pwd_clear.setOnClickListener(m_register_Listener);
+        pwd_eye.setOnClickListener(m_register_Listener);
+        name_clear.setOnClickListener(m_register_Listener);
+        chech_clear.setOnClickListener(m_register_Listener);
+        check_eye.setOnClickListener(m_register_Listener);
+        chinese_clear.setOnClickListener(m_register_Listener);
+        english_clear.setOnClickListener(m_register_Listener);
+
+        et_name.addTextChangedListener(new TextWatcher() { // 监听文本框内容变化
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {// 获得文本框中的工号
+                String user = et_name.getText().toString().trim();
+                if ("".equals(user)) {// 用户名为空,设置按钮不可见
+                    name_clear.setVisibility(View.INVISIBLE);
+                } else {            // 用户名不为空，设置按钮可见
+                    name_clear.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+        et_pwd.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {    // 获得文本框中的用户密码
+                String pwd = et_pwd.getText().toString().trim();
+                if ("".equals(pwd)) {    // 用户名为空,设置按钮不可见
+                    pwd_clear.setVisibility(View.INVISIBLE);
+                } else {             // 用户名不为空，设置按钮可见
+                    pwd_clear.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+        checkpwd.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {    // 获得文本框中的用户确认密码
+                String pwd = checkpwd.getText().toString().trim();
+                if ("".equals(pwd)) {    // 用户名为空,设置按钮不可见
+                    chech_clear.setVisibility(View.INVISIBLE);
+                } else {             // 用户名不为空，设置按钮可见
+                    chech_clear.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+        chineseName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {    // 获得文本框中的中文名字
+                String pwd = chineseName.getText().toString().trim();
+                if ("".equals(pwd)) {    // 用户名为空,设置按钮不可见
+                    chinese_clear.setVisibility(View.INVISIBLE);
+                } else {             // 用户名不为空，设置按钮可见
+                    chinese_clear.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+        englishName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {    // 获得文本框中的英文名字
+                String pwd = englishName.getText().toString().trim();
+                if ("".equals(pwd)) {    // 用户名为空,设置按钮不可见
+                    english_clear.setVisibility(View.INVISIBLE);
+                } else {             // 用户名不为空，设置按钮可见
+                    english_clear.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+    }
+
+    OnClickListener m_register_Listener = new OnClickListener() {
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.bt_creatbutton:
+                    register_check();
+                    //注册按钮被点击进行注册逻辑
+                    break;
+                case R.id.close_button:
+                    Intent i = new Intent(Registernumber.this, Register.class);
+                    startActivity(i);
+                    break;
+                case R.id.bt_possess:
+                    if (bt_bottom.isClickable()) {
+                        Intent i1 = new Intent(Registernumber.this, Register.class);
+                        startActivity(i1);
+                    }
+                    break;
+                case R.id.bt_name_clear:
+                    // 清除登录名
+                    et_name.setText("");
+                    break;
+                case R.id.bt_pwd_clear:
+                    et_pwd.setText("");
+                    break;
+                case R.id.bt_pwd_eye:
+                    if (isOpen) { // 密码可见与不可见的切换
+                        isOpen = false;
+                    } else {
+                        isOpen = true;
+                    }      // 默认isOpen是false,密码不可见
+                    changePwdOpenOrClose(isOpen);
+                    break;
+                case R.id.check_pwd_clear:
+                    checkpwd.setText("");
+                    break;
+                case R.id.check_pwd_eye:
+                    if (isOpen) { // 密码可见与不可见的切换
+                        isOpen = false;
+                    } else {
+                        isOpen = true;
+                    }      // 默认isOpen是false,密码不可见
+                    checkPwdOpenOrClose(isOpen);
+                    break;
+                case R.id.chinese_name_clear:
+                    chineseName.setText("");
+                    break;
+                case R.id.english_name_clear:
+                    englishName.setText("");
+                    break;
+                default:
+            }
+        }
+    };
+
+    private void changePwdOpenOrClose(boolean flag) {
+        if (flag) {   // 第一次过来是false，密码不可见
+            pwd_eye.setBackgroundResource(R.drawable.ic_visibility_black_24dp);
+// 设置EditText的密码可见
+            et_pwd.setTransformationMethod(HideReturnsTransformationMethod
+                    .getInstance());
+        } else {
+// 密码可见
+            pwd_eye.setBackgroundResource(R.drawable.ic_visibility_off_black_24dp);
+// 设置EditText的密码隐藏
+            et_pwd.setTransformationMethod(PasswordTransformationMethod
+                    .getInstance());
+        }
+    }
+
+    private void checkPwdOpenOrClose(boolean flag) {
+        if (flag) {   // 第一次过来是false，密码不可见
+            check_eye.setBackground(getDrawable(R.drawable.ic_visibility_black_24dp));
+// 设置EditText的密码可见
+            checkpwd.setTransformationMethod(HideReturnsTransformationMethod
+                    .getInstance());
+        } else {
+// 密码可见
+            check_eye.setBackground(getDrawable(R.drawable.ic_visibility_off_black_24dp));
+// 设置EditText的密码隐藏
+            checkpwd.setTransformationMethod(PasswordTransformationMethod
+                    .getInstance());
+        }
+    }
+
+    //注册逻辑
+
+    public void register_check() {
+        if (isUserNameAndPwdValid()) {
+            isWorkIdRepeat = false;
+            ArrayList<User> myal = data.getUsers();
+            for (int i = 0; i < myal.size(); i++) {
+                String WorkId = data.getUsers().get(i).getWorkId();
+                if (et_name.getText().toString().equals(WorkId)) {
+                    isWorkIdRepeat = true;
+                }
+            }
+            addUser(isWorkIdRepeat);
+
+        }
+    }
+
+    private boolean isUserNameAndPwdValid() {
+        if (et_name.getText().toString().trim().equals("")) {
+            Toast.makeText(this, getString(R.string.account_empty),
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (et_pwd.getText().toString().equals("")) {
+            Toast.makeText(this, getString(R.string.pwd_empty),
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (checkpwd.getText().toString().equals("")) {
+            Toast.makeText(this, getString(R.string.pwd_check_empty),
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (chineseName.getText().toString().equals("")) {
+            Toast.makeText(this, getString(R.string.ResetChin_empty),
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (englishName.getText().toString().equals("")) {
+            Toast.makeText(this, getString(R.string.ResetEng_empty),
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (!et_pwd.getText().toString().equals(checkpwd.getText().toString())) {
+            Toast.makeText(this, getString(R.string.Psaaword_same), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
+    private void addUser(boolean isWorkIdRepeat) {
+        if (isWorkIdRepeat) {
+            Toast.makeText(Registernumber.this, getString(R.string.registrfailed), Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(Registernumber.this, getString(R.string.RegisterSuccess), Toast.LENGTH_SHORT).show();
+            data.addUserForCloud(et_name.getText().toString(), et_pwd.getText().toString(), chineseName.getText().toString(), englishName.getText().toString());
+            Intent it = new Intent(Registernumber.this, Register.class);
+            startActivity(it);
+            finish();
+        }
+    }
+}
